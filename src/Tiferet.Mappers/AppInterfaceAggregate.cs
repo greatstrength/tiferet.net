@@ -9,6 +9,29 @@ public class AppInterfaceAggregate : Aggregate<AppInterface>
 {
     public AppInterfaceAggregate(AppInterface domain) : base(domain) { }
 
+    /// <summary>Update the name.</summary>
+    public void Rename(string name) => SetAttribute(nameof(AppInterface.Name), name);
+
+    /// <summary>Update the description.</summary>
+    public void SetDescription(string? description) =>
+        SetAttribute(nameof(AppInterface.Description), description);
+
+    /// <summary>Update the assembly name.</summary>
+    public void SetAssemblyName(string assemblyName) =>
+        SetAttribute(nameof(AppInterface.AssemblyName), assemblyName);
+
+    /// <summary>Update the type name.</summary>
+    public void SetTypeName(string typeName) =>
+        SetAttribute(nameof(AppInterface.TypeName), typeName);
+
+    /// <summary>Update the logger ID.</summary>
+    public void SetLoggerId(string loggerId) =>
+        SetAttribute(nameof(AppInterface.LoggerId), loggerId);
+
+    /// <summary>Update the flags.</summary>
+    public void SetFlags(IReadOnlyList<string> flags) =>
+        SetAttribute(nameof(AppInterface.Flags), flags);
+
     /// <summary>Add a service dependency.</summary>
     public void AddService(string serviceId, string assemblyName, string typeName,
         IReadOnlyDictionary<string, string>? parameters = null)

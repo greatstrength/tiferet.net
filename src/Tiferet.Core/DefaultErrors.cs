@@ -12,52 +12,52 @@ public static class DefaultErrors
     {
         [ErrorCodes.CommandParameterRequired] = new()
         {
-            ["id"] = ErrorCodes.CommandParameterRequired,
-            ["name"] = "Command Parameter Required",
-            ["error_code"] = ErrorCodes.CommandParameterRequired,
-            ["messages"] = new List<Dictionary<string, string>>
+            ["Id"] = ErrorCodes.CommandParameterRequired,
+            ["Name"] = "Command Parameter Required",
+            ["ErrorCode"] = ErrorCodes.CommandParameterRequired,
+            ["Messages"] = new List<Dictionary<string, string>>
             {
-                new() { ["lang"] = "en_US", ["text"] = "Required parameter missing." },
+                new() { ["Lang"] = "en_US", ["Text"] = "Required parameter missing." },
             },
         },
         [ErrorCodes.FeatureNotFound] = new()
         {
-            ["id"] = ErrorCodes.FeatureNotFound,
-            ["name"] = "Feature Not Found",
-            ["error_code"] = ErrorCodes.FeatureNotFound,
-            ["messages"] = new List<Dictionary<string, string>>
+            ["Id"] = ErrorCodes.FeatureNotFound,
+            ["Name"] = "Feature Not Found",
+            ["ErrorCode"] = ErrorCodes.FeatureNotFound,
+            ["Messages"] = new List<Dictionary<string, string>>
             {
-                new() { ["lang"] = "en_US", ["text"] = "Feature not found: {id}" },
+                new() { ["Lang"] = "en_US", ["Text"] = "Feature not found: {id}" },
             },
         },
         [ErrorCodes.ErrorNotFound] = new()
         {
-            ["id"] = ErrorCodes.ErrorNotFound,
-            ["name"] = "Error Not Found",
-            ["error_code"] = ErrorCodes.ErrorNotFound,
-            ["messages"] = new List<Dictionary<string, string>>
+            ["Id"] = ErrorCodes.ErrorNotFound,
+            ["Name"] = "Error Not Found",
+            ["ErrorCode"] = ErrorCodes.ErrorNotFound,
+            ["Messages"] = new List<Dictionary<string, string>>
             {
-                new() { ["lang"] = "en_US", ["text"] = "Error not found: {id}" },
+                new() { ["Lang"] = "en_US", ["Text"] = "Error not found: {id}" },
             },
         },
         [ErrorCodes.AppInterfaceNotFound] = new()
         {
-            ["id"] = ErrorCodes.AppInterfaceNotFound,
-            ["name"] = "App Interface Not Found",
-            ["error_code"] = ErrorCodes.AppInterfaceNotFound,
-            ["messages"] = new List<Dictionary<string, string>>
+            ["Id"] = ErrorCodes.AppInterfaceNotFound,
+            ["Name"] = "App Interface Not Found",
+            ["ErrorCode"] = ErrorCodes.AppInterfaceNotFound,
+            ["Messages"] = new List<Dictionary<string, string>>
             {
-                new() { ["lang"] = "en_US", ["text"] = "App interface not found: {id}" },
+                new() { ["Lang"] = "en_US", ["Text"] = "App interface not found: {id}" },
             },
         },
         [ErrorCodes.InvalidModelAttribute] = new()
         {
-            ["id"] = ErrorCodes.InvalidModelAttribute,
-            ["name"] = "Invalid Model Attribute",
-            ["error_code"] = ErrorCodes.InvalidModelAttribute,
-            ["messages"] = new List<Dictionary<string, string>>
+            ["Id"] = ErrorCodes.InvalidModelAttribute,
+            ["Name"] = "Invalid Model Attribute",
+            ["ErrorCode"] = ErrorCodes.InvalidModelAttribute,
+            ["Messages"] = new List<Dictionary<string, string>>
             {
-                new() { ["lang"] = "en_US", ["text"] = "Invalid attribute: {attribute}" },
+                new() { ["Lang"] = "en_US", ["Text"] = "Invalid attribute: {attribute}" },
             },
         },
     };
