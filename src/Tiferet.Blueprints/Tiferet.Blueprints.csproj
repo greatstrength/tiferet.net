@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tiferet.Core\Tiferet.Core.csproj" />
+    <ProjectReference Include="..\Tiferet.Domain\Tiferet.Domain.csproj" />
+    <ProjectReference Include="..\Tiferet.Events\Tiferet.Events.csproj" />
+    <ProjectReference Include="..\Tiferet.Interfaces\Tiferet.Interfaces.csproj" />
+    <ProjectReference Include="..\Tiferet.Mappers\Tiferet.Mappers.csproj" />
+    <ProjectReference Include="..\Tiferet.Contexts\Tiferet.Contexts.csproj" />
+    <ProjectReference Include="..\Tiferet.Repositories\Tiferet.Repositories.csproj" />
+    <ProjectReference Include="..\Tiferet.DependencyInjection\Tiferet.DependencyInjection.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>
