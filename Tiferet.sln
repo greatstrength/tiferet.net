@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tiferet.DependencyInjection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tiferet.Utilities", "src\Tiferet.Utilities\Tiferet.Utilities.csproj", "{A5C6B166-1508-49C0-B63C-F00A5352C0A4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tiferet.Repositories", "src\Tiferet.Repositories\Tiferet.Repositories.csproj", "{77213586-7EFE-4CFC-BAA9-435EEED55215}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -129,6 +131,18 @@ Global
 		{A5C6B166-1508-49C0-B63C-F00A5352C0A4}.Release|x64.Build.0 = Release|Any CPU
 		{A5C6B166-1508-49C0-B63C-F00A5352C0A4}.Release|x86.ActiveCfg = Release|Any CPU
 		{A5C6B166-1508-49C0-B63C-F00A5352C0A4}.Release|x86.Build.0 = Release|Any CPU
+		{77213586-7EFE-4CFC-BAA9-435EEED55215}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77213586-7EFE-4CFC-BAA9-435EEED55215}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77213586-7EFE-4CFC-BAA9-435EEED55215}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{77213586-7EFE-4CFC-BAA9-435EEED55215}.Debug|x64.Build.0 = Debug|Any CPU
+		{77213586-7EFE-4CFC-BAA9-435EEED55215}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{77213586-7EFE-4CFC-BAA9-435EEED55215}.Debug|x86.Build.0 = Debug|Any CPU
+		{77213586-7EFE-4CFC-BAA9-435EEED55215}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77213586-7EFE-4CFC-BAA9-435EEED55215}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77213586-7EFE-4CFC-BAA9-435EEED55215}.Release|x64.ActiveCfg = Release|Any CPU
+		{77213586-7EFE-4CFC-BAA9-435EEED55215}.Release|x64.Build.0 = Release|Any CPU
+		{77213586-7EFE-4CFC-BAA9-435EEED55215}.Release|x86.ActiveCfg = Release|Any CPU
+		{77213586-7EFE-4CFC-BAA9-435EEED55215}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -142,5 +156,6 @@ Global
 		{8AD1E452-1F01-4B67-93C1-5FA0B1BD3BA6} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{AAC2E880-082C-4D34-BB7B-2AF3BAD91CFC} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{A5C6B166-1508-49C0-B63C-F00A5352C0A4} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{77213586-7EFE-4CFC-BAA9-435EEED55215} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 	EndGlobalSection
 EndGlobal

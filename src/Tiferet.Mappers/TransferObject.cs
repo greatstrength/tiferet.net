@@ -158,6 +158,21 @@ public abstract class TransferObject<TDomain, TAggregate> : TransferObject
     }
 
     /// <summary>
+    /// Create a transfer object from an aggregate.
+    /// Delegates to <see cref="FromModel{TTransfer}"/> using the aggregate's domain record.
+    /// Concrete subclasses may override via <c>new static</c> for nested child conversion.
+    /// </summary>
+    /// <typeparam name="TTransfer">The concrete transfer object type.</typeparam>
+    /// <param name="aggregate">The source aggregate.</param>
+    /// <param name="overrides">Additional values that take priority.</param>
+    /// <returns>A new transfer object instance.</returns>
+    public static TTransfer FromAggregate<TTransfer>(TAggregate aggregate, Dictionary<string, object?>? overrides = null)
+        where TTransfer : TransferObject<TDomain, TAggregate>, new()
+    {
+        return FromModel<TTransfer>(aggregate.Domain, overrides);
+    }
+
+    /// <summary>
     /// Construct an aggregate from a property dictionary using reflection.
     /// Finds a constructor on the aggregate whose domain record parameter can be built.
     /// </summary>
