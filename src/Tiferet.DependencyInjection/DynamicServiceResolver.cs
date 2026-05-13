@@ -5,52 +5,48 @@ namespace Tiferet.DependencyInjection;
 /// <summary>
 /// Concrete <see cref="IServiceResolver"/> backed by
 /// <see cref="Microsoft.Extensions.DependencyInjection"/>.
-/// Rebuilds the <see cref="IServiceProvider"/> on each mutation.
+/// The <see cref="IServiceProvider"/> is built lazily on the first
+/// <see cref="GetService"/> call after any mutation, rather than on
+/// every <c>AddService</c>/<c>RemoveService</c> call.
 /// </summary>
 public class DynamicServiceResolver : IServiceResolver
 {
     private readonly ServiceCollection _services = new();
-    private IServiceProvider _provider;
 
-    /// <summary>
-    /// Initializes a new <see cref="DynamicServiceResolver"/> with an empty container.
-    /// </summary>
-    public DynamicServiceResolver()
-    {
-        _provider = _services.BuildServiceProvider();
-    }
+    // Null means the provider is stale and will be rebuilt on next GetService.
+    private IServiceProvider? _provider;
 
     /// <inheritdoc />
     public void AddService<T>(T instance) where T : class
     {
         _services.AddSingleton(instance);
-        Rebuild();
+        _provider = null;
     }
 
     /// <inheritdoc />
     public void AddService<T>(Func<IServiceProvider, T> factory) where T : class
     {
         _services.AddSingleton<T>(factory);
-        Rebuild();
+        _provider = null;
     }
 
     /// <inheritdoc />
     public void AddService(Type serviceType, object instance)
     {
         _services.AddSingleton(serviceType, instance);
-        Rebuild();
+        _provider = null;
     }
 
     /// <inheritdoc />
     public T? GetService<T>() where T : class
     {
-        return _provider.GetService<T>();
+        return EnsureProvider().GetService<T>();
     }
 
     /// <inheritdoc />
     public object? GetService(Type serviceType)
     {
-        return _provider.GetService(serviceType);
+        return EnsureProvider().GetService(serviceType);
     }
 
     /// <inheritdoc />
@@ -60,20 +56,20 @@ public class DynamicServiceResolver : IServiceResolver
         var toRemove = _services.Where(d => d.ServiceType == typeof(T)).ToList();
         foreach (var descriptor in toRemove)
             _services.Remove(descriptor);
-        Rebuild();
+        _provider = null;
     }
 
     /// <inheritdoc />
     public Func<T> BuildFactory<T>() where T : class
     {
-        return () => ActivatorUtilities.CreateInstance<T>(_provider);
+        return () => ActivatorUtilities.CreateInstance<T>(EnsureProvider());
     }
 
     /// <summary>
-    /// Rebuild the service provider after a mutation.
+    /// Build (or return the cached) <see cref="IServiceProvider"/>.
+    /// Called on every read operation; building occurs at most once per
+    /// batch of mutations.
     /// </summary>
-    private void Rebuild()
-    {
-        _provider = _services.BuildServiceProvider();
-    }
+    private IServiceProvider EnsureProvider()
+        => _provider ??= _services.BuildServiceProvider();
 }
