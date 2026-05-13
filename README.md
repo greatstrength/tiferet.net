@@ -114,6 +114,11 @@ Verify(b != 0, "DIVISION_BY_ZERO", "Cannot divide by zero.");
 
 - [Calculator](https://github.com/greatstrength/tiferet.net/tree/v1.x-proto/examples/Tiferet.Examples.Calculator) — arithmetic operations with demo and CLI modes
 
+## Documentation
+
+- [Tutorial](https://github.com/greatstrength/tiferet.net/blob/v1.x-proto/docs/tutorial.md) — step-by-step walkthrough building the calculator app from scratch
+- [Architecture](https://github.com/greatstrength/tiferet.net/blob/v1.x-proto/docs/architecture.md) — layer diagram, responsibilities, and runtime flow
+
 ## License
 
 [MIT](https://github.com/greatstrength/tiferet.net/blob/v1.x-proto/LICENSE)
