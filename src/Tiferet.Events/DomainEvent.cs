@@ -1,4 +1,3 @@
-using System.Reflection;
 using Tiferet.Core;
 
 namespace Tiferet.Events;
@@ -84,51 +83,8 @@ public abstract class DomainEvent<TParams, TResult> : DomainEvent
     /// <summary>
     /// Construct a <typeparamref name="TParams"/> instance from a dictionary
     /// by matching keys to the longest public constructor's parameter names.
+    /// Delegates to <see cref="ReflectionActivator.Construct{T}"/>.
     /// </summary>
     private static TParams ConstructParams(Dictionary<string, object?> data)
-    {
-        var ctor = typeof(TParams)
-            .GetConstructors(BindingFlags.Public | BindingFlags.Instance)
-            .OrderByDescending(c => c.GetParameters().Length)
-            .First();
-
-        var ctorParams = ctor.GetParameters();
-        var args = new object?[ctorParams.Length];
-
-        for (int i = 0; i < ctorParams.Length; i++)
-        {
-            var param = ctorParams[i];
-            var key = param.Name!;
-
-            // Try exact match, then PascalCase, then case-insensitive.
-            if (!data.TryGetValue(key, out var value))
-            {
-                var pascalKey = char.ToUpperInvariant(key[0]) + key[1..];
-                if (!data.TryGetValue(pascalKey, out value))
-                {
-                    var match = data.Keys.FirstOrDefault(k =>
-                        string.Equals(k, key, StringComparison.OrdinalIgnoreCase));
-                    if (match is not null)
-                        value = data[match];
-                }
-            }
-
-            if (value is not null)
-            {
-                var targetType = Nullable.GetUnderlyingType(param.ParameterType)
-                    ?? param.ParameterType;
-                args[i] = targetType.IsAssignableFrom(value.GetType())
-                    ? value
-                    : Convert.ChangeType(value, targetType);
-            }
-            else if (param.HasDefaultValue)
-                args[i] = param.DefaultValue;
-            else
-                args[i] = param.ParameterType.IsValueType
-                    ? Activator.CreateInstance(param.ParameterType)
-                    : null;
-        }
-
-        return (TParams)ctor.Invoke(args);
-    }
+        => ReflectionActivator.Construct<TParams>(data);
 }

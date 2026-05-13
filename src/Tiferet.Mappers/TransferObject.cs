@@ -1,4 +1,5 @@
 using System.Reflection;
+using Tiferet.Core;
 using Tiferet.Domain;
 
 namespace Tiferet.Mappers;
@@ -187,64 +188,8 @@ public abstract class TransferObject<TDomain, TAggregate> : TransferObject
 
     /// <summary>
     /// Construct a domain record from a property dictionary using reflection.
-    /// Matches dictionary keys to constructor parameters.
+    /// Delegates to <see cref="ReflectionActivator.Construct{T}"/>.
     /// </summary>
     private static TDomain ConstructDomain(Dictionary<string, object?> data)
-    {
-        var ctors = typeof(TDomain).GetConstructors(BindingFlags.Public | BindingFlags.Instance);
-
-        // Find the primary constructor (records have one with all properties).
-        var ctor = ctors.OrderByDescending(c => c.GetParameters().Length).First();
-        var parameters = ctor.GetParameters();
-
-        var args = new object?[parameters.Length];
-        for (int i = 0; i < parameters.Length; i++)
-        {
-            var param = parameters[i];
-            var key = param.Name!;
-
-            // Try PascalCase match first, then case-insensitive.
-            if (data.TryGetValue(key, out var value))
-            {
-                args[i] = ConvertValue(value, param.ParameterType);
-            }
-            else
-            {
-                // Try PascalCase key.
-                var pascalKey = char.ToUpperInvariant(key[0]) + key[1..];
-                if (data.TryGetValue(pascalKey, out value))
-                {
-                    args[i] = ConvertValue(value, param.ParameterType);
-                }
-                else if (param.HasDefaultValue)
-                {
-                    args[i] = param.DefaultValue;
-                }
-                else
-                {
-                    args[i] = param.ParameterType.IsValueType
-                        ? Activator.CreateInstance(param.ParameterType)
-                        : null;
-                }
-            }
-        }
-
-        return (TDomain)ctor.Invoke(args);
-    }
-
-    /// <summary>
-    /// Convert a value to the target type, handling common type mismatches.
-    /// </summary>
-    private static object? ConvertValue(object? value, Type targetType)
-    {
-        if (value is null)
-            return null;
-
-        var underlying = Nullable.GetUnderlyingType(targetType) ?? targetType;
-
-        if (underlying.IsAssignableFrom(value.GetType()))
-            return value;
-
-        return Convert.ChangeType(value, underlying);
-    }
+        => ReflectionActivator.Construct<TDomain>(data);
 }
