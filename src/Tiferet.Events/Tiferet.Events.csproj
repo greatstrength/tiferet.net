@@ -2,6 +2,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Tiferet.Core\Tiferet.Core.csproj" />
+    <ProjectReference Include="..\Tiferet.Domain\Tiferet.Domain.csproj" />
+    <ProjectReference Include="..\Tiferet.Interfaces\Tiferet.Interfaces.csproj" />
+    <ProjectReference Include="..\Tiferet.Mappers\Tiferet.Mappers.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

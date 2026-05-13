@@ -1,5 +1,5 @@
+using Tiferet.Core;
 using Tiferet.Domain;
-using Tiferet.Events.Static;
 
 namespace Tiferet.Mappers;
 

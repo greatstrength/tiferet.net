@@ -1,6 +1,5 @@
 using Tiferet.Core;
 using Tiferet.Events;
-using Tiferet.Events.Static;
 
 namespace Tiferet.Tests.Events;
 

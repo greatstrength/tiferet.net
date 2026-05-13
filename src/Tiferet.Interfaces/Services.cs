@@ -13,13 +13,32 @@ public interface IFeatureService : IRepository<FeatureAggregate> { }
 public interface IErrorService : IRepository<ErrorAggregate> { }
 
 /// <summary>Service interface for managing CLI command definitions.</summary>
-public interface ICliService : IRepository<CliCommandAggregate> { }
+public interface ICliService : IRepository<CliCommandAggregate>
+{
+    /// <summary>Get all parent-level CLI arguments.</summary>
+    IReadOnlyList<CliArgument> GetParentArguments();
+}
 
 /// <summary>Service interface for managing DI service configurations.</summary>
 public interface IDIService : IService
 {
+    /// <summary>Check if a service configuration exists by ID.</summary>
+    bool ConfigurationExists(string id);
+
+    /// <summary>Retrieve a service configuration by ID.</summary>
+    ServiceConfigurationAggregate? GetConfiguration(string id);
+
     /// <summary>List all service configurations and constants.</summary>
     (IReadOnlyList<ServiceConfigurationAggregate> Configurations, Dictionary<string, string> Constants) ListAll();
+
+    /// <summary>Save or update a service configuration.</summary>
+    void SaveConfiguration(ServiceConfigurationAggregate configuration);
+
+    /// <summary>Delete a service configuration by ID (idempotent).</summary>
+    void DeleteConfiguration(string id);
+
+    /// <summary>Save or update constants.</summary>
+    void SaveConstants(Dictionary<string, string> constants);
 }
 
 /// <summary>Service interface for loading and saving structured configuration data.</summary>
@@ -55,4 +74,22 @@ public interface ILoggingService : IService
 {
     /// <summary>List all logging configurations.</summary>
     (IReadOnlyList<FormatterAggregate> Formatters, IReadOnlyList<HandlerAggregate> Handlers, IReadOnlyList<LoggerAggregate> Loggers) ListAll();
+
+    /// <summary>Save a formatter configuration.</summary>
+    void SaveFormatter(FormatterAggregate formatter);
+
+    /// <summary>Save a handler configuration.</summary>
+    void SaveHandler(HandlerAggregate handler);
+
+    /// <summary>Save a logger configuration.</summary>
+    void SaveLogger(LoggerAggregate logger);
+
+    /// <summary>Delete a formatter by ID (idempotent).</summary>
+    void DeleteFormatter(string id);
+
+    /// <summary>Delete a handler by ID (idempotent).</summary>
+    void DeleteHandler(string id);
+
+    /// <summary>Delete a logger by ID (idempotent).</summary>
+    void DeleteLogger(string id);
 }
