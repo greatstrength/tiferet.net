@@ -61,12 +61,9 @@ public class GetError : DomainEvent<GetErrorParams, ErrorAggregate>
         // Fall back to default errors if requested.
         if (p.IncludeDefaults)
         {
-            var data = DefaultErrors.Get(p.Id);
-            if (data is not null)
-            {
-                var domain = DomainObject.FromDictionary<Domain.Error>(data);
-                return new ErrorAggregate(domain);
-            }
+            var defaultError = DefaultErrors.Get(p.Id);
+            if (defaultError is not null)
+                return new ErrorAggregate(defaultError);
         }
 
         // Not found.
@@ -88,10 +85,9 @@ public class ListErrors : DomainEvent<ListErrorsParams, IReadOnlyList<ErrorAggre
 
         // Merge defaults with repository errors (repo wins on conflicts).
         var errors = new Dictionary<string, ErrorAggregate>();
-        foreach (var (id, data) in DefaultErrors.All)
+        foreach (var (id, defaultError) in DefaultErrors.All)
         {
-            var domain = DomainObject.FromDictionary<Domain.Error>(data);
-            errors[id] = new ErrorAggregate(domain);
+            errors[id] = new ErrorAggregate(defaultError);
         }
         foreach (var error in _errorService.List())
             errors[error.Domain.Id] = error;

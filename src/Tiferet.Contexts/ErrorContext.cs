@@ -37,14 +37,13 @@ public class ErrorContext
         catch (TiferetException)
         {
             // Fall back to a built-in default for "error not found".
-            var data = DefaultErrors.Get(ErrorCodes.ErrorNotFound);
-            if (data is not null)
+            var defaultError = DefaultErrors.Get(ErrorCodes.ErrorNotFound);
+            if (defaultError is not null)
             {
-                var error = DomainObject.FromDictionary<Domain.Error>(data);
                 throw new TiferetApiException(
-                    error.ErrorCode,
-                    error.Name,
-                    error.FormatMessage() ?? "Error not found.",
+                    defaultError.ErrorCode,
+                    defaultError.Name,
+                    defaultError.FormatMessage() ?? "Error not found.",
                     ("id", errorCode));
             }
 
