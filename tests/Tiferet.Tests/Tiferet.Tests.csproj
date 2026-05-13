@@ -25,6 +25,7 @@
     <ProjectReference Include="..\..\src\Tiferet.Interfaces\Tiferet.Interfaces.csproj" />
     <ProjectReference Include="..\..\src\Tiferet.Mappers\Tiferet.Mappers.csproj" />
     <ProjectReference Include="..\..\src\Tiferet.DependencyInjection\Tiferet.DependencyInjection.csproj" />
+    <ProjectReference Include="..\..\src\Tiferet.Utilities\Tiferet.Utilities.csproj" />
   </ItemGroup>
 
 </Project>
