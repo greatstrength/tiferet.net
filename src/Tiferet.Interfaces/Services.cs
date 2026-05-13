@@ -1,22 +1,25 @@
+using Tiferet.Domain;
+using Tiferet.Mappers;
+
 namespace Tiferet.Interfaces;
 
 /// <summary>Service interface for managing app interface configurations.</summary>
-public interface IAppService : IRepository<object> { }
+public interface IAppService : IRepository<AppInterfaceAggregate> { }
 
 /// <summary>Service interface for managing feature workflow configurations.</summary>
-public interface IFeatureService : IRepository<object> { }
+public interface IFeatureService : IRepository<FeatureAggregate> { }
 
 /// <summary>Service interface for managing error definitions.</summary>
-public interface IErrorService : IRepository<object> { }
+public interface IErrorService : IRepository<ErrorAggregate> { }
 
 /// <summary>Service interface for managing CLI command definitions.</summary>
-public interface ICliService : IRepository<object> { }
+public interface ICliService : IRepository<CliCommandAggregate> { }
 
 /// <summary>Service interface for managing DI service configurations.</summary>
 public interface IDIService : IService
 {
     /// <summary>List all service configurations and constants.</summary>
-    (IReadOnlyList<object> Configurations, Dictionary<string, object> Constants) ListAll();
+    (IReadOnlyList<ServiceConfigurationAggregate> Configurations, Dictionary<string, string> Constants) ListAll();
 }
 
 /// <summary>Service interface for loading and saving structured configuration data.</summary>
@@ -51,5 +54,5 @@ public interface ISqliteService : IService, IDisposable
 public interface ILoggingService : IService
 {
     /// <summary>List all logging configurations.</summary>
-    (IReadOnlyList<object> Formatters, IReadOnlyList<object> Handlers, IReadOnlyList<object> Loggers) ListAll();
+    (IReadOnlyList<FormatterAggregate> Formatters, IReadOnlyList<HandlerAggregate> Handlers, IReadOnlyList<LoggerAggregate> Loggers) ListAll();
 }

@@ -23,17 +23,12 @@ public sealed class RoleConfig
 }
 
 /// <summary>
-/// Base class for transfer objects that bridge persistent configuration
-/// and runtime domain aggregates.
-/// Provides role-based serialization via <see cref="Roles"/>,
-/// mapping to aggregates via <see cref="Map"/>,
-/// and construction from domain models via <see cref="FromModel{TTransfer}"/>.
+/// Non-generic base class for transfer objects.
+/// Provides role-based serialization via <see cref="Roles"/> and <see cref="ToDictionary"/>.
+/// Use <see cref="TransferObject{TDomain, TAggregate}"/> for typed mapping to aggregates,
+/// or extend this directly for composite DTOs that don't map to a single aggregate.
 /// </summary>
-/// <typeparam name="TDomain">The domain record type.</typeparam>
-/// <typeparam name="TAggregate">The target aggregate type.</typeparam>
-public abstract class TransferObject<TDomain, TAggregate>
-    where TDomain : DomainObject
-    where TAggregate : Aggregate<TDomain>
+public abstract class TransferObject
 {
     /// <summary>
     /// Role definitions for serialization. Subclasses override to define roles
@@ -92,6 +87,20 @@ public abstract class TransferObject<TDomain, TAggregate>
 
         return result;
     }
+}
+
+/// <summary>
+/// Generic transfer object that bridges persistent configuration
+/// and runtime domain aggregates.
+/// Provides mapping to aggregates via <see cref="Map"/>
+/// and construction from domain models via <see cref="FromModel{TTransfer}"/>.
+/// </summary>
+/// <typeparam name="TDomain">The domain record type.</typeparam>
+/// <typeparam name="TAggregate">The target aggregate type.</typeparam>
+public abstract class TransferObject<TDomain, TAggregate> : TransferObject
+    where TDomain : DomainObject
+    where TAggregate : Aggregate<TDomain>
+{
 
     /// <summary>
     /// Map this transfer object to an aggregate instance.

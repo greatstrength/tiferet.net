@@ -1,4 +1,5 @@
 using Tiferet.Interfaces;
+using Tiferet.Mappers;
 
 namespace Tiferet.Tests.Interfaces;
 
@@ -31,25 +32,26 @@ public class InterfaceTests
     [Fact]
     public void IAppService_ExtendsIRepository()
     {
-        Assert.True(typeof(IRepository<object>).IsAssignableFrom(typeof(IAppService)));
+        Assert.True(typeof(IService).IsAssignableFrom(typeof(IAppService)));
+        Assert.True(typeof(IRepository<AppInterfaceAggregate>).IsAssignableFrom(typeof(IAppService)));
     }
 
     [Fact]
     public void IFeatureService_ExtendsIRepository()
     {
-        Assert.True(typeof(IRepository<object>).IsAssignableFrom(typeof(IFeatureService)));
+        Assert.True(typeof(IRepository<FeatureAggregate>).IsAssignableFrom(typeof(IFeatureService)));
     }
 
     [Fact]
     public void IErrorService_ExtendsIRepository()
     {
-        Assert.True(typeof(IRepository<object>).IsAssignableFrom(typeof(IErrorService)));
+        Assert.True(typeof(IRepository<ErrorAggregate>).IsAssignableFrom(typeof(IErrorService)));
     }
 
     [Fact]
     public void ICliService_ExtendsIRepository()
     {
-        Assert.True(typeof(IRepository<object>).IsAssignableFrom(typeof(ICliService)));
+        Assert.True(typeof(IRepository<CliCommandAggregate>).IsAssignableFrom(typeof(ICliService)));
     }
 
     [Fact]
