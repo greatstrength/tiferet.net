@@ -10,12 +10,22 @@ namespace Tiferet.Contexts;
 /// <summary>
 /// Context for building loggers from stored logging configurations.
 /// Uses <see cref="ILoggerFactory"/> for idiomatic .NET logging.
+/// Implements <see cref="IDisposable"/> to release owned factory resources.
 /// </summary>
-public class LoggingContext
+public class LoggingContext : IDisposable
 {
     private readonly ListAllLoggingConfigs _listAllEvent;
     private readonly string _loggerId;
-    private readonly ILoggerFactory _loggerFactory;
+
+    // Default factory: owned by us when created internally, otherwise caller-owned.
+    private readonly ILoggerFactory _defaultFactory;
+    private readonly bool _ownsDefaultFactory;
+
+    // Per-config factory: created lazily on first BuildLogger() call when a
+    // matching logger config exists. Disposed in Dispose().
+    private ILoggerFactory? _configuredFactory;
+
+    private bool _disposed;
 
     /// <summary>
     /// Initializes the logging context.
@@ -30,7 +40,8 @@ public class LoggingContext
     {
         _listAllEvent = listAllLoggingConfigsEvent;
         _loggerId = loggerId;
-        _loggerFactory = loggerFactory ?? LoggerFactory.Create(builder =>
+        _ownsDefaultFactory = loggerFactory is null;
+        _defaultFactory = loggerFactory ?? LoggerFactory.Create(builder =>
         {
             builder.AddConsole();
             builder.SetMinimumLevel(LogLevel.Warning);
@@ -39,36 +50,33 @@ public class LoggingContext
 
     /// <summary>
     /// Build a logger for the configured logger ID.
-    /// Loads configurations from the event; if none exist, returns a default logger.
+    /// The per-config factory is created once on the first call and reused.
+    /// Falls back to the default factory if no matching config exists.
     /// </summary>
     /// <returns>The configured logger instance.</returns>
     public ILogger BuildLogger()
     {
+        // Return from the already-created configured factory if available.
+        if (_configuredFactory is not null)
+            return _configuredFactory.CreateLogger(_loggerId);
+
         try
         {
             // Load all logging configurations.
-            var (formatters, handlers, loggers) =
-                _listAllEvent.Execute(new ListAllLoggingConfigsParams());
+            var (_, _, loggers) = _listAllEvent.Execute(new ListAllLoggingConfigsParams());
 
             // Find the matching logger config for our ID.
-            LoggerAggregate? loggerConfig = null;
-            foreach (var l in loggers)
-            {
-                if (l.Domain.Id == _loggerId)
-                {
-                    loggerConfig = l;
-                    break;
-                }
-            }
+            var loggerConfig = loggers.FirstOrDefault(l => l.Domain.Id == _loggerId);
 
-            // If a matching config exists, use its level for the factory.
+            // If a matching config exists, create and cache a factory for its level.
             if (loggerConfig is not null)
             {
-                return LoggerFactory.Create(builder =>
+                _configuredFactory = LoggerFactory.Create(builder =>
                 {
                     builder.AddConsole();
                     builder.SetMinimumLevel(loggerConfig.Domain.Level);
-                }).CreateLogger(_loggerId);
+                });
+                return _configuredFactory.CreateLogger(_loggerId);
             }
         }
         catch (Exception)
@@ -77,6 +85,21 @@ public class LoggingContext
         }
 
         // Return a default logger.
-        return _loggerFactory.CreateLogger(_loggerId);
+        return _defaultFactory.CreateLogger(_loggerId);
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        if (_disposed) return;
+
+        // Dispose the per-config factory if it was created.
+        _configuredFactory?.Dispose();
+
+        // Dispose the default factory only if we created it.
+        if (_ownsDefaultFactory)
+            _defaultFactory.Dispose();
+
+        _disposed = true;
     }
 }

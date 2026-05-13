@@ -7,8 +7,10 @@ namespace Tiferet.Contexts;
 /// <summary>
 /// Top-level application interface context that composes feature execution,
 /// error handling, and logging into a unified runtime pipeline.
+/// Implements <see cref="IDisposable"/> as the composition root; disposes
+/// any owned disposable dependencies (e.g., <see cref="LoggingContext"/>).
 /// </summary>
-public class AppInterfaceContext
+public class AppInterfaceContext : IDisposable
 {
     /// <summary>The interface identifier.</summary>
     public string InterfaceId { get; }
@@ -106,6 +108,12 @@ public class AppInterfaceContext
     {
         return request.HandleResponse();
     }
+
+    /// <summary>
+    /// Releases resources held by this context, including the
+    /// <see cref="LoggingContext"/> and its logger factories.
+    /// </summary>
+    public void Dispose() => _logging.Dispose();
 
     /// <summary>
     /// Run the full application pipeline: parse request, execute feature,
