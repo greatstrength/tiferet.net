@@ -71,9 +71,9 @@ public class ErrorContext
         return error.Domain.FormatResponse(lang, args)
             ?? new Dictionary<string, object>
             {
-                ["error_code"] = exception.ErrorCode,
-                ["name"] = "Unknown Error",
-                ["message"] = exception.Message,
+                ["ErrorCode"] = exception.ErrorCode,
+                ["Name"] = "Unknown Error",
+                ["Message"] = exception.Message,
             };
     }
 }

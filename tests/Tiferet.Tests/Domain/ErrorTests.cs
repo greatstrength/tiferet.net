@@ -55,9 +55,9 @@ public class ErrorRecordTests
         ]);
         var resp = e.FormatResponse("en_US", new() { ["val"] = "x" });
         Assert.NotNull(resp);
-        Assert.Equal("err", resp!["error_code"]);
-        Assert.Equal("Err Name", resp["name"]);
-        Assert.Equal("Bad value x", resp["message"]);
+        Assert.Equal("err", resp!["ErrorCode"]);
+        Assert.Equal("Err Name", resp["Name"]);
+        Assert.Equal("Bad value x", resp["Message"]);
         Assert.Equal("x", resp["val"]);
     }
 

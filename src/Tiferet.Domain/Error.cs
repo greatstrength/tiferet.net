@@ -61,7 +61,7 @@ public sealed record Error(
         string? description = null,
         IReadOnlyList<ErrorMessage>? messages = null)
     {
-        // Derive error_code from id when not provided.
+        // Derive ErrorCode from Id when not provided.
         errorCode ??= id.ToUpperInvariant().Replace(' ', '_');
 
         return new Error(
@@ -96,7 +96,7 @@ public sealed record Error(
     /// </summary>
     /// <param name="lang">The language code.</param>
     /// <param name="args">Named arguments for placeholder substitution.</param>
-    /// <returns>A dictionary with error_code, name, and message; or null if no message found.</returns>
+    /// <returns>A dictionary with ErrorCode, Name, and Message; or null if no message found.</returns>
     public Dictionary<string, object>? FormatResponse(string lang = "en_US", Dictionary<string, object>? args = null)
     {
         var message = FormatMessage(lang, args);
@@ -104,9 +104,9 @@ public sealed record Error(
 
         var response = new Dictionary<string, object>
         {
-            ["error_code"] = Id,
-            ["name"] = Name,
-            ["message"] = message,
+            ["ErrorCode"] = Id,
+            ["Name"] = Name,
+            ["Message"] = message,
         };
 
         // Include the args in the response.

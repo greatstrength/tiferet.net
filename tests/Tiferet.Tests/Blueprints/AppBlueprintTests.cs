@@ -129,7 +129,7 @@ public class AppBlueprintTests : IDisposable
         var request = context.ParseRequest(featureId: "calc.add");
 
         Assert.NotNull(request);
-        Assert.Equal("basic_calc", request.Headers["interface_id"]);
+        Assert.Equal("basic_calc", request.Headers["InterfaceId"]);
         Assert.Equal("calc.add", request.FeatureId);
     }
 

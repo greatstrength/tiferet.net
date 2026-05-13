@@ -50,7 +50,7 @@ public class AppInterfaceContext
     {
         // Ensure headers include the interface ID.
         headers ??= new Dictionary<string, string>();
-        headers["interface_id"] = InterfaceId;
+        headers["InterfaceId"] = InterfaceId;
 
         return new RequestContext(
             headers: headers,
@@ -66,7 +66,7 @@ public class AppInterfaceContext
     public void ExecuteFeature(string featureId, RequestContext request)
     {
         // Add the feature ID to headers.
-        request.Headers["feature_id"] = featureId;
+        request.Headers["FeatureId"] = featureId;
 
         // Delegate to the feature context.
         _features.ExecuteFeature(featureId, request);
@@ -92,9 +92,9 @@ public class AppInterfaceContext
 
         // Throw the API exception.
         throw new TiferetApiException(
-            errorCode: formatted.TryGetValue("error_code", out var ec) ? ec.ToString()! : tiferetError.ErrorCode,
-            name: formatted.TryGetValue("name", out var n) ? n.ToString()! : "Error",
-            message: formatted.TryGetValue("message", out var m) ? m.ToString()! : error.Message);
+            errorCode: formatted.TryGetValue("ErrorCode", out var ec) ? ec.ToString()! : tiferetError.ErrorCode,
+            name: formatted.TryGetValue("Name", out var n) ? n.ToString()! : "Error",
+            message: formatted.TryGetValue("Message", out var m) ? m.ToString()! : error.Message);
     }
 
     /// <summary>
