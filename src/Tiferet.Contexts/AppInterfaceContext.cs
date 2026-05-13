@@ -92,9 +92,9 @@ public class AppInterfaceContext
 
         // Throw the API exception.
         throw new TiferetApiException(
-            errorCode: formatted.TryGetValue("ErrorCode", out var ec) ? ec.ToString()! : tiferetError.ErrorCode,
-            name: formatted.TryGetValue("Name", out var n) ? n.ToString()! : "Error",
-            message: formatted.TryGetValue("Message", out var m) ? m.ToString()! : error.Message);
+            errorCode: formatted.ErrorCode,
+            name: formatted.Name,
+            message: formatted.Message);
     }
 
     /// <summary>

@@ -48,17 +48,18 @@ public class ErrorRecordTests
     }
 
     [Fact]
-    public void FormatResponse_ReturnsDict()
+    public void FormatResponse_ReturnsTypedResponse()
     {
         var e = Error.Create(id: "err", name: "Err Name", messages: [
             new ErrorMessage("en_US", "Bad value {val}")
         ]);
         var resp = e.FormatResponse("en_US", new() { ["val"] = "x" });
         Assert.NotNull(resp);
-        Assert.Equal("err", resp!["ErrorCode"]);
-        Assert.Equal("Err Name", resp["Name"]);
-        Assert.Equal("Bad value x", resp["Message"]);
-        Assert.Equal("x", resp["val"]);
+        Assert.Equal("err", resp!.ErrorCode);
+        Assert.Equal("Err Name", resp.Name);
+        Assert.Equal("Bad value x", resp.Message);
+        Assert.NotNull(resp.Context);
+        Assert.Equal("x", resp.Context!["val"]);
     }
 
     [Fact]

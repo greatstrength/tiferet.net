@@ -30,6 +30,19 @@ public sealed record ErrorMessage(string Lang, string Text) : DomainObject
 }
 
 /// <summary>
+/// A structured error response with formatted message and optional context.
+/// </summary>
+/// <param name="ErrorCode">The error code.</param>
+/// <param name="Name">The error name.</param>
+/// <param name="Message">The formatted error message.</param>
+/// <param name="Context">Optional additional context from the error arguments.</param>
+public sealed record ErrorResponse(
+    string ErrorCode,
+    string Name,
+    string Message,
+    IReadOnlyDictionary<string, object>? Context = null);
+
+/// <summary>
 /// An error object with multilingual messages and formatting capabilities.
 /// </summary>
 /// <param name="Id">The unique identifier of the error.</param>
@@ -96,26 +109,18 @@ public sealed record Error(
     /// </summary>
     /// <param name="lang">The language code.</param>
     /// <param name="args">Named arguments for placeholder substitution.</param>
-    /// <returns>A dictionary with ErrorCode, Name, and Message; or null if no message found.</returns>
-    public Dictionary<string, object>? FormatResponse(string lang = "en_US", Dictionary<string, object>? args = null)
+    /// <returns>An <see cref="ErrorResponse"/> with the formatted message, or null if no message found.</returns>
+    public ErrorResponse? FormatResponse(string lang = "en_US", Dictionary<string, object>? args = null)
     {
         var message = FormatMessage(lang, args);
         if (message is null) return null;
 
-        var response = new Dictionary<string, object>
-        {
-            ["ErrorCode"] = Id,
-            ["Name"] = Name,
-            ["Message"] = message,
-        };
-
-        // Include the args in the response.
-        if (args is not null)
-        {
-            foreach (var (key, value) in args)
-                response[key] = value;
-        }
-
-        return response;
+        return new ErrorResponse(
+            ErrorCode: Id,
+            Name: Name,
+            Message: message,
+            Context: args is not null && args.Count > 0
+                ? new Dictionary<string, object>(args)
+                : null);
     }
 }

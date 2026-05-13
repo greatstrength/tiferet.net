@@ -52,13 +52,13 @@ public class ErrorContext
     }
 
     /// <summary>
-    /// Format a <see cref="TiferetException"/> into a structured error response dictionary.
+    /// Format a <see cref="TiferetException"/> into a structured error response.
     /// Does not raise — the caller is responsible for throwing.
     /// </summary>
     /// <param name="exception">The exception to handle.</param>
     /// <param name="lang">The language code for formatting (default: en_US).</param>
-    /// <returns>The formatted error response dictionary.</returns>
-    public Dictionary<string, object> HandleError(TiferetException exception, string lang = "en_US")
+    /// <returns>The formatted error response.</returns>
+    public ErrorResponse HandleError(TiferetException exception, string lang = "en_US")
     {
         // Get the error definition by its code.
         var error = GetErrorByCode(exception.ErrorCode);
@@ -68,11 +68,9 @@ public class ErrorContext
 
         // Format and return the response.
         return error.Domain.FormatResponse(lang, args)
-            ?? new Dictionary<string, object>
-            {
-                ["ErrorCode"] = exception.ErrorCode,
-                ["Name"] = "Unknown Error",
-                ["Message"] = exception.Message,
-            };
+            ?? new ErrorResponse(
+                ErrorCode: exception.ErrorCode,
+                Name: "Unknown Error",
+                Message: exception.Message);
     }
 }
