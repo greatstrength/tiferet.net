@@ -12,6 +12,8 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <IsPackable>true</IsPackable>
+    <Description>YAML-backed repository implementations for the Tiferet DDD framework.</Description>
   </PropertyGroup>
 
 </Project>

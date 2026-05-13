@@ -12,7 +12,8 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Nullable>enable</Nullable>
+    <IsPackable>true</IsPackable>
+    <Description>Domain model base classes and domain objects for the Tiferet DDD framework.</Description>
   </PropertyGroup>
 
 </Project>

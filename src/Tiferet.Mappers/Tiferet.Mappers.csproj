@@ -9,6 +9,8 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <IsPackable>true</IsPackable>
+    <Description>Aggregate and TransferObject base classes for domain mapping in the Tiferet DDD framework.</Description>
   </PropertyGroup>
 
 </Project>
