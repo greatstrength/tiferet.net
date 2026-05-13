@@ -223,6 +223,8 @@ errors:
 
 `AppBlueprint.BuildApp` reads your configuration, resolves services, wires all contexts, and returns an `AppInterfaceContext` ready for use.
 
+`AppInterfaceContext` implements `IDisposable` — it owns `ILoggerFactory` instances internally. Always use a `using` declaration so they are released when your program exits.
+
 Update `Program.cs`:
 
 ```csharp
@@ -230,7 +232,7 @@ using Tiferet.Blueprints;
 using Tiferet.Core;
 
 var configDir = Path.Combine(AppContext.BaseDirectory, "app", "configs");
-var app = AppBlueprint.BuildApp("basic_calc", configDir);
+using var app = AppBlueprint.BuildApp("basic_calc", configDir);
 
 var cases = new[]
 {
@@ -364,6 +366,6 @@ dotnet run -- calc divide 8 0
 - **Multi-step features** — add more than one `ServiceId` under `Steps` to chain events; each step receives the result of the previous step as additional data
 - **Fixed parameters** — use `Parameters` in a feature step to inject constant values (as seen in `calc.sqrt` with `B: '0.5'`)
 - **Custom service overrides** — specify `Services` in `app.yml` to replace default YAML repositories with your own implementations
-- **Environment variable parameters** — use `$ENV_VAR_NAME` syntax in `container.yml` parameter values; `ParseParameter` resolves them at startup
+- **Environment variable parameters** — use `$env.VAR_NAME` syntax in `container.yml` parameter values (e.g., `$env.DB_PATH`); `ParseParameter.Parse()` resolves them at runtime
 
 See [`docs/architecture.md`](architecture.md) for a full explanation of the layer stack and runtime flow.

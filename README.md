@@ -81,10 +81,12 @@ features:
 
 ### 3. Bootstrap and run
 
+`AppInterfaceContext` implements `IDisposable` — use a `using` declaration to ensure logger factories are released.
+
 ```csharp
 using Tiferet.Blueprints;
 
-var app = AppBlueprint.BuildApp("my_app", configDir: "app/configs");
+using var app = AppBlueprint.BuildApp("my_app", configDir: "app/configs");
 
 var result = app.Run("calc.add", data: new Dictionary<string, object?>
 {

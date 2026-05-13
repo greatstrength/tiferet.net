@@ -53,7 +53,12 @@ tiferet.net is a layered Domain-Driven Design framework. Each layer has a single
 ## Layer Responsibilities
 
 ### Tiferet.Core
-Shared building blocks: `TiferetException`, `TiferetApiException`, `ErrorCodes`, `ParseParameter` (environment variable resolution), and `ReflectionActivator` (reflection-based object construction).
+Shared building blocks:
+- `TiferetException` / `TiferetApiException` — structured exceptions; `Message` is always a human-readable string.
+- `ErrorCodes` — framework error code constants.
+- `ParseParameter.Parse(string)` — resolves `$env.VAR_NAME` prefixes to environment variable values.
+- `ImportDependency.Resolve(assemblyName, className)` — loads a `Type` from an assembly by name.
+- `ReflectionActivator.Construct<T>(Dictionary<string, object?>)` — constructs record instances from string-keyed dictionaries; the single source of that logic for both the feature pipeline and the mapper layer.
 
 ### Tiferet.Domain
 Read-only domain model objects: `AppInterface`, `Feature`, `FeatureStep`, `Error`, `CliCommand`, `CliArgument`, `ServiceConfiguration`, and logging types. These represent the structural shape of every configurable concept in the framework.
@@ -64,6 +69,8 @@ Bridges YAML configuration to runtime domain objects. Two base classes:
 - **`TransferObject`** — YAML deserialization layer; maps to aggregates via `Map()`
 
 Each domain concept has a corresponding `*Aggregate` and `*YamlObject` (e.g., `FeatureAggregate`, `FeatureYamlObject`).
+
+`SerializationRoles` provides the well-known role name constants (`ToModel`, `ToDataYaml`) used in `TransferObject` subclass `Roles` dictionaries.
 
 ### Tiferet.Interfaces
 Abstract service contracts as interfaces: `IFeatureService`, `IErrorService`, `IDIService`, `ILoggingService`, `ICliService`. Domain events and contexts depend only on these interfaces, never on concrete implementations.
@@ -85,12 +92,12 @@ Infrastructure utilities: `YamlLoader`, `JsonLoader`, `CsvLoader`, `CsvDictLoade
 
 ### Tiferet.Contexts
 Runtime orchestration:
-- **`AppInterfaceContext`** — top-level entry point; exposes `Run(featureId, data)`
+- **`AppInterfaceContext : IDisposable`** — top-level entry point; exposes `Run(featureId, data)`. Implements `IDisposable` as the composition root — use a `using` declaration to release owned logger factories.
 - **`FeatureContext`** — loads feature definitions and executes each step (domain event) in sequence
 - **`DIContext`** — resolves domain event instances from `container.yml` service configurations
 - **`ErrorContext`** — formats `TiferetException` into `TiferetApiException` with localized messages
 - **`CacheContext`** — in-memory cache shared between DI and feature resolution
-- **`LoggingContext`** — configures `Microsoft.Extensions.Logging` from `logging.yml`
+- **`LoggingContext : IDisposable`** — configures `Microsoft.Extensions.Logging` from `logging.yml`; lazily builds and caches the per-config `ILoggerFactory`, disposing it (and any internally-created default factory) when the context is disposed
 
 ### Tiferet.Blueprints
 One-step bootstrappers:
