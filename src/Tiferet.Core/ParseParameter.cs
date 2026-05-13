@@ -11,7 +11,7 @@ public static class ParseParameter
     /// </summary>
     /// <param name="parameter">The parameter string to parse.</param>
     /// <returns>The resolved parameter value.</returns>
-    public static string Execute(string parameter)
+    public static string Parse(string parameter)
     {
         if (parameter.StartsWith("$env."))
         {

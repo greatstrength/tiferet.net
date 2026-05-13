@@ -67,8 +67,12 @@ public static class AppBlueprint
         // 4. Create and wire contexts.
         var cache = new CacheContext();
         var errorContext = new ErrorContext(getErrorEvent);
-        var loggingContext = new LoggingContext(
-            listAllLoggingConfigsEvent, appInterface.Domain.LoggerId);
+
+        // Use the configured LoggerId if set, otherwise fall back to the interface ID.
+        var loggerId = appInterface.Domain.LoggerId == "default"
+            ? interfaceId
+            : appInterface.Domain.LoggerId;
+        var loggingContext = new LoggingContext(listAllLoggingConfigsEvent, loggerId);
         var diContext = new DIContext(listAllSettingsEvent, cache);
         var featureContext = new FeatureContext(getFeatureEvent, diContext, cache);
 
@@ -94,7 +98,7 @@ public static class AppBlueprint
             return null;
 
         // Import the service type via assembly reflection.
-        var type = ImportDependency.Execute(dep.AssemblyName, dep.TypeName);
+        var type = ImportDependency.Resolve(dep.AssemblyName, dep.TypeName);
 
         // Verify the resolved type implements the expected interface.
         if (!typeof(T).IsAssignableFrom(type))
@@ -163,7 +167,7 @@ public static class AppBlueprint
             if (rawValue is not null)
             {
                 // Resolve environment variables via ParseParameter.
-                args[i] = ParseParameter.Execute(rawValue);
+                args[i] = ParseParameter.Parse(rawValue);
             }
             else if (param.HasDefaultValue)
             {

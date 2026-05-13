@@ -104,7 +104,7 @@ public class FeatureContext
     {
         // Non-request parameters delegate to Core.ParseParameter.
         if (!parameter.StartsWith("$r."))
-            return ParseParameter.Execute(parameter);
+            return ParseParameter.Parse(parameter);
 
         // Request-backed parameter requires a request context.
         if (request is null)

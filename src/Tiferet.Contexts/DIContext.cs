@@ -148,7 +148,7 @@ public class DIContext
         // Parse top-level constants via ParseParameter.
         var constants = new Dictionary<string, string>();
         foreach (var (key, value) in rawConstants)
-            constants[key] = ParseParameter.Execute(value);
+            constants[key] = ParseParameter.Parse(value);
 
         // Merge per-configuration parameters (flagged or default).
         foreach (var config in configurations)
@@ -159,7 +159,7 @@ public class DIContext
             if (parameters is not null)
             {
                 foreach (var (key, value) in parameters)
-                    constants[key] = ParseParameter.Execute(value);
+                    constants[key] = ParseParameter.Parse(value);
             }
         }
 

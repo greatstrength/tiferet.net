@@ -105,18 +105,18 @@ public class DomainEventTests
 public class ParseParameterTests
 {
     [Fact]
-    public void Execute_ReturnsLiteralValue()
+    public void Parse_ReturnsLiteralValue()
     {
-        Assert.Equal("hello", ParseParameter.Execute("hello"));
+        Assert.Equal("hello", ParseParameter.Parse("hello"));
     }
 
     [Fact]
-    public void Execute_ResolvesEnvVar()
+    public void Parse_ResolvesEnvVar()
     {
         Environment.SetEnvironmentVariable("TIFERET_TEST_VAR", "resolved");
         try
         {
-            Assert.Equal("resolved", ParseParameter.Execute("$env.TIFERET_TEST_VAR"));
+            Assert.Equal("resolved", ParseParameter.Parse("$env.TIFERET_TEST_VAR"));
         }
         finally
         {
@@ -125,10 +125,10 @@ public class ParseParameterTests
     }
 
     [Fact]
-    public void Execute_ThrowsOnMissingEnvVar()
+    public void Parse_ThrowsOnMissingEnvVar()
     {
         var ex = Assert.Throws<TiferetException>(
-            () => ParseParameter.Execute("$env.NONEXISTENT_VAR_XYZ_123"));
+            () => ParseParameter.Parse("$env.NONEXISTENT_VAR_XYZ_123"));
         Assert.Equal(ErrorCodes.ParameterParsingFailed, ex.ErrorCode);
     }
 }
@@ -136,17 +136,17 @@ public class ParseParameterTests
 public class ImportDependencyTests
 {
     [Fact]
-    public void Execute_ResolvesKnownType()
+    public void Resolve_ResolvesKnownType()
     {
-        var type = ImportDependency.Execute("System.Private.CoreLib", "System.String");
+        var type = ImportDependency.Resolve("System.Private.CoreLib", "System.String");
         Assert.Equal(typeof(string), type);
     }
 
     [Fact]
-    public void Execute_ThrowsOnBadAssembly()
+    public void Resolve_ThrowsOnBadAssembly()
     {
         var ex = Assert.Throws<TiferetException>(
-            () => ImportDependency.Execute("NonExistent.Assembly", "Foo.Bar"));
+            () => ImportDependency.Resolve("NonExistent.Assembly", "Foo.Bar"));
         Assert.Equal(ErrorCodes.ImportDependencyFailed, ex.ErrorCode);
     }
 }

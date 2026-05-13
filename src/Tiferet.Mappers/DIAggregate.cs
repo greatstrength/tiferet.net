@@ -108,12 +108,12 @@ public class ServiceConfigurationAggregate : Aggregate<ServiceConfiguration>
         {
             var dep = Domain.GetDependency(flag);
             if (dep is not null)
-                return ImportDependency.Execute(dep.AssemblyName, dep.TypeName);
+                return ImportDependency.Resolve(dep.AssemblyName, dep.TypeName);
         }
 
         // Fall back to default type.
         if (Domain.AssemblyName is not null && Domain.TypeName is not null)
-            return ImportDependency.Execute(Domain.AssemblyName, Domain.TypeName);
+            return ImportDependency.Resolve(Domain.AssemblyName, Domain.TypeName);
 
         return null;
     }

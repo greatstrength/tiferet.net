@@ -13,7 +13,7 @@ public static class ImportDependency
     /// <param name="assemblyName">The assembly name containing the type.</param>
     /// <param name="className">The fully qualified class name.</param>
     /// <returns>The resolved type.</returns>
-    public static Type Execute(string assemblyName, string className)
+    public static Type Resolve(string assemblyName, string className)
     {
         try
         {
