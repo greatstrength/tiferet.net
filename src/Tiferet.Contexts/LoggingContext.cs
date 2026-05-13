@@ -33,7 +33,7 @@ public class LoggingContext
         _loggerFactory = loggerFactory ?? LoggerFactory.Create(builder =>
         {
             builder.AddConsole();
-            builder.SetMinimumLevel(LogLevel.Debug);
+            builder.SetMinimumLevel(LogLevel.Warning);
         });
     }
 
