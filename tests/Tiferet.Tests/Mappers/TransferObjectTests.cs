@@ -15,11 +15,11 @@ public class SampleTransferObject : TransferObject<SampleDomain, SampleAggregate
 
     protected override Dictionary<string, RoleConfig> Roles { get; } = new()
     {
-        ["to_model"] = new RoleConfig
+        ["ToModel"] = new RoleConfig
         {
             Exclude = ["Optional"],
         },
-        ["to_data.yaml"] = new RoleConfig
+        ["ToDataYaml"] = new RoleConfig
         {
             Exclude = ["Id"],
             ByAlias = true,
@@ -38,10 +38,10 @@ public class TransferObjectTests
     };
 
     [Fact]
-    public void ToPrimitive_ReturnsAllNonNullProperties()
+    public void ToDictionary_ReturnsAllNonNullProperties()
     {
         var to = CreateTransfer();
-        var result = to.ToPrimitive();
+        var result = to.ToDictionary();
         Assert.Equal("1", result["Id"]);
         Assert.Equal("Alpha", result["Name"]);
         Assert.Equal(42, result["Value"]);
@@ -49,38 +49,38 @@ public class TransferObjectTests
     }
 
     [Fact]
-    public void ToPrimitive_WithRole_ExcludesProperties()
+    public void ToDictionary_WithRole_ExcludesProperties()
     {
         var to = CreateTransfer();
         to.Optional = "present";
-        var result = to.ToPrimitive("to_model");
+        var result = to.ToDictionary("ToModel");
         Assert.True(result.ContainsKey("Id"));
         Assert.False(result.ContainsKey("Optional")); // excluded by role
     }
 
     [Fact]
-    public void ToPrimitive_ToDataYamlRole_ExcludesId()
+    public void ToDictionary_ToDataYamlRole_ExcludesId()
     {
         var to = CreateTransfer();
-        var result = to.ToPrimitive("to_data.yaml");
+        var result = to.ToDictionary("ToDataYaml");
         Assert.False(result.ContainsKey("Id"));
         Assert.True(result.ContainsKey("Name"));
     }
 
     [Fact]
-    public void ToPrimitive_WithOverrides()
+    public void ToDictionary_WithOverrides()
     {
         var to = CreateTransfer();
-        var result = to.ToPrimitive(overrides: new() { ["Name"] = "Overridden" });
+        var result = to.ToDictionary(overrides: new() { ["Name"] = "Overridden" });
         Assert.Equal("Overridden", result["Name"]);
     }
 
     [Fact]
-    public void ToPrimitive_IncludesNonNullOptional()
+    public void ToDictionary_IncludesNonNullOptional()
     {
         var to = CreateTransfer();
         to.Optional = "present";
-        var result = to.ToPrimitive();
+        var result = to.ToDictionary();
         Assert.Equal("present", result["Optional"]);
     }
 
@@ -135,10 +135,10 @@ public class TransferObjectTests
     }
 
     [Fact]
-    public void ToPrimitive_UnknownRole_IgnoresRoleConfig()
+    public void ToDictionary_UnknownRole_IgnoresRoleConfig()
     {
         var to = CreateTransfer();
-        var result = to.ToPrimitive("nonexistent_role");
+        var result = to.ToDictionary("NonExistentRole");
         // Should just serialize everything (minus nulls) without role filtering.
         Assert.True(result.ContainsKey("Id"));
         Assert.True(result.ContainsKey("Name"));

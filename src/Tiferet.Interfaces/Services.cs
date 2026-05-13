@@ -32,11 +32,6 @@ public interface IConfigurationService : IService
 /// <summary>Service interface for file stream operations.</summary>
 public interface IFileService : IService, IDisposable
 {
-    /// <summary>Open the file stream.</summary>
-    void Open();
-
-    /// <summary>Close the file stream.</summary>
-    void Close();
 }
 
 /// <summary>Service interface for SQLite database operations.</summary>

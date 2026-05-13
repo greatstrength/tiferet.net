@@ -1,4 +1,3 @@
-using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Tiferet.DependencyInjection;
@@ -67,22 +66,7 @@ public class DynamicServiceResolver : IServiceResolver
     /// <inheritdoc />
     public Func<T> BuildFactory<T>() where T : class
     {
-        return () =>
-        {
-            // Find the constructor with the most parameters.
-            var ctors = typeof(T).GetConstructors(BindingFlags.Public | BindingFlags.Instance);
-            var ctor = ctors.OrderByDescending(c => c.GetParameters().Length).First();
-            var parameters = ctor.GetParameters();
-
-            // Resolve each parameter from the container.
-            var args = new object?[parameters.Length];
-            for (int i = 0; i < parameters.Length; i++)
-            {
-                args[i] = _provider.GetService(parameters[i].ParameterType);
-            }
-
-            return (T)ctor.Invoke(args);
-        };
+        return () => ActivatorUtilities.CreateInstance<T>(_provider);
     }
 
     /// <summary>

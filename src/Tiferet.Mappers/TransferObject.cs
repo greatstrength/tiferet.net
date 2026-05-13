@@ -1,6 +1,4 @@
 using System.Reflection;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Tiferet.Domain;
 
 namespace Tiferet.Mappers;
@@ -39,7 +37,7 @@ public abstract class TransferObject<TDomain, TAggregate>
 {
     /// <summary>
     /// Role definitions for serialization. Subclasses override to define roles
-    /// like "to_model" and "to_data.yaml".
+    /// like "ToModel" and "ToDataYaml".
     /// </summary>
     protected virtual Dictionary<string, RoleConfig> Roles { get; } = new();
 
@@ -50,7 +48,7 @@ public abstract class TransferObject<TDomain, TAggregate>
     /// <param name="role">The serialization role to apply (optional).</param>
     /// <param name="overrides">Additional property values that override the serialized output.</param>
     /// <returns>A dictionary of property names to values.</returns>
-    public virtual Dictionary<string, object?> ToPrimitive(string? role = null, Dictionary<string, object?>? overrides = null)
+    public virtual Dictionary<string, object?> ToDictionary(string? role = null, Dictionary<string, object?>? overrides = null)
     {
         // Resolve role config if provided.
         RoleConfig? config = null;
@@ -97,13 +95,13 @@ public abstract class TransferObject<TDomain, TAggregate>
 
     /// <summary>
     /// Map this transfer object to an aggregate instance.
-    /// Serializes via the "to_model" role and constructs the aggregate.
+    /// Serializes via the "ToModel" role and constructs the aggregate.
     /// </summary>
     /// <param name="overrides">Additional values merged into the data.</param>
     /// <returns>A new aggregate instance.</returns>
     public virtual TAggregate Map(Dictionary<string, object?>? overrides = null)
     {
-        var data = ToPrimitive("to_model", overrides);
+        var data = ToDictionary("ToModel", overrides);
         return ConstructAggregate(data);
     }
 

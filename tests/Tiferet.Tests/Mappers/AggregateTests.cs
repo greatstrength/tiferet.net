@@ -14,6 +14,12 @@ public class SampleAggregate : Aggregate<SampleDomain>
 
     /// <summary>Domain-specific mutation shorthand.</summary>
     public void Rename(string name) => SetAttribute(nameof(SampleDomain.Name), name);
+
+    /// <summary>Domain-specific mutation for Value.</summary>
+    public void SetValue(int value) => SetAttribute(nameof(SampleDomain.Value), value);
+
+    /// <summary>Test helper — exposes SetAttribute for invalid-attribute testing.</summary>
+    public void SetAttributePublic(string attribute, object? value) => SetAttribute(attribute, value);
 }
 
 public class AggregateTests
@@ -31,18 +37,18 @@ public class AggregateTests
     }
 
     [Fact]
-    public void SetAttribute_UpdatesProperty()
+    public void Rename_UpdatesProperty()
     {
         var agg = CreateAggregate();
-        agg.SetAttribute("Name", "Beta");
+        agg.Rename("Beta");
         Assert.Equal("Beta", agg.Domain.Name);
     }
 
     [Fact]
-    public void SetAttribute_PreservesOtherProperties()
+    public void Rename_PreservesOtherProperties()
     {
         var agg = CreateAggregate();
-        agg.SetAttribute("Name", "Beta");
+        agg.Rename("Beta");
         Assert.Equal("1", agg.Domain.Id);
         Assert.Equal(42, agg.Domain.Value);
     }
@@ -52,16 +58,16 @@ public class AggregateTests
     {
         var agg = CreateAggregate();
         var ex = Assert.Throws<TiferetException>(
-            () => agg.SetAttribute("NonExistent", "val"));
+            () => agg.SetAttributePublic("NonExistent", "val"));
         Assert.Equal(ErrorCodes.InvalidModelAttribute, ex.ErrorCode);
         Assert.Equal("NonExistent", ex.Context["attribute"]);
     }
 
     [Fact]
-    public void SetAttribute_UpdatesValueType()
+    public void SetValue_UpdatesValueType()
     {
         var agg = CreateAggregate();
-        agg.SetAttribute("Value", 99);
+        agg.SetValue(99);
         Assert.Equal(99, agg.Domain.Value);
     }
 
@@ -74,11 +80,11 @@ public class AggregateTests
     }
 
     [Fact]
-    public void SetAttribute_ProducesNewRecordInstance()
+    public void Mutation_ProducesNewRecordInstance()
     {
         var agg = CreateAggregate();
         var originalDomain = agg.Domain;
-        agg.SetAttribute("Name", "Delta");
+        agg.Rename("Delta");
         Assert.NotSame(originalDomain, agg.Domain);
     }
 

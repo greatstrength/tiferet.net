@@ -173,6 +173,12 @@ public class IServiceResolverTests
     }
 
     [Fact]
+    public void ExtendsIService()
+    {
+        Assert.True(typeof(IService).IsAssignableFrom(typeof(IServiceResolver)));
+    }
+
+    [Fact]
     public void DynamicServiceResolver_ImplementsIServiceResolver()
     {
         Assert.True(typeof(IServiceResolver).IsAssignableFrom(typeof(DynamicServiceResolver)));

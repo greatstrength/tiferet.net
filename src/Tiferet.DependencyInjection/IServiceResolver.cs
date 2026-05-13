@@ -4,9 +4,8 @@ namespace Tiferet.DependencyInjection;
 
 /// <summary>
 /// Abstract service resolution contract for the Tiferet DI container.
-/// Mirrors the Python <c>ServiceProvider</c> ABC.
 /// </summary>
-public interface IServiceResolver
+public interface IServiceResolver : IService
 {
     /// <summary>Register a service instance by type.</summary>
     /// <typeparam name="T">The service interface type.</typeparam>

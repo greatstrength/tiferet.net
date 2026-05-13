@@ -32,7 +32,7 @@ public abstract class Aggregate<TDomain> where TDomain : DomainObject
     /// </summary>
     /// <param name="attribute">The property name to update (PascalCase).</param>
     /// <param name="value">The new value to assign.</param>
-    public void SetAttribute(string attribute, object? value)
+    protected void SetAttribute(string attribute, object? value)
     {
         // Resolve the property on the domain record type.
         var property = typeof(TDomain).GetProperty(
