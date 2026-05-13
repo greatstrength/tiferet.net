@@ -1,6 +1,6 @@
-using System.Reflection;
 using Tiferet.Core;
 using Tiferet.Domain;
+using System.Reflection;
 
 namespace Tiferet.Mappers;
 
@@ -127,64 +127,6 @@ public abstract class TransferObject<TDomain, TAggregate> : TransferObject
     {
         var data = ToDictionary(SerializationRoles.ToModel, overrides);
         return ConstructAggregate(data);
-    }
-
-    /// <summary>
-    /// Create a transfer object from a domain model or aggregate.
-    /// </summary>
-    /// <typeparam name="TTransfer">The concrete transfer object type.</typeparam>
-    /// <param name="model">The source domain record.</param>
-    /// <param name="overrides">Additional values that take priority.</param>
-    /// <returns>A new transfer object instance.</returns>
-    public static TTransfer FromModel<TTransfer>(TDomain model, Dictionary<string, object?>? overrides = null)
-        where TTransfer : TransferObject<TDomain, TAggregate>, new()
-    {
-        var transfer = new TTransfer();
-
-        // Get properties from the domain model.
-        var modelProps = typeof(TDomain).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-
-        // Get settable properties on the transfer object.
-        var transferProps = typeof(TTransfer).GetProperties(BindingFlags.Public | BindingFlags.Instance)
-            .Where(p => p.CanWrite)
-            .ToDictionary(p => p.Name);
-
-        // Copy matching properties from the domain model.
-        foreach (var mp in modelProps)
-        {
-            if (transferProps.TryGetValue(mp.Name, out var tp))
-            {
-                var value = mp.GetValue(model);
-                tp.SetValue(transfer, value);
-            }
-        }
-
-        // Apply overrides.
-        if (overrides is not null)
-        {
-            foreach (var (key, value) in overrides)
-            {
-                if (transferProps.TryGetValue(key, out var tp))
-                    tp.SetValue(transfer, value);
-            }
-        }
-
-        return transfer;
-    }
-
-    /// <summary>
-    /// Create a transfer object from an aggregate.
-    /// Delegates to <see cref="FromModel{TTransfer}"/> using the aggregate's domain record.
-    /// Concrete subclasses may override via <c>new static</c> for nested child conversion.
-    /// </summary>
-    /// <typeparam name="TTransfer">The concrete transfer object type.</typeparam>
-    /// <param name="aggregate">The source aggregate.</param>
-    /// <param name="overrides">Additional values that take priority.</param>
-    /// <returns>A new transfer object instance.</returns>
-    public static TTransfer FromAggregate<TTransfer>(TAggregate aggregate, Dictionary<string, object?>? overrides = null)
-        where TTransfer : TransferObject<TDomain, TAggregate>, new()
-    {
-        return FromModel<TTransfer>(aggregate.Domain, overrides);
     }
 
     /// <summary>

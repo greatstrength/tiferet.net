@@ -15,11 +15,11 @@ public class SampleTransferObject : TransferObject<SampleDomain, SampleAggregate
 
     protected override Dictionary<string, RoleConfig> Roles { get; } = new()
     {
-        ["ToModel"] = new RoleConfig
+        [SerializationRoles.ToModel] = new RoleConfig
         {
             Exclude = ["Optional"],
         },
-        ["ToDataYaml"] = new RoleConfig
+        [SerializationRoles.ToDataYaml] = new RoleConfig
         {
             Exclude = ["Id"],
             ByAlias = true,
@@ -53,7 +53,7 @@ public class TransferObjectTests
     {
         var to = CreateTransfer();
         to.Optional = "present";
-        var result = to.ToDictionary("ToModel");
+        var result = to.ToDictionary(SerializationRoles.ToModel);
         Assert.True(result.ContainsKey("Id"));
         Assert.False(result.ContainsKey("Optional")); // excluded by role
     }
@@ -62,7 +62,7 @@ public class TransferObjectTests
     public void ToDictionary_ToDataYamlRole_ExcludesId()
     {
         var to = CreateTransfer();
-        var result = to.ToDictionary("ToDataYaml");
+        var result = to.ToDictionary(SerializationRoles.ToDataYaml);
         Assert.False(result.ContainsKey("Id"));
         Assert.True(result.ContainsKey("Name"));
     }
@@ -103,22 +103,20 @@ public class TransferObjectTests
     }
 
     [Fact]
-    public void FromModel_CreatesTransferObject()
+    public void TransferObject_ConstructedExplicitly_MapsToAggregate()
     {
         var domain = new SampleDomain("1", "Alpha", 42);
-        var to = TransferObject<SampleDomain, SampleAggregate>
-            .FromModel<SampleTransferObject>(domain);
+        var to = new SampleTransferObject { Id = domain.Id, Name = domain.Name, Value = domain.Value };
         Assert.Equal("1", to.Id);
         Assert.Equal("Alpha", to.Name);
         Assert.Equal(42, to.Value);
     }
 
     [Fact]
-    public void FromModel_WithOverrides()
+    public void TransferObject_ConstructedWithOverride_ReflectsOverride()
     {
         var domain = new SampleDomain("1", "Alpha", 42);
-        var to = TransferObject<SampleDomain, SampleAggregate>
-            .FromModel<SampleTransferObject>(domain, new() { ["Name"] = "Overridden" });
+        var to = new SampleTransferObject { Id = domain.Id, Name = "Overridden", Value = domain.Value };
         Assert.Equal("Overridden", to.Name);
     }
 
@@ -126,8 +124,7 @@ public class TransferObjectTests
     public void RoundTrip_DomainToTransferToAggregate()
     {
         var domain = new SampleDomain("1", "Alpha", 42);
-        var to = TransferObject<SampleDomain, SampleAggregate>
-            .FromModel<SampleTransferObject>(domain);
+        var to = new SampleTransferObject { Id = domain.Id, Name = domain.Name, Value = domain.Value };
         var agg = to.Map();
         Assert.Equal(domain.Id, agg.Domain.Id);
         Assert.Equal(domain.Name, agg.Domain.Name);

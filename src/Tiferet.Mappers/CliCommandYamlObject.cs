@@ -38,6 +38,19 @@ public class CliArgumentYamlObject : TransferObject
         Action = arg.Action?.ToString(),
     };
 
+    /// <inheritdoc />
+    public override Dictionary<string, object?> ToDictionary(string? role = null, Dictionary<string, object?>? overrides = null)
+    {
+        var result = new Dictionary<string, object?> { ["NameOrFlags"] = NameOrFlags, ["Type"] = Type };
+        if (Description is not null) result["Description"] = Description;
+        if (Required is not null) result["Required"] = Required;
+        if (Default is not null) result["Default"] = Default;
+        if (Choices is not null) result["Choices"] = Choices;
+        if (Nargs is not null) result["Nargs"] = Nargs;
+        if (Action is not null) result["Action"] = Action;
+        return result;
+    }
+
     public static CliArgumentYamlObject FromYaml(Dictionary<string, object> data)
     {
         var obj = new CliArgumentYamlObject

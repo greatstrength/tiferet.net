@@ -18,6 +18,10 @@ public class ErrorMessageYamlObject : TransferObject
     public static ErrorMessageYamlObject FromRecord(ErrorMessage msg)
         => new() { Lang = msg.Lang, Text = msg.Text };
 
+    /// <inheritdoc />
+    public override Dictionary<string, object?> ToDictionary(string? role = null, Dictionary<string, object?>? overrides = null)
+        => new() { ["Lang"] = Lang, ["Text"] = Text };
+
     /// <summary>Create from a YAML data dictionary.</summary>
     public static ErrorMessageYamlObject FromYaml(Dictionary<string, object> data) => new()
     {

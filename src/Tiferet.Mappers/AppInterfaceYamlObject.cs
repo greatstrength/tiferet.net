@@ -23,6 +23,20 @@ public class AppServiceDependencyYamlObject : TransferObject
         Parameters = svc.Parameters is not null ? new Dictionary<string, string>(svc.Parameters) : null,
     };
 
+    /// <inheritdoc />
+    public override Dictionary<string, object?> ToDictionary(string? role = null, Dictionary<string, object?>? overrides = null)
+    {
+        var result = new Dictionary<string, object?>
+        {
+            ["ServiceId"] = ServiceId,
+            ["AssemblyName"] = AssemblyName,
+            ["TypeName"] = TypeName,
+        };
+        if (Parameters is not null)
+            result["Parameters"] = Parameters;
+        return result;
+    }
+
     public static AppServiceDependencyYamlObject FromYaml(Dictionary<string, object> data)
     {
         var obj = new AppServiceDependencyYamlObject

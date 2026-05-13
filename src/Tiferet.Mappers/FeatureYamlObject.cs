@@ -27,6 +27,18 @@ public class FeatureEventYamlObject : TransferObject
         DataKey = ev.DataKey, PassOnError = ev.PassOnError, Condition = ev.Condition,
     };
 
+    /// <inheritdoc />
+    public override Dictionary<string, object?> ToDictionary(string? role = null, Dictionary<string, object?>? overrides = null)
+    {
+        var result = new Dictionary<string, object?> { ["Name"] = Name, ["ServiceId"] = ServiceId };
+        if (Flags is not null) result["Flags"] = Flags;
+        if (Parameters is not null) result["Parameters"] = Parameters;
+        if (DataKey is not null) result["DataKey"] = DataKey;
+        if (PassOnError) result["PassOnError"] = PassOnError;
+        if (Condition is not null) result["Condition"] = Condition;
+        return result;
+    }
+
     public static FeatureEventYamlObject FromYaml(Dictionary<string, object> data)
     {
         var obj = new FeatureEventYamlObject

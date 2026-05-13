@@ -21,6 +21,20 @@ public class FlaggedDependencyYamlObject : TransferObject
         Parameters = dep.Parameters is not null ? new Dictionary<string, string>(dep.Parameters) : null,
     };
 
+    /// <inheritdoc />
+    public override Dictionary<string, object?> ToDictionary(string? role = null, Dictionary<string, object?>? overrides = null)
+    {
+        var result = new Dictionary<string, object?>
+        {
+            ["Flag"] = Flag,
+            ["AssemblyName"] = AssemblyName,
+            ["TypeName"] = TypeName,
+        };
+        if (Parameters is not null)
+            result["Parameters"] = Parameters;
+        return result;
+    }
+
     public static FlaggedDependencyYamlObject FromYaml(Dictionary<string, object> data)
     {
         var obj = new FlaggedDependencyYamlObject
