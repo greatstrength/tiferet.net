@@ -62,15 +62,10 @@ public abstract class YamlRepository<TAggregate, TDomain> : IRepository<TAggrega
 
     /// <summary>
     /// Hydrate an aggregate from a string-keyed data dictionary and entity ID.
-    /// Default: injects Id, uses <see cref="DomainObject.FromDictionary{T}"/>, constructs aggregate.
-    /// Subclasses override for domain-specific factory methods (e.g., Feature.Create).
+    /// Each subclass must provide domain-specific deserialization
+    /// (typically via a transfer object's <c>FromYaml().Map()</c> pipeline).
     /// </summary>
-    protected virtual TAggregate Hydrate(Dictionary<string, object> data, string id)
-    {
-        data["Id"] = id;
-        var domain = DomainObject.FromDictionary<TDomain>(data);
-        return (TAggregate)Activator.CreateInstance(typeof(TAggregate), domain)!;
-    }
+    protected abstract TAggregate Hydrate(Dictionary<string, object> data, string id);
 
     /// <summary>
     /// Dehydrate an aggregate into a YAML-serializable dictionary.
