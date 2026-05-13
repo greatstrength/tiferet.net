@@ -10,6 +10,11 @@
     <Version>1.0.0-alpha.1</Version>
     <!-- Default: nothing is packable. src/ projects opt in by overriding to true. -->
     <IsPackable>false</IsPackable>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
 
 </Project>
