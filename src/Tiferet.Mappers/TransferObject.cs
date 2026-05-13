@@ -5,6 +5,20 @@ using Tiferet.Domain;
 namespace Tiferet.Mappers;
 
 /// <summary>
+/// Well-known serialization role names used by <see cref="TransferObject"/> subclasses.
+/// Using these constants instead of inline string literals prevents typos and
+/// enables IDE navigation and rename support.
+/// </summary>
+public static class SerializationRoles
+{
+    /// <summary>Maps the transfer object to its runtime aggregate/domain record.</summary>
+    public const string ToModel = "ToModel";
+
+    /// <summary>Serializes the transfer object for YAML persistence.</summary>
+    public const string ToDataYaml = "ToDataYaml";
+}
+
+/// <summary>
 /// Configuration for a serialization role, controlling which properties
 /// to include/exclude and how to serialize them.
 /// </summary>
@@ -111,7 +125,7 @@ public abstract class TransferObject<TDomain, TAggregate> : TransferObject
     /// <returns>A new aggregate instance.</returns>
     public virtual TAggregate Map(Dictionary<string, object?>? overrides = null)
     {
-        var data = ToDictionary("ToModel", overrides);
+        var data = ToDictionary(SerializationRoles.ToModel, overrides);
         return ConstructAggregate(data);
     }
 

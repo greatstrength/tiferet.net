@@ -69,8 +69,8 @@ public class FeatureYamlObject : TransferObject<Feature, FeatureAggregate>
 
     protected override Dictionary<string, RoleConfig> Roles { get; } = new()
     {
-        ["ToModel"] = new() { Exclude = ["Steps", "Flags", "LogParams"] },
-        ["ToDataYaml"] = new() { Exclude = ["Id"] },
+        [SerializationRoles.ToModel] = new() { Exclude = ["Steps", "Flags", "LogParams"] },
+        [SerializationRoles.ToDataYaml] = new() { Exclude = ["Id"] },
     };
 
     public override FeatureAggregate Map(Dictionary<string, object?>? overrides = null)

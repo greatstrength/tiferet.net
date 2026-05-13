@@ -82,8 +82,8 @@ public class CliCommandYamlObject : TransferObject<CliCommand, CliCommandAggrega
 
     protected override Dictionary<string, RoleConfig> Roles { get; } = new()
     {
-        ["ToModel"] = new() { Exclude = ["Arguments"] },
-        ["ToDataYaml"] = new() { Exclude = ["Id"] },
+        [SerializationRoles.ToModel] = new() { Exclude = ["Arguments"] },
+        [SerializationRoles.ToDataYaml] = new() { Exclude = ["Id"] },
     };
 
     public override CliCommandAggregate Map(Dictionary<string, object?>? overrides = null)

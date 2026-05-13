@@ -58,8 +58,8 @@ public class ServiceConfigurationYamlObject : TransferObject<ServiceConfiguratio
 
     protected override Dictionary<string, RoleConfig> Roles { get; } = new()
     {
-        ["ToModel"] = new() { Exclude = ["Dependencies", "Parameters"] },
-        ["ToDataYaml"] = new() { Exclude = ["Id"] },
+        [SerializationRoles.ToModel] = new() { Exclude = ["Dependencies", "Parameters"] },
+        [SerializationRoles.ToDataYaml] = new() { Exclude = ["Id"] },
     };
 
     public override ServiceConfigurationAggregate Map(Dictionary<string, object?>? overrides = null)

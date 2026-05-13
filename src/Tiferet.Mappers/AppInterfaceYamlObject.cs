@@ -63,8 +63,8 @@ public class AppInterfaceYamlObject : TransferObject<AppInterface, AppInterfaceA
 
     protected override Dictionary<string, RoleConfig> Roles { get; } = new()
     {
-        ["ToModel"] = new() { Exclude = ["Services", "Constants", "Flags"] },
-        ["ToDataYaml"] = new() { Exclude = ["Id"] },
+        [SerializationRoles.ToModel] = new() { Exclude = ["Services", "Constants", "Flags"] },
+        [SerializationRoles.ToDataYaml] = new() { Exclude = ["Id"] },
     };
 
     public override AppInterfaceAggregate Map(Dictionary<string, object?>? overrides = null)

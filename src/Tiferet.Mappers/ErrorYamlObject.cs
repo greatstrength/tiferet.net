@@ -39,8 +39,8 @@ public class ErrorYamlObject : TransferObject<Error, ErrorAggregate>
 
     protected override Dictionary<string, RoleConfig> Roles { get; } = new()
     {
-        ["ToModel"] = new() { Exclude = ["Messages"] },
-        ["ToDataYaml"] = new() { Exclude = ["Id", "ErrorCode"] },
+        [SerializationRoles.ToModel] = new() { Exclude = ["Messages"] },
+        [SerializationRoles.ToDataYaml] = new() { Exclude = ["Id", "ErrorCode"] },
     };
 
     /// <summary>Map to aggregate, converting nested messages.</summary>
