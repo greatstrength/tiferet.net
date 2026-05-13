@@ -35,11 +35,17 @@ public class TiferetExceptionTests
     }
 
     [Fact]
-    public void Message_ContainsJsonWithErrorCode()
+    public void Message_IsHumanReadable()
     {
         var ex = new TiferetException("TEST_ERROR", "something broke");
-        Assert.Contains("TEST_ERROR", ex.Message);
-        Assert.Contains("something broke", ex.Message);
+        Assert.Equal("something broke", ex.Message);
+    }
+
+    [Fact]
+    public void Message_FallsBackToErrorCode_WhenNoMessageProvided()
+    {
+        var ex = new TiferetException("TEST_ERROR");
+        Assert.Equal("TEST_ERROR", ex.Message);
     }
 
     [Fact]

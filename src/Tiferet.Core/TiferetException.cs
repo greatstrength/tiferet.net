@@ -1,5 +1,3 @@
-using System.Text.Json;
-
 namespace Tiferet.Core;
 
 /// <summary>
@@ -24,28 +22,11 @@ public class TiferetException : Exception
         string errorCode,
         string? message = null,
         params (string Key, object Value)[] context)
-        : base(BuildJsonMessage(errorCode, message, context))
+        : base(message ?? errorCode)
     {
         ErrorCode = errorCode;
         Context = context.Length > 0
             ? context.ToDictionary(c => c.Key, c => c.Value)
             : new Dictionary<string, object>();
-    }
-
-    private static string BuildJsonMessage(
-        string errorCode,
-        string? message,
-        (string Key, object Value)[] context)
-    {
-        var payload = new Dictionary<string, object?>
-        {
-            ["error_code"] = errorCode,
-            ["message"] = message,
-        };
-
-        foreach (var (key, value) in context)
-            payload[key] = value;
-
-        return JsonSerializer.Serialize(payload);
     }
 }

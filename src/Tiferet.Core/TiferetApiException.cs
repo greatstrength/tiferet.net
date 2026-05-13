@@ -2,15 +2,13 @@ namespace Tiferet.Core;
 
 /// <summary>
 /// API-facing exception returned for Tiferet API errors.
-/// Extends <see cref="TiferetException"/> with a descriptive name and user-facing message.
+/// Extends <see cref="TiferetException"/> with a descriptive name.
+/// The <see cref="Exception.Message"/> property carries the user-facing message.
 /// </summary>
 public class TiferetApiException : TiferetException
 {
     /// <summary>A descriptive name for the error.</summary>
     public string Name { get; }
-
-    /// <summary>The formatted, user-facing error message.</summary>
-    public new string Message { get; }
 
     /// <summary>
     /// Initializes a new <see cref="TiferetApiException"/>.
@@ -27,6 +25,5 @@ public class TiferetApiException : TiferetException
         : base(errorCode, message, context)
     {
         Name = name;
-        Message = message;
     }
 }
