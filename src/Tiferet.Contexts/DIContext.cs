@@ -105,21 +105,32 @@ public class DIContext
         // Build the provider.
         var provider = _createProvider(typeMap, constants);
 
-        // Cache and return.
+        // Cache provider and typeMap together so GetDependency can resolve by type.
         _cache.Set(cacheKey, provider);
+        _cache.Set($"{cacheKey}_types", typeMap);
         return provider;
     }
 
     /// <summary>
     /// Get a resolved service by its configuration ID and flags.
+    /// Looks up the service type from the cached type map and resolves
+    /// the correct instance from the provider.
     /// </summary>
     /// <param name="configurationId">The service configuration identifier.</param>
     /// <param name="flags">The flags to use for provider resolution.</param>
     /// <returns>The resolved service instance.</returns>
     public object? GetDependency(string configurationId, params string[] flags)
     {
+        // Ensure provider is built (and typeMap cached).
         var provider = BuildServiceProvider(flags);
-        return provider.GetService(typeof(object));
+
+        // Retrieve the cached type map to find the correct service type.
+        var typeMapKey = $"{CreateCacheKey(flags)}_types";
+        var typeMap = _cache.Get<Dictionary<string, Type>>(typeMapKey);
+        if (typeMap is null || !typeMap.TryGetValue(configurationId, out var serviceType))
+            return null;
+
+        return provider.GetService(serviceType);
     }
 
     /// <summary>
