@@ -13,10 +13,10 @@ public class RemoveServiceDependency : DomainEvent<RemoveServiceDependencyParams
 
     public override string Execute(RemoveServiceDependencyParams p)
     {
-        var iface = _appService.Get(p.Id);
-        Verify(iface is not null, ErrorCodes.AppInterfaceNotFound, null, ("interfaceId", p.Id));
+        var iface = VerifyNotNull(_appService.Get(p.Id),
+            ErrorCodes.AppInterfaceNotFound, context: ("interfaceId", p.Id));
 
-        iface!.RemoveService(p.ServiceId);
+        iface.RemoveService(p.ServiceId);
         _appService.Save(iface);
         return p.Id;
     }

@@ -17,8 +17,8 @@ public class AddServiceConfiguration : DomainEvent<AddServiceConfigurationParams
 
     public override ServiceConfiguration Execute(AddServiceConfigurationParams p)
     {
-        Verify(!_diService.ConfigurationExists(p.Id),
-            ErrorCodes.ConfigurationAlreadyExists, null, ("id", p.Id));
+        VerifyNotExists(_diService.ConfigurationExists(p.Id),
+            ErrorCodes.ConfigurationAlreadyExists, context: ("id", p.Id));
 
         var hasDefault = p.AssemblyName is not null && p.TypeName is not null;
         var hasDeps = p.Dependencies is not null && p.Dependencies.Count > 0;

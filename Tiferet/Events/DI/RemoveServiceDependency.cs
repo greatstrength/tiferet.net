@@ -13,10 +13,10 @@ public class RemoveServiceDependency : DomainEvent<RemoveServiceDependencyParams
 
     public override string Execute(RemoveServiceDependencyParams p)
     {
-        var config = _diService.GetConfiguration(p.Id);
-        Verify(config is not null, ErrorCodes.ServiceConfigurationNotFound, null, ("id", p.Id));
+        var config = VerifyNotNull(_diService.GetConfiguration(p.Id),
+            ErrorCodes.ServiceConfigurationNotFound, context: ("id", p.Id));
 
-        config!.RemoveDependency(p.Flag);
+        config.RemoveDependency(p.Flag);
 
         var hasDefault = config.AssemblyName is not null && config.TypeName is not null;
         var hasDeps = config.Dependencies is not null && config.Dependencies.Count > 0;

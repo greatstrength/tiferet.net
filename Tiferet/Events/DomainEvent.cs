@@ -24,6 +24,46 @@ public abstract class DomainEvent
     }
 
     /// <summary>
+    /// Verify that a value is not null. Returns the non-null value on success,
+    /// eliminating the need for null-forgiving operators on subsequent use.
+    /// Raises a <see cref="TiferetException"/> with the given error code if the value is null.
+    /// </summary>
+    /// <typeparam name="T">The type of the value being checked.</typeparam>
+    /// <param name="value">The value to verify.</param>
+    /// <param name="errorCode">The error code to raise if the value is null.</param>
+    /// <param name="message">Optional error message.</param>
+    /// <param name="context">Optional context key-value pairs.</param>
+    /// <returns>The non-null value.</returns>
+    public T VerifyNotNull<T>(
+        T? value,
+        string errorCode,
+        string? message = null,
+        params (string Key, object Value)[] context) where T : class
+    {
+        if (value is null)
+            RaiseError(errorCode, message, context);
+        return value!;
+    }
+
+    /// <summary>
+    /// Verify that an entity does not already exist.
+    /// Raises a <see cref="TiferetException"/> with the given error code if it does.
+    /// </summary>
+    /// <param name="exists">The result of an existence check (e.g., <c>service.Exists(id)</c>).</param>
+    /// <param name="errorCode">The error code to raise if the entity exists.</param>
+    /// <param name="message">Optional error message.</param>
+    /// <param name="context">Optional context key-value pairs.</param>
+    public void VerifyNotExists(
+        bool exists,
+        string errorCode,
+        string? message = null,
+        params (string Key, object Value)[] context)
+    {
+        if (exists)
+            RaiseError(errorCode, message, context);
+    }
+
+    /// <summary>
     /// Raise a structured <see cref="TiferetException"/>.
     /// </summary>
     public static void RaiseError(

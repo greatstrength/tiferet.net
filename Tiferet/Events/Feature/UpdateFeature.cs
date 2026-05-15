@@ -17,13 +17,13 @@ public class UpdateFeature : DomainEvent<UpdateFeatureParams, FeatureConfigurati
             ErrorCodes.InvalidFeatureAttribute,
             $"Invalid feature attribute: {p.Attribute}", ("attribute", p.Attribute));
 
-        var feature = _featureService.Get(p.Id);
-        Verify(feature is not null, ErrorCodes.FeatureNotFound, null, ("featureId", p.Id));
+        var feature = VerifyNotNull(_featureService.Get(p.Id),
+            ErrorCodes.FeatureNotFound, context: ("featureId", p.Id));
 
-        if (p.Attribute == "Name") feature!.Rename((string)p.Value!);
-        else if (p.Attribute == "Description") feature!.SetDescription((string?)p.Value);
+        if (p.Attribute == "Name") feature.Rename((string)p.Value!);
+        else if (p.Attribute == "Description") feature.SetDescription((string?)p.Value);
 
-        _featureService.Save(feature!);
-        return feature!.ToDomainObject();
+        _featureService.Save(feature);
+        return feature.ToDomainObject();
     }
 }

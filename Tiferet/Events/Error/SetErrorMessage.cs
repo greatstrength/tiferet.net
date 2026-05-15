@@ -12,10 +12,10 @@ public class SetErrorMessage : DomainEvent<SetErrorMessageParams, string>
 
     public override string Execute(SetErrorMessageParams p)
     {
-        var error = _errorService.Get(p.Id);
-        Verify(error is not null, ErrorCodes.ErrorNotFound, null, ("id", p.Id));
+        var error = VerifyNotNull(_errorService.Get(p.Id),
+            ErrorCodes.ErrorNotFound, context: ("id", p.Id));
 
-        error!.SetMessage(p.Lang, p.Message);
+        error.SetMessage(p.Lang, p.Message);
         _errorService.Save(error);
         return p.Id;
     }

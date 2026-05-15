@@ -13,9 +13,9 @@ public class GetAppInterface : DomainEvent<GetAppInterfaceParams, AppInterfaceCo
 
     public override AppInterfaceConfiguration Execute(GetAppInterfaceParams p)
     {
-        var iface = _appService.Get(p.InterfaceId);
-        Verify(iface is not null, ErrorCodes.AppInterfaceNotFound,
+        var iface = VerifyNotNull(_appService.Get(p.InterfaceId),
+            ErrorCodes.AppInterfaceNotFound,
             $"App interface not found: {p.InterfaceId}", ("interfaceId", p.InterfaceId));
-        return iface!.ToDomainObject();
+        return iface.ToDomainObject();
     }
 }

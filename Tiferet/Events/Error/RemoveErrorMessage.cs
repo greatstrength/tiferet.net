@@ -12,10 +12,10 @@ public class RemoveErrorMessage : DomainEvent<RemoveErrorMessageParams, string>
 
     public override string Execute(RemoveErrorMessageParams p)
     {
-        var error = _errorService.Get(p.Id);
-        Verify(error is not null, ErrorCodes.ErrorNotFound, null, ("id", p.Id));
+        var error = VerifyNotNull(_errorService.Get(p.Id),
+            ErrorCodes.ErrorNotFound, context: ("id", p.Id));
 
-        error!.RemoveMessage(p.Lang);
+        error.RemoveMessage(p.Lang);
 
         Verify((error.Messages?.Count ?? 0) > 0,
             ErrorCodes.NoErrorMessages,

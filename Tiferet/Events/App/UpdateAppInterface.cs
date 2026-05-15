@@ -13,24 +13,24 @@ public class UpdateAppInterface : DomainEvent<UpdateAppInterfaceParams, string>
 
     public override string Execute(UpdateAppInterfaceParams p)
     {
-        var iface = _appService.Get(p.Id);
-        Verify(iface is not null, ErrorCodes.AppInterfaceNotFound, null, ("interfaceId", p.Id));
+        var iface = VerifyNotNull(_appService.Get(p.Id),
+            ErrorCodes.AppInterfaceNotFound, context: ("interfaceId", p.Id));
 
         switch (p.Attribute)
         {
-            case "Name": iface!.Rename((string)p.Value!); break;
-            case "Description": iface!.SetDescription((string?)p.Value); break;
-            case "AssemblyName": iface!.SetAssemblyName((string)p.Value!); break;
-            case "TypeName": iface!.SetTypeName((string)p.Value!); break;
-            case "LoggerId": iface!.SetLoggerId((string)p.Value!); break;
-            case "Flags": iface!.SetFlags((IReadOnlyList<string>)p.Value!); break;
+            case "Name": iface.Rename((string)p.Value!); break;
+            case "Description": iface.SetDescription((string?)p.Value); break;
+            case "AssemblyName": iface.SetAssemblyName((string)p.Value!); break;
+            case "TypeName": iface.SetTypeName((string)p.Value!); break;
+            case "LoggerId": iface.SetLoggerId((string)p.Value!); break;
+            case "Flags": iface.SetFlags((IReadOnlyList<string>)p.Value!); break;
             default:
                 RaiseError(ErrorCodes.InvalidModelAttribute,
                     $"Invalid attribute: {p.Attribute}", ("attribute", p.Attribute));
                 break;
         }
 
-        _appService.Save(iface!);
+        _appService.Save(iface);
         return p.Id;
     }
 }

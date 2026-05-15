@@ -15,10 +15,10 @@ public class SetDefaultServiceConfiguration : DomainEvent<SetDefaultServiceConfi
 
     public override ServiceConfiguration Execute(SetDefaultServiceConfigurationParams p)
     {
-        var config = _diService.GetConfiguration(p.Id);
-        Verify(config is not null, ErrorCodes.ServiceConfigurationNotFound, null, ("id", p.Id));
+        var config = VerifyNotNull(_diService.GetConfiguration(p.Id),
+            ErrorCodes.ServiceConfigurationNotFound, context: ("id", p.Id));
 
-        config!.SetDefaultType(p.AssemblyName, p.TypeName, p.Parameters);
+        config.SetDefaultType(p.AssemblyName, p.TypeName, p.Parameters);
         _diService.SaveConfiguration(config);
         return config.ToDomainObject();
     }

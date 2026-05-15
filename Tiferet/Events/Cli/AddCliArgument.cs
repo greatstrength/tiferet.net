@@ -18,10 +18,10 @@ public class AddCliArgument : DomainEvent<AddCliArgumentParams, string>
 
     public override string Execute(AddCliArgumentParams p)
     {
-        var command = _cliService.Get(p.CommandId);
-        Verify(command is not null, ErrorCodes.CliCommandNotFound, null, ("commandId", p.CommandId));
+        var command = VerifyNotNull(_cliService.Get(p.CommandId),
+            ErrorCodes.CliCommandNotFound, context: ("commandId", p.CommandId));
 
-        command!.AddArgument(p.NameOrFlags, p.Description, p.Type,
+        command.AddArgument(p.NameOrFlags, p.Description, p.Type,
             p.Required, p.Default, p.Choices, p.Nargs, p.Action);
         _cliService.Save(command);
         return p.CommandId;

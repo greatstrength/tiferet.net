@@ -13,10 +13,10 @@ public class RenameError : DomainEvent<RenameErrorParams, ErrorConfiguration>
 
     public override ErrorConfiguration Execute(RenameErrorParams p)
     {
-        var error = _errorService.Get(p.Id);
-        Verify(error is not null, ErrorCodes.ErrorNotFound, null, ("id", p.Id));
+        var error = VerifyNotNull(_errorService.Get(p.Id),
+            ErrorCodes.ErrorNotFound, context: ("id", p.Id));
 
-        error!.Rename(p.NewName);
+        error.Rename(p.NewName);
         _errorService.Save(error);
         return error.ToDomainObject();
     }

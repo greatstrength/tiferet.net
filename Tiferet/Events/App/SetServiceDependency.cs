@@ -15,10 +15,10 @@ public class SetServiceDependency : DomainEvent<SetServiceDependencyParams, stri
 
     public override string Execute(SetServiceDependencyParams p)
     {
-        var iface = _appService.Get(p.Id);
-        Verify(iface is not null, ErrorCodes.AppInterfaceNotFound, null, ("interfaceId", p.Id));
+        var iface = VerifyNotNull(_appService.Get(p.Id),
+            ErrorCodes.AppInterfaceNotFound, context: ("interfaceId", p.Id));
 
-        iface!.SetService(p.ServiceId, p.AssemblyName, p.TypeName, p.Parameters);
+        iface.SetService(p.ServiceId, p.AssemblyName, p.TypeName, p.Parameters);
         _appService.Save(iface);
         return p.Id;
     }

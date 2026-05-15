@@ -17,7 +17,7 @@ public class AddError : DomainEvent<AddErrorParams, ErrorConfiguration>
 
     public override ErrorConfiguration Execute(AddErrorParams p)
     {
-        Verify(!_errorService.Exists(p.Id), ErrorCodes.ErrorAlreadyExists,
+        VerifyNotExists(_errorService.Exists(p.Id), ErrorCodes.ErrorAlreadyExists,
             $"An error with ID {p.Id} already exists.", ("id", p.Id));
 
         var messages = new List<ErrorMessageConfiguration> { new(p.Lang, p.Message) };

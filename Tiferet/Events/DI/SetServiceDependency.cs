@@ -15,10 +15,10 @@ public class SetServiceDependency : DomainEvent<SetServiceDependencyParams, stri
 
     public override string Execute(SetServiceDependencyParams p)
     {
-        var config = _diService.GetConfiguration(p.Id);
-        Verify(config is not null, ErrorCodes.ServiceConfigurationNotFound, null, ("id", p.Id));
+        var config = VerifyNotNull(_diService.GetConfiguration(p.Id),
+            ErrorCodes.ServiceConfigurationNotFound, context: ("id", p.Id));
 
-        config!.SetDependency(p.Flag, p.AssemblyName, p.TypeName, p.Parameters);
+        config.SetDependency(p.Flag, p.AssemblyName, p.TypeName, p.Parameters);
         _diService.SaveConfiguration(config);
         return p.Id;
     }

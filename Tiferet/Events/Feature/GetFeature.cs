@@ -13,9 +13,9 @@ public class GetFeature : DomainEvent<GetFeatureParams, FeatureConfiguration>
 
     public override FeatureConfiguration Execute(GetFeatureParams p)
     {
-        var feature = _featureService.Get(p.Id);
-        Verify(feature is not null, ErrorCodes.FeatureNotFound,
+        var feature = VerifyNotNull(_featureService.Get(p.Id),
+            ErrorCodes.FeatureNotFound,
             $"FeatureConfiguration not found: {p.Id}", ("featureId", p.Id));
-        return feature!.ToDomainObject();
+        return feature.ToDomainObject();
     }
 }

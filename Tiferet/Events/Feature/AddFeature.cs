@@ -23,7 +23,7 @@ public class AddFeature : DomainEvent<AddFeatureParams, FeatureConfiguration>
             id: p.Id, description: p.Description,
             steps: p.Steps, logParams: p.LogParams);
 
-        Verify(!_featureService.Exists(aggregate.Id),
+        VerifyNotExists(_featureService.Exists(aggregate.Id),
             ErrorCodes.FeatureAlreadyExists, $"FeatureConfiguration with ID {aggregate.Id} already exists.",
             ("id", aggregate.Id));
 
