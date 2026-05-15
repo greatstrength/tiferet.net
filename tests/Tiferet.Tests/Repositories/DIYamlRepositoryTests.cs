@@ -3,6 +3,10 @@ using System.Text;
 using Tiferet.Domain;
 using Tiferet.Mappers;
 using Tiferet.Repositories;
+using Tiferet.Mappers.DI;
+using Tiferet.Domain.Error;
+using Tiferet.Domain.Feature;
+using Tiferet.Domain.DI;
 
 namespace Tiferet.Tests.Repositories;
 
@@ -19,7 +23,7 @@ public class DIYamlRepositoryTests : IDisposable
         File.WriteAllText(_yamlFile, """
             services:
               error_service:
-                Name: Error Service
+                Name: ErrorConfiguration Service
                 AssemblyName: MyApp
                 TypeName: MyApp.ErrorService
                 Parameters:
@@ -52,7 +56,7 @@ public class DIYamlRepositoryTests : IDisposable
         var config = repo.GetConfiguration("error_service");
         Assert.NotNull(config);
         Assert.Equal("error_service", config.Domain.Id);
-        Assert.Equal("Error Service", config.Domain.Name);
+        Assert.Equal("ErrorConfiguration Service", config.Domain.Name);
         Assert.Equal("MyApp", config.Domain.AssemblyName);
         Assert.NotNull(config.Domain.Parameters);
         Assert.Equal("app/configs/error.yml", config.Domain.Parameters["config_file"]);
@@ -79,12 +83,12 @@ public class DIYamlRepositoryTests : IDisposable
     public void SaveConfiguration_PersistsNew()
     {
         var repo = new DIYamlRepository(_yamlFile);
-        var config = new ServiceConfiguration("feature_service", "Feature Service", "MyApp", "MyApp.FeatureService");
+        var config = new ServiceConfiguration("feature_service", "FeatureConfiguration Service", "MyApp", "MyApp.FeatureService");
         repo.SaveConfiguration(new ServiceConfigurationAggregate(config));
 
         var loaded = repo.GetConfiguration("feature_service");
         Assert.NotNull(loaded);
-        Assert.Equal("Feature Service", loaded.Domain.Name);
+        Assert.Equal("FeatureConfiguration Service", loaded.Domain.Name);
     }
 
     [Fact]

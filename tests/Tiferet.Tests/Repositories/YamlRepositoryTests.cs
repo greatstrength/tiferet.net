@@ -3,6 +3,10 @@ using System.Text;
 using Tiferet.Domain;
 using Tiferet.Mappers;
 using Tiferet.Repositories;
+using Tiferet.Mappers.App;
+using Tiferet.Mappers.Error;
+using Tiferet.Domain.Error;
+using Tiferet.Domain.App;
 
 namespace Tiferet.Tests.Repositories;
 
@@ -78,12 +82,12 @@ public class ErrorYamlRepositoryTests : IDisposable
     public void Save_PersistsNewEntity()
     {
         var repo = new ErrorYamlRepository(_yamlFile);
-        var error = Error.Create("server_error", "Server Error");
+        var error = ErrorConfiguration.Create("server_error", "Server ErrorConfiguration");
         repo.Save(new ErrorAggregate(error));
 
         var loaded = repo.Get("server_error");
         Assert.NotNull(loaded);
-        Assert.Equal("Server Error", loaded.Domain.Name);
+        Assert.Equal("Server ErrorConfiguration", loaded.Domain.Name);
     }
 
     [Fact]
@@ -153,7 +157,7 @@ public class AppYamlRepositoryTests : IDisposable
     public void Save_RoundTrip()
     {
         var repo = new AppYamlRepository(_yamlFile);
-        var iface = new AppInterface("cli_app", "CLI App", "MyApp", "MyApp.CliApp");
+        var iface = new AppInterfaceConfiguration("cli_app", "CLI App", "MyApp", "MyApp.CliApp");
         repo.Save(new AppInterfaceAggregate(iface));
 
         var loaded = repo.Get("cli_app");

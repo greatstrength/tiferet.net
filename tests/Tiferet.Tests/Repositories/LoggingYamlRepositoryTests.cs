@@ -5,6 +5,9 @@ using Microsoft.Extensions.Logging;
 using Tiferet.Domain;
 using Tiferet.Mappers;
 using Tiferet.Repositories;
+using Tiferet.Mappers.Logging;
+using Tiferet.Domain.Error;
+using Tiferet.Domain.Logging;
 
 namespace Tiferet.Tests.Repositories;
 
@@ -22,18 +25,18 @@ public class LoggingYamlRepositoryTests : IDisposable
             logging:
               formatters:
                 simple:
-                  Name: Simple Formatter
+                  Name: Simple FormatterConfiguration
                   Format: "{timestamp} {level} {message}"
               handlers:
                 console:
-                  Name: Console Handler
+                  Name: Console HandlerConfiguration
                   AssemblyName: MyApp
                   TypeName: MyApp.ConsoleHandler
                   Level: Information
                   FormatterId: simple
               loggers:
                 default:
-                  Name: Default Logger
+                  Name: Default LoggerConfiguration
                   Level: Debug
                   HandlerIds:
                     - console
@@ -59,7 +62,7 @@ public class LoggingYamlRepositoryTests : IDisposable
         var (formatters, _, _) = repo.ListAll();
         var fmt = formatters[0];
         Assert.Equal("simple", fmt.Domain.Id);
-        Assert.Equal("Simple Formatter", fmt.Domain.Name);
+        Assert.Equal("Simple FormatterConfiguration", fmt.Domain.Name);
         Assert.Contains("{message}", fmt.Domain.Format);
     }
 
@@ -91,7 +94,7 @@ public class LoggingYamlRepositoryTests : IDisposable
     public void SaveFormatter_RoundTrip()
     {
         var repo = new LoggingYamlRepository(_yamlFile);
-        var fmt = new Formatter("detailed", "Detailed Formatter", "{timestamp} [{level}] {message}");
+        var fmt = new FormatterConfiguration("detailed", "Detailed FormatterConfiguration", "{timestamp} [{level}] {message}");
         repo.SaveFormatter(new FormatterAggregate(fmt));
 
         var (formatters, _, _) = repo.ListAll();
@@ -103,7 +106,7 @@ public class LoggingYamlRepositoryTests : IDisposable
     public void SaveHandler_RoundTrip()
     {
         var repo = new LoggingYamlRepository(_yamlFile);
-        var hdl = new Handler("file", "File Handler", "MyApp", "MyApp.FileHandler",
+        var hdl = new HandlerConfiguration("file", "File HandlerConfiguration", "MyApp", "MyApp.FileHandler",
             LogLevel.Warning, "simple", null, null, "app.log");
         repo.SaveHandler(new HandlerAggregate(hdl));
 
@@ -115,7 +118,7 @@ public class LoggingYamlRepositoryTests : IDisposable
     public void SaveLogger_RoundTrip()
     {
         var repo = new LoggingYamlRepository(_yamlFile);
-        var logger = new Logger("app", "App Logger", LogLevel.Error);
+        var logger = new LoggerConfiguration("app", "App LoggerConfiguration", LogLevel.Error);
         repo.SaveLogger(new LoggerAggregate(logger));
 
         var (_, _, loggers) = repo.ListAll();

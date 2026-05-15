@@ -19,7 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Tiferet.Blueprints\Tiferet.Blueprints.csproj" />
+    <ProjectReference Include="..\..\Tiferet\Tiferet.csproj" />
+    <ProjectReference Include="..\..\Tiferet.Testing\Tiferet.Testing.csproj" />
   </ItemGroup>
 
 </Project>

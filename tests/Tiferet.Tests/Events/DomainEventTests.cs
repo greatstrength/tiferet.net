@@ -1,4 +1,4 @@
-using Tiferet.Core;
+using Tiferet.Assets;
 using Tiferet.Events;
 
 namespace Tiferet.Tests.Events;

@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
-using Tiferet.Core;
+using Tiferet.Assets;
+using Tiferet.Events;
 using Tiferet.Domain;
 using Tiferet.Events.Feature;
 using Tiferet.Events.Error;
@@ -9,6 +10,15 @@ using Tiferet.Events.Cli;
 using Tiferet.Events.Logging;
 using Tiferet.Interfaces;
 using Tiferet.Mappers;
+using Tiferet.Mappers.Feature;
+using Tiferet.Mappers.DI;
+using Tiferet.Mappers.Cli;
+using Tiferet.Mappers.App;
+using Tiferet.Mappers.Error;
+using Tiferet.Mappers.Logging;
+using Tiferet.Domain.Error;
+using Tiferet.Domain.Feature;
+using Tiferet.Domain.Cli;
 
 namespace Tiferet.Tests.Events;
 
@@ -44,7 +54,7 @@ public class MockAppService : IAppService
     public void Delete(string id) => _store.Remove(id);
 }
 
-// *** Feature Event Tests
+// *** FeatureConfiguration Event Tests
 
 public class FeatureEventCrudTests
 {
@@ -116,7 +126,7 @@ public class FeatureEventCrudTests
     }
 }
 
-// *** Error Event Tests
+// *** ErrorConfiguration Event Tests
 
 public class ErrorEventCrudTests
 {
@@ -260,7 +270,7 @@ public class CliEventCrudTests
         public IReadOnlyList<CliCommandAggregate> List() => _store.Values.ToList();
         public void Save(CliCommandAggregate entity) => _store[entity.Domain.Id] = entity;
         public void Delete(string id) => _store.Remove(id);
-        public IReadOnlyList<CliArgument> GetParentArguments() => [];
+        public IReadOnlyList<CliArgumentConfiguration> GetParentArguments() => [];
     }
 
     [Fact]

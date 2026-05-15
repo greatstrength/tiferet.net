@@ -1,7 +1,9 @@
 using System.CommandLine;
 using Tiferet.Blueprints;
 using Tiferet.Contexts;
-using Tiferet.Core;
+using Tiferet.Assets;
+using Tiferet.Events;
+using Tiferet.Domain.Error;
 
 // Config directory relative to the binary output location.
 var configDir = Path.Combine(AppContext.BaseDirectory, "app", "configs");
@@ -51,6 +53,6 @@ static void Execute(
     }
     catch (TiferetApiException ex)
     {
-        Console.WriteLine($"Error: {ex.Message}");
+        Console.WriteLine($"ErrorConfiguration: {ex.Message}");
     }
 }

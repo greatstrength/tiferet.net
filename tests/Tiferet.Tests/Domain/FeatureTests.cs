@@ -1,5 +1,7 @@
 using Tiferet.Domain;
 using Tiferet.Mappers;
+using Tiferet.Mappers.Feature;
+using Tiferet.Domain.Feature;
 
 namespace Tiferet.Tests.Domain;
 
@@ -8,7 +10,7 @@ public class FeatureRecordTests
     [Fact]
     public void Create_DerivesIdFromGroupIdAndKey()
     {
-        var f = Feature.Create(name: "Add Number", groupId: "calc");
+        var f = FeatureConfiguration.Create(name: "Add Number", groupId: "calc");
         Assert.Equal("calc.add_number", f.Id);
         Assert.Equal("calc", f.GroupId);
         Assert.Equal("add_number", f.FeatureKey);
@@ -17,7 +19,7 @@ public class FeatureRecordTests
     [Fact]
     public void Create_DerivesGroupIdAndKeyFromId()
     {
-        var f = Feature.Create(name: "Add", id: "calc.add");
+        var f = FeatureConfiguration.Create(name: "Add", id: "calc.add");
         Assert.Equal("calc", f.GroupId);
         Assert.Equal("add", f.FeatureKey);
     }
@@ -25,37 +27,37 @@ public class FeatureRecordTests
     [Fact]
     public void Create_DefaultsDescriptionToName()
     {
-        var f = Feature.Create(name: "Add Number", groupId: "calc");
+        var f = FeatureConfiguration.Create(name: "Add Number", groupId: "calc");
         Assert.Equal("Add Number", f.Description);
     }
 
     [Fact]
     public void Create_ExplicitDescription()
     {
-        var f = Feature.Create(name: "Add", groupId: "calc", description: "Custom desc");
+        var f = FeatureConfiguration.Create(name: "Add", groupId: "calc", description: "Custom desc");
         Assert.Equal("Custom desc", f.Description);
     }
 
     [Fact]
     public void GetStep_ReturnsStep()
     {
-        var step = new FeatureEvent("Step1", "svc1");
-        var f = Feature.Create(name: "F", groupId: "g", steps: [step]);
+        var step = new FeatureEventConfiguration("Step1", "svc1");
+        var f = FeatureConfiguration.Create(name: "F", groupId: "g", steps: [step]);
         Assert.Same(step, f.GetStep(0));
     }
 
     [Fact]
     public void GetStep_ReturnsNull_OutOfRange()
     {
-        var f = Feature.Create(name: "F", groupId: "g");
+        var f = FeatureConfiguration.Create(name: "F", groupId: "g");
         Assert.Null(f.GetStep(0));
     }
 
     [Fact]
     public void ValueEquality()
     {
-        var a = Feature.Create(name: "F", groupId: "g");
-        var b = Feature.Create(name: "F", groupId: "g");
+        var a = FeatureConfiguration.Create(name: "F", groupId: "g");
+        var b = FeatureConfiguration.Create(name: "F", groupId: "g");
         Assert.Equal(a, b);
     }
 }
@@ -63,7 +65,7 @@ public class FeatureRecordTests
 public class FeatureAggregateTests
 {
     private static FeatureAggregate CreateAggregate() =>
-        new(Feature.Create(name: "Add Number", groupId: "calc"));
+        new(FeatureConfiguration.Create(name: "Add Number", groupId: "calc"));
 
     [Fact]
     public void Rename_UpdatesName()
@@ -137,7 +139,7 @@ public class FeatureEventAggregateTests
     [Fact]
     public void SetPassOnError_Updates()
     {
-        var agg = new FeatureEventAggregate(new FeatureEvent("Step", "svc"));
+        var agg = new FeatureEventAggregate(new FeatureEventConfiguration("Step", "svc"));
         agg.SetPassOnError(true);
         Assert.True(agg.Domain.PassOnError);
     }
@@ -145,7 +147,7 @@ public class FeatureEventAggregateTests
     [Fact]
     public void SetParameters_MergesParameters()
     {
-        var agg = new FeatureEventAggregate(new FeatureEvent("Step", "svc",
+        var agg = new FeatureEventAggregate(new FeatureEventConfiguration("Step", "svc",
             Parameters: new Dictionary<string, string> { ["a"] = "1" }));
         agg.SetParameters(new() { ["b"] = "2" });
         Assert.Equal("1", agg.Domain.Parameters!["a"]);

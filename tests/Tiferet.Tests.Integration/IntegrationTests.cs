@@ -1,10 +1,17 @@
 using System.Text;
 using Tiferet.Blueprints;
 using Tiferet.Contexts;
-using Tiferet.Core;
+using Tiferet.Assets;
+using Tiferet.Events;
 using Tiferet.Domain;
 using Tiferet.Mappers;
 using Tiferet.Repositories;
+using Tiferet.Mappers.Feature;
+using Tiferet.Mappers.App;
+using Tiferet.Mappers.Error;
+using Tiferet.Domain.Error;
+using Tiferet.Domain.Feature;
+using Tiferet.Domain.App;
 
 namespace Tiferet.Tests.Integration;
 
@@ -86,7 +93,7 @@ public class IntegrationFixture : IDisposable
                       Parameters:
                         B: '10'
                 multi_step:
-                  Name: Multi Step Feature
+                  Name: Multi Step FeatureConfiguration
                   Description: Stores intermediate result then adds
                   Steps:
                     - ServiceId: concat_event
@@ -95,8 +102,8 @@ public class IntegrationFixture : IDisposable
                     - ServiceId: add_double_event
                       Name: Add A and B
                 error:
-                  Name: Error Feature
-                  Description: Feature that always errors
+                  Name: ErrorConfiguration FeatureConfiguration
+                  Description: FeatureConfiguration that always errors
                   Steps:
                     - ServiceId: erroring_event
                       Name: Always fails
@@ -162,7 +169,7 @@ public class AppBootstrapTests : IDisposable
     }
 }
 
-// *** Feature Execution Tests
+// *** FeatureConfiguration Execution Tests
 
 public class FeatureExecutionTests : IDisposable
 {
@@ -231,7 +238,7 @@ public class FeatureExecutionTests : IDisposable
     }
 }
 
-// *** Error Handling Tests
+// *** ErrorConfiguration Handling Tests
 
 public class ErrorHandlingTests : IDisposable
 {
@@ -292,7 +299,7 @@ public class ErrorHandlingTests : IDisposable
     [Fact]
     public void Run_UnknownFeature_ThrowsTiferetApiException()
     {
-        // Feature load raises TiferetException(FeatureNotFound) → HandleError → TiferetApiException
+        // FeatureConfiguration load raises TiferetException(FeatureNotFound) → HandleError → TiferetApiException
         var ex = Assert.Throws<TiferetApiException>(() =>
             _app.Run("math.nonexistent", data: new()));
 
@@ -326,13 +333,13 @@ public class RepositoryRoundTripTests : IDisposable
         File.WriteAllText(yamlFile, "errors: {}", Encoding.UTF8);
 
         var repo = new ErrorYamlRepository(yamlFile);
-        var error = Error.Create("test_error", "Test Error",
-            messages: [new ErrorMessage("en_US", "Test message")]);
+        var error = ErrorConfiguration.Create("test_error", "Test ErrorConfiguration",
+            messages: [new ErrorMessageConfiguration("en_US", "Test message")]);
         repo.Save(new ErrorAggregate(error));
 
         var loaded = repo.Get("test_error");
         Assert.NotNull(loaded);
-        Assert.Equal("Test Error", loaded.Domain.Name);
+        Assert.Equal("Test ErrorConfiguration", loaded.Domain.Name);
         Assert.Single(loaded.Domain.Messages!);
         Assert.Equal("Test message", loaded.Domain.Messages![0].Text);
     }
@@ -345,11 +352,11 @@ public class RepositoryRoundTripTests : IDisposable
         File.WriteAllText(yamlFile, "features: {}", Encoding.UTF8);
 
         var repo = new FeatureYamlRepository(yamlFile);
-        var feature = Feature.Create(
+        var feature = FeatureConfiguration.Create(
             name: "Add Number",
             groupId: "calc",
             featureKey: "add",
-            steps: [new FeatureEvent("Add A and B", "add_number_event")]);
+            steps: [new FeatureEventConfiguration("Add A and B", "add_number_event")]);
         repo.Save(new FeatureAggregate(feature));
 
         var loaded = repo.Get("calc.add");
@@ -367,7 +374,7 @@ public class RepositoryRoundTripTests : IDisposable
         File.WriteAllText(yamlFile, "interfaces: {}", Encoding.UTF8);
 
         var repo = new AppYamlRepository(yamlFile);
-        var iface = new AppInterface(
+        var iface = new AppInterfaceConfiguration(
             Id: "my_app",
             Name: "My App",
             AssemblyName: "MyApp",

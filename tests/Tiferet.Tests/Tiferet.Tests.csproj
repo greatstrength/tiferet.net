@@ -20,16 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Tiferet.Core\Tiferet.Core.csproj" />
-    <ProjectReference Include="..\..\src\Tiferet.Domain\Tiferet.Domain.csproj" />
-    <ProjectReference Include="..\..\src\Tiferet.Events\Tiferet.Events.csproj" />
-    <ProjectReference Include="..\..\src\Tiferet.Interfaces\Tiferet.Interfaces.csproj" />
-    <ProjectReference Include="..\..\src\Tiferet.Mappers\Tiferet.Mappers.csproj" />
-    <ProjectReference Include="..\..\src\Tiferet.DependencyInjection\Tiferet.DependencyInjection.csproj" />
-    <ProjectReference Include="..\..\src\Tiferet.Utilities\Tiferet.Utilities.csproj" />
-    <ProjectReference Include="..\..\src\Tiferet.Repositories\Tiferet.Repositories.csproj" />
-    <ProjectReference Include="..\..\src\Tiferet.Contexts\Tiferet.Contexts.csproj" />
-    <ProjectReference Include="..\..\src\Tiferet.Blueprints\Tiferet.Blueprints.csproj" />
+    <ProjectReference Include="..\..\Tiferet\Tiferet.csproj" />
+    <ProjectReference Include="..\..\Tiferet.Testing\Tiferet.Testing.csproj" />
   </ItemGroup>
 
 </Project>

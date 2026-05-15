@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Tiferet.Blueprints\Tiferet.Blueprints.csproj" />
+    <ProjectReference Include="..\..\Tiferet\Tiferet.csproj" />
   </ItemGroup>
 
   <ItemGroup>

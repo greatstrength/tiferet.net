@@ -1,5 +1,9 @@
 using Tiferet.Interfaces;
 using Tiferet.Mappers;
+using Tiferet.Mappers.Feature;
+using Tiferet.Mappers.Cli;
+using Tiferet.Mappers.App;
+using Tiferet.Mappers.Error;
 
 namespace Tiferet.Tests.Interfaces;
 

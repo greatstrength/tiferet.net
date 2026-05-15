@@ -1,4 +1,6 @@
-using Tiferet.Core;
+using Tiferet.Assets;
+using Tiferet.Events;
+using Tiferet.Domain.Error;
 
 namespace Tiferet.Tests.Core;
 
@@ -61,10 +63,10 @@ public class TiferetApiExceptionTests
     [Fact]
     public void Constructor_SetsNameAndMessage()
     {
-        var ex = new TiferetApiException("CODE", "Error Name", "Error message text");
+        var ex = new TiferetApiException("CODE", "ErrorConfiguration Name", "ErrorConfiguration message text");
         Assert.Equal("CODE", ex.ErrorCode);
-        Assert.Equal("Error Name", ex.Name);
-        Assert.Equal("Error message text", ex.Message);
+        Assert.Equal("ErrorConfiguration Name", ex.Name);
+        Assert.Equal("ErrorConfiguration message text", ex.Message);
     }
 
     [Fact]

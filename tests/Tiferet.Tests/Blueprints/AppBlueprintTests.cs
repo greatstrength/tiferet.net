@@ -1,7 +1,9 @@
 using System.Text;
 using Tiferet.Blueprints;
 using Tiferet.Contexts;
-using Tiferet.Core;
+using Tiferet.Assets;
+using Tiferet.Events;
+using Tiferet.Domain.Logging;
 
 namespace Tiferet.Tests.Blueprints;
 
@@ -38,7 +40,7 @@ public class AppBlueprintTests : IDisposable
                 TypeName: Tiferet.Contexts.AppInterfaceContext
                 Description: Perform basic calculator operations
               custom_logger:
-                Name: Custom Logger App
+                Name: Custom LoggerConfiguration App
                 AssemblyName: Tiferet.Contexts
                 TypeName: Tiferet.Contexts.AppInterfaceContext
                 LoggerId: app_logger

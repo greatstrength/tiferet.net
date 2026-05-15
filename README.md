@@ -1,31 +1,22 @@
 # tiferet.net
 
-> **Alpha software.** APIs may change before the stable 1.0 release.
+> **Beta software.** APIs are stabilizing. Breaking changes are possible before 1.0.
 
 A .NET framework for Domain-Driven Design — configuration-driven features, typed domain events, generic service contracts, and YAML-backed repositories. The C# port of the [Tiferet Python framework](https://github.com/greatstrength/tiferet).
 
 ## Installation
 
-For most applications, `Tiferet.Blueprints` is the only package you need to reference directly. It pulls in all other framework packages as transitive dependencies.
-
 ```
-dotnet add package Tiferet.Blueprints --prerelease
+dotnet add package Tiferet --prerelease
 ```
 
-If you are building a library that depends on specific layers, reference the individual packages:
+`Tiferet` is a single package containing everything: domain objects, events, mappers, service interfaces, YAML repositories, utilities, DI, and the `AppBlueprint`/`CliBlueprint` bootstrappers.
 
-| Package | Purpose |
-|---|---|
-| `Tiferet.Core` | Exceptions, constants, and shared infrastructure |
-| `Tiferet.Domain` | Domain model base class and domain objects |
-| `Tiferet.Events` | `DomainEvent<TParams, TResult>` base and execution engine |
-| `Tiferet.Interfaces` | Abstract service contracts (`IService`) |
-| `Tiferet.Mappers` | `Aggregate` and `TransferObject` base classes |
-| `Tiferet.Contexts` | Runtime orchestration (App, Feature, Error, CLI, Logging) |
-| `Tiferet.Repositories` | YAML-backed repository implementations |
-| `Tiferet.Utilities` | Infrastructure utilities (YAML, SQLite, file I/O) |
-| `Tiferet.DependencyInjection` | DI provider and service registration |
-| `Tiferet.Blueprints` | One-step bootstrapper and CLI builder (entry point) |
+For test helpers (base classes and harness utilities), also add:
+
+```
+dotnet add package Tiferet.Testing --prerelease
+```
 
 ## Quick Start
 
