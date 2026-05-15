@@ -20,7 +20,7 @@ namespace Tiferet.Repositories;
 /// YAML-backed repository for CLI command definitions.
 /// Composite key structure: <c>cli.cmds.{groupKey}.{commandKey}</c>.
 /// </summary>
-public class CliYamlRepository : YamlRepository<CliCommandAggregate, CliCommandConfiguration>, ICliService
+public class CliYamlRepository : YamlRepository<CliCommandAggregate>, ICliService
 {
     /// <summary>
     /// Initializes the CLI YAML repository.

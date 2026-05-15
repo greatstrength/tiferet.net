@@ -55,12 +55,12 @@ public class ErrorYamlRepositoryTests : IDisposable
         var repo = new ErrorYamlRepository(_yamlFile);
         var error = repo.Get("invalid_input");
         Assert.NotNull(error);
-        Assert.Equal("invalid_input", error.Domain.Id);
-        Assert.Equal("Invalid Input", error.Domain.Name);
-        Assert.Equal("INVALID_INPUT", error.Domain.ErrorCode);
-        Assert.NotNull(error.Domain.Messages);
-        Assert.Single(error.Domain.Messages);
-        Assert.Equal("en_US", error.Domain.Messages[0].Lang);
+        Assert.Equal("invalid_input", error.Id);
+        Assert.Equal("Invalid Input", error.Name);
+        Assert.Equal("INVALID_INPUT", error.ErrorCode);
+        Assert.NotNull(error.Messages);
+        Assert.Single(error.Messages);
+        Assert.Equal("en_US", error.Messages[0].Lang);
     }
 
     [Fact]
@@ -86,7 +86,7 @@ public class ErrorYamlRepositoryTests : IDisposable
 
         var loaded = repo.Get("server_error");
         Assert.NotNull(loaded);
-        Assert.Equal("Server ErrorConfiguration", loaded.Domain.Name);
+        Assert.Equal("Server ErrorConfiguration", loaded.Name);
     }
 
     [Fact]
@@ -98,7 +98,7 @@ public class ErrorYamlRepositoryTests : IDisposable
         repo.Save(error);
 
         var reloaded = repo.Get("invalid_input");
-        Assert.Equal("Updated Name", reloaded!.Domain.Name);
+        Assert.Equal("Updated Name", reloaded!.Name);
     }
 
     [Fact]
@@ -147,9 +147,9 @@ public class AppYamlRepositoryTests : IDisposable
         var repo = new AppYamlRepository(_yamlFile);
         var app = repo.Get("basic_calc");
         Assert.NotNull(app);
-        Assert.Equal("basic_calc", app.Domain.Id);
-        Assert.Equal("Basic Calculator", app.Domain.Name);
-        Assert.Equal("MyApp", app.Domain.AssemblyName);
+        Assert.Equal("basic_calc", app.Id);
+        Assert.Equal("Basic Calculator", app.Name);
+        Assert.Equal("MyApp", app.AssemblyName);
     }
 
     [Fact]
@@ -161,7 +161,7 @@ public class AppYamlRepositoryTests : IDisposable
 
         var loaded = repo.Get("cli_app");
         Assert.NotNull(loaded);
-        Assert.Equal("CLI App", loaded.Domain.Name);
+        Assert.Equal("CLI App", loaded.Name);
         Assert.Equal(2, repo.List().Count);
     }
 

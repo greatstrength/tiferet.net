@@ -70,7 +70,7 @@ public class LoggingContext : IDisposable
             var (_, _, loggers) = _listAllEvent.Execute(new ListAllLoggingConfigsParams());
 
             // Find the matching logger config for our ID.
-            var loggerConfig = loggers.FirstOrDefault(l => l.Domain.Id == _loggerId);
+            var loggerConfig = loggers.FirstOrDefault(l => l.Id == _loggerId);
 
             // If a matching config exists, create and cache a factory for its level.
             if (loggerConfig is not null)
@@ -78,7 +78,7 @@ public class LoggingContext : IDisposable
                 _configuredFactory = LoggerFactory.Create(builder =>
                 {
                     builder.AddConsole();
-                    builder.SetMinimumLevel(loggerConfig.Domain.Level);
+                    builder.SetMinimumLevel(loggerConfig.Level);
                 });
                 return _configuredFactory.CreateLogger(_loggerId);
             }

@@ -18,8 +18,8 @@ public class RemoveServiceDependency : DomainEvent<RemoveServiceDependencyParams
 
         config!.RemoveDependency(p.Flag);
 
-        var hasDefault = config.Domain.AssemblyName is not null && config.Domain.TypeName is not null;
-        var hasDeps = config.Domain.Dependencies is not null && config.Domain.Dependencies.Count > 0;
+        var hasDefault = config.AssemblyName is not null && config.TypeName is not null;
+        var hasDeps = config.Dependencies is not null && config.Dependencies.Count > 0;
         Verify(hasDefault || hasDeps, ErrorCodes.InvalidServiceConfiguration);
 
         _diService.SaveConfiguration(config);

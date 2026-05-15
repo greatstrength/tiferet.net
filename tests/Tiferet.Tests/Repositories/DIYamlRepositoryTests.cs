@@ -55,11 +55,11 @@ public class DIYamlRepositoryTests : IDisposable
         var repo = new DIYamlRepository(_yamlFile);
         var config = repo.GetConfiguration("error_service");
         Assert.NotNull(config);
-        Assert.Equal("error_service", config.Domain.Id);
-        Assert.Equal("ErrorConfiguration Service", config.Domain.Name);
-        Assert.Equal("MyApp", config.Domain.AssemblyName);
-        Assert.NotNull(config.Domain.Parameters);
-        Assert.Equal("app/configs/error.yml", config.Domain.Parameters["config_file"]);
+        Assert.Equal("error_service", config.Id);
+        Assert.Equal("ErrorConfiguration Service", config.Name);
+        Assert.Equal("MyApp", config.AssemblyName);
+        Assert.NotNull(config.Parameters);
+        Assert.Equal("app/configs/error.yml", config.Parameters["config_file"]);
     }
 
     [Fact]
@@ -75,7 +75,7 @@ public class DIYamlRepositoryTests : IDisposable
         var repo = new DIYamlRepository(_yamlFile);
         var (configs, constants) = repo.ListAll();
         Assert.Single(configs);
-        Assert.Equal("error_service", configs[0].Domain.Id);
+        Assert.Equal("error_service", configs[0].Id);
         Assert.Equal("tiferet", constants["APP_NAME"]);
     }
 
@@ -88,7 +88,7 @@ public class DIYamlRepositoryTests : IDisposable
 
         var loaded = repo.GetConfiguration("feature_service");
         Assert.NotNull(loaded);
-        Assert.Equal("FeatureConfiguration Service", loaded.Domain.Name);
+        Assert.Equal("FeatureConfiguration Service", loaded.Name);
     }
 
     [Fact]

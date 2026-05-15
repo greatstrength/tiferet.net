@@ -4,9 +4,17 @@ using Tiferet.Domain.Cli;
 namespace Tiferet.Mappers.Cli;
 
 /// <summary>Aggregate for mutable CLI command operations.</summary>
-public class CliCommandAggregate : Aggregate<CliCommandConfiguration>
+public record CliCommandAggregate : Aggregate<CliCommandConfiguration>
 {
-    public CliCommandAggregate(CliCommandConfiguration domain) : base(domain) { }
+    public CliCommandAggregate(CliCommandConfiguration state) : base(state) { }
+
+    // Delegated properties.
+    public string Id => State.Id;
+    public string Name => State.Name;
+    public string Key => State.Key;
+    public string GroupKey => State.GroupKey;
+    public string? Description => State.Description;
+    public IReadOnlyList<CliArgumentConfiguration>? Arguments => State.Arguments;
 
     /// <summary>
     /// Create a new CliCommandAggregate, deriving Id from GroupKey and Key when not provided.
@@ -24,7 +32,7 @@ public class CliCommandAggregate : Aggregate<CliCommandConfiguration>
         id ??= $"{groupKey.Replace('-', '_')}.{key.Replace('-', '_')}";
 
         // Construct the domain record.
-        var instance = new CliCommandConfiguration(
+        var record = new CliCommandConfiguration(
             Id: id,
             Name: name,
             Key: key,
@@ -33,14 +41,14 @@ public class CliCommandAggregate : Aggregate<CliCommandConfiguration>
             Arguments: arguments);
 
         // Validate — throws TiferetDomainException on failure.
-        DomainObject.Validate(instance);
+        DomainObject.Validate(record);
 
-        // Return the constructed aggregate.
-        return new CliCommandAggregate(instance);
+        // Return the aggregate wrapping the validated record.
+        return new CliCommandAggregate(record);
     }
 
-    public void Rename(string name) => SetAttribute(nameof(CliCommandConfiguration.Name), name);
-    public void SetDescription(string? description) => SetAttribute(nameof(CliCommandConfiguration.Description), description);
+    public void Rename(string name) => Mutate(s => s with { Name = name });
+    public void SetDescription(string? description) => Mutate(s => s with { Description = description });
 
     public void AddArgument(
         IReadOnlyList<string> nameOrFlags,
@@ -56,7 +64,14 @@ public class CliCommandAggregate : Aggregate<CliCommandConfiguration>
             NameOrFlags: nameOrFlags, Description: description, Type: type,
             Required: required, Default: @default, Choices: choices, Nargs: nargs, Action: action);
 
-        var args = new List<CliArgumentConfiguration>(Domain.Arguments ?? []) { arg };
-        SetAttribute(nameof(CliCommandConfiguration.Arguments), (IReadOnlyList<CliArgumentConfiguration>)args);
+        var args = new List<CliArgumentConfiguration>(Arguments ?? []) { arg };
+        Mutate(s => s with { Arguments = args });
     }
+
+    /// <summary>
+    /// Check if the command has an argument with the given flags.
+    /// Delegates to the domain record.
+    /// </summary>
+    public bool HasArgument(IReadOnlyList<string> flags)
+        => State.HasArgument(flags);
 }

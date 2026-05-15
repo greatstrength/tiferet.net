@@ -61,9 +61,9 @@ public class LoggingYamlRepositoryTests : IDisposable
         var repo = new LoggingYamlRepository(_yamlFile);
         var (formatters, _, _) = repo.ListAll();
         var fmt = formatters[0];
-        Assert.Equal("simple", fmt.Domain.Id);
-        Assert.Equal("Simple FormatterConfiguration", fmt.Domain.Name);
-        Assert.Contains("{message}", fmt.Domain.Format);
+        Assert.Equal("simple", fmt.Id);
+        Assert.Equal("Simple FormatterConfiguration", fmt.Name);
+        Assert.Contains("{message}", fmt.Format);
     }
 
     [Fact]
@@ -72,9 +72,9 @@ public class LoggingYamlRepositoryTests : IDisposable
         var repo = new LoggingYamlRepository(_yamlFile);
         var (_, handlers, _) = repo.ListAll();
         var hdl = handlers[0];
-        Assert.Equal("console", hdl.Domain.Id);
-        Assert.Equal(LogLevel.Information, hdl.Domain.Level);
-        Assert.Equal("simple", hdl.Domain.FormatterId);
+        Assert.Equal("console", hdl.Id);
+        Assert.Equal(LogLevel.Information, hdl.Level);
+        Assert.Equal("simple", hdl.FormatterId);
     }
 
     [Fact]
@@ -83,11 +83,11 @@ public class LoggingYamlRepositoryTests : IDisposable
         var repo = new LoggingYamlRepository(_yamlFile);
         var (_, _, loggers) = repo.ListAll();
         var logger = loggers[0];
-        Assert.Equal("default", logger.Domain.Id);
-        Assert.Equal(LogLevel.Debug, logger.Domain.Level);
-        Assert.NotNull(logger.Domain.HandlerIds);
-        Assert.Single(logger.Domain.HandlerIds);
-        Assert.Equal("console", logger.Domain.HandlerIds[0]);
+        Assert.Equal("default", logger.Id);
+        Assert.Equal(LogLevel.Debug, logger.Level);
+        Assert.NotNull(logger.HandlerIds);
+        Assert.Single(logger.HandlerIds);
+        Assert.Equal("console", logger.HandlerIds[0]);
     }
 
     [Fact]
@@ -99,7 +99,7 @@ public class LoggingYamlRepositoryTests : IDisposable
 
         var (formatters, _, _) = repo.ListAll();
         Assert.Equal(2, formatters.Count);
-        Assert.Contains(formatters, f => f.Domain.Id == "detailed");
+        Assert.Contains(formatters, f => f.Id == "detailed");
     }
 
     [Fact]

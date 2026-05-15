@@ -337,9 +337,9 @@ public class RepositoryRoundTripTests : IDisposable
 
         var loaded = repo.Get("test_error");
         Assert.NotNull(loaded);
-        Assert.Equal("Test ErrorConfiguration", loaded.Domain.Name);
-        Assert.Single(loaded.Domain.Messages!);
-        Assert.Equal("Test message", loaded.Domain.Messages![0].Text);
+        Assert.Equal("Test ErrorConfiguration", loaded.Name);
+        Assert.Single(loaded.Messages!);
+        Assert.Equal("Test message", loaded.Messages![0].Text);
     }
 
     // ** test: feature YAML repository round-trip
@@ -358,9 +358,9 @@ public class RepositoryRoundTripTests : IDisposable
 
         var loaded = repo.Get("calc.add");
         Assert.NotNull(loaded);
-        Assert.Equal("Add Number", loaded.Domain.Name);
-        Assert.Single(loaded.Domain.Steps!);
-        Assert.Equal("add_number_event", loaded.Domain.Steps![0].ServiceId);
+        Assert.Equal("Add Number", loaded.Name);
+        Assert.Single(loaded.Steps!);
+        Assert.Equal("add_number_event", loaded.Steps![0].ServiceId);
     }
 
     // ** test: app interface YAML repository round-trip
@@ -380,7 +380,7 @@ public class RepositoryRoundTripTests : IDisposable
 
         var loaded = repo.Get("my_app");
         Assert.NotNull(loaded);
-        Assert.Equal("My App", loaded.Domain.Name);
-        Assert.Equal("MyApp", loaded.Domain.AssemblyName);
+        Assert.Equal("My App", loaded.Name);
+        Assert.Equal("MyApp", loaded.AssemblyName);
     }
 }

@@ -53,7 +53,7 @@ public class FlaggedDependencyYamlObject : TransferObject
 }
 
 /// <summary>Transfer object for <see cref="ServiceConfiguration"/> in YAML configuration.</summary>
-public class ServiceConfigurationYamlObject : TransferObject<ServiceConfiguration, ServiceConfigurationAggregate>
+public class ServiceConfigurationYamlObject : TransferObject<ServiceConfigurationAggregate>
 {
     public string Id { get; set; } = "";
     public string? Name { get; set; }
@@ -73,18 +73,17 @@ public class ServiceConfigurationYamlObject : TransferObject<ServiceConfiguratio
         IReadOnlyDictionary<string, string>? parameters = Parameters is not null
             ? new Dictionary<string, string>(Parameters) : null;
         var dependencies = Dependencies?.Select(d => d.ToRecord()).ToList() as IReadOnlyList<FlaggedDependencyConfiguration>;
-        var config = new ServiceConfiguration(Id, Name, AssemblyName, TypeName, parameters, dependencies);
-        return new ServiceConfigurationAggregate(config);
+        var record = new ServiceConfiguration(Id, Name, AssemblyName, TypeName, parameters, dependencies);
+        return new ServiceConfigurationAggregate(record);
     }
 
     public static ServiceConfigurationYamlObject FromAggregate(ServiceConfigurationAggregate aggregate)
     {
-        var d = aggregate.Domain;
         return new ServiceConfigurationYamlObject
         {
-            Id = d.Id, Name = d.Name, AssemblyName = d.AssemblyName, TypeName = d.TypeName,
-            Parameters = d.Parameters is not null ? new Dictionary<string, string>(d.Parameters) : null,
-            Dependencies = d.Dependencies?.Select(FlaggedDependencyYamlObject.FromRecord).ToList(),
+            Id = aggregate.Id, Name = aggregate.Name, AssemblyName = aggregate.AssemblyName, TypeName = aggregate.TypeName,
+            Parameters = aggregate.Parameters is not null ? new Dictionary<string, string>(aggregate.Parameters) : null,
+            Dependencies = aggregate.Dependencies?.Select(FlaggedDependencyYamlObject.FromRecord).ToList(),
         };
     }
 

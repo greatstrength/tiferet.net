@@ -94,7 +94,7 @@ public class DIYamlRepository : IDIService
     {
         var full = LoadFull();
         var dehydrated = ServiceConfigurationYamlObject.FromAggregate(configuration).ToYamlDict();
-        YamlHelper.SetNestedValue(full, dehydrated, "services", configuration.Domain.Id);
+        YamlHelper.SetNestedValue(full, dehydrated, "services", configuration.Id);
         SaveFull(full);
     }
 

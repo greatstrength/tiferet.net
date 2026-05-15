@@ -20,7 +20,7 @@ namespace Tiferet.Repositories;
 /// YAML-backed repository for feature workflow configurations.
 /// Composite key structure: <c>features.{groupId}.{featureKey}</c>.
 /// </summary>
-public class FeatureYamlRepository : YamlRepository<FeatureAggregate, FeatureConfiguration>, IFeatureService
+public class FeatureYamlRepository : YamlRepository<FeatureAggregate>, IFeatureService
 {
     /// <summary>
     /// Initializes the feature YAML repository.

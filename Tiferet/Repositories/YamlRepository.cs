@@ -23,10 +23,8 @@ namespace Tiferet.Repositories;
 /// <see cref="GetSectionPath"/> and <see cref="ReconstructId"/> for composite keys.
 /// </summary>
 /// <typeparam name="TAggregate">The aggregate type (e.g., <see cref="ErrorAggregate"/>).</typeparam>
-/// <typeparam name="TDomain">The domain record type (e.g., <see cref="ErrorConfiguration"/>).</typeparam>
-public abstract class YamlRepository<TAggregate, TDomain> : IRepository<TAggregate>
-    where TAggregate : Aggregate<TDomain>
-    where TDomain : DomainObject
+public abstract class YamlRepository<TAggregate> : IRepository<TAggregate>
+    where TAggregate : Aggregate
 {
     /// <summary>The path to the YAML configuration file.</summary>
     protected string YamlFile { get; }
@@ -81,11 +79,11 @@ public abstract class YamlRepository<TAggregate, TDomain> : IRepository<TAggrega
 
     /// <summary>
     /// Dehydrate an aggregate into a YAML-serializable dictionary.
-    /// Default: reflects domain record properties, excludes <see cref="DehydrateExclude"/>.
+    /// Default: reflects aggregate properties, excludes <see cref="DehydrateExclude"/>.
     /// </summary>
     protected virtual Dictionary<object, object> Dehydrate(TAggregate entity)
     {
-        return YamlHelper.DehydrateRecord(entity.Domain, DehydrateExclude);
+        return YamlHelper.DehydrateRecord(entity, DehydrateExclude);
     }
 
     // --- YAML I/O helpers ---
@@ -176,8 +174,8 @@ public abstract class YamlRepository<TAggregate, TDomain> : IRepository<TAggrega
     /// </summary>
     protected virtual string GetEntityId(TAggregate entity)
     {
-        var idProp = typeof(TDomain).GetProperty("Id")
-            ?? throw new InvalidOperationException($"{typeof(TDomain).Name} has no Id property.");
-        return (string)idProp.GetValue(entity.Domain)!;
+        var idProp = typeof(TAggregate).GetProperty("Id")
+            ?? throw new InvalidOperationException($"{typeof(TAggregate).Name} has no Id property.");
+        return (string)idProp.GetValue(entity)!;
     }
 }

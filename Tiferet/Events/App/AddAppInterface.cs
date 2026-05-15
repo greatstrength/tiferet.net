@@ -19,9 +19,9 @@ public class AddAppInterface : DomainEvent<AddAppInterfaceParams, AppInterfaceAg
 
     public override AppInterfaceAggregate Execute(AddAppInterfaceParams p)
     {
-        var domain = new AppInterfaceConfiguration(p.Id, p.Name, p.AssemblyName, p.TypeName,
+        var record = new AppInterfaceConfiguration(p.Id, p.Name, p.AssemblyName, p.TypeName,
             p.Description, p.LoggerId, p.Flags, p.Services, p.Constants);
-        var aggregate = new AppInterfaceAggregate(domain);
+        var aggregate = new AppInterfaceAggregate(record);
         _appService.Save(aggregate);
         return aggregate;
     }

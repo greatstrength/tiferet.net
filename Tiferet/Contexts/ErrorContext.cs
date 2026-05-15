@@ -72,7 +72,7 @@ public class ErrorContext
         var args = new Dictionary<string, object>(exception.Context);
 
         // Format and return the response.
-        return error.Domain.FormatResponse(lang, args)
+        return error.FormatResponse(lang, args)
             ?? new ErrorResponse(
                 ErrorCode: exception.ErrorCode,
                 Name: "Unknown Error",
