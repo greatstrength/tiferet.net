@@ -1,5 +1,4 @@
 using Tiferet.Domain.Error;
-using Tiferet.Mappers.Error;
 
 namespace Tiferet.Domain;
 
@@ -10,43 +9,51 @@ namespace Tiferet.Domain;
 /// </summary>
 public static class DefaultErrors
 {
-    private static readonly Dictionary<string, ErrorAggregate> _errors = new()
+    private static ErrorConfiguration MakeDefault(string id, string name, string message)
     {
-        [ErrorCodes.CommandParameterRequired] = ErrorAggregate.Create(
-            id: ErrorCodes.CommandParameterRequired,
-            name: "Command Parameter Required",
-            messages: [new ErrorMessageConfiguration("en_US", "Required parameter missing.")]),
+        var errorCode = id.ToUpperInvariant().Replace(' ', '_');
+        return new ErrorConfiguration(
+            Id: id, Name: name, ErrorCode: errorCode,
+            Messages: [new ErrorMessageConfiguration("en_US", message)]);
+    }
 
-        [ErrorCodes.FeatureNotFound] = ErrorAggregate.Create(
-            id: ErrorCodes.FeatureNotFound,
-            name: "FeatureConfiguration Not Found",
-            messages: [new ErrorMessageConfiguration("en_US", "FeatureConfiguration not found: {id}")]),
+    private static readonly Dictionary<string, ErrorConfiguration> _errors = new()
+    {
+        [ErrorCodes.CommandParameterRequired] = MakeDefault(
+            ErrorCodes.CommandParameterRequired,
+            "Command Parameter Required",
+            "Required parameter missing."),
 
-        [ErrorCodes.ErrorNotFound] = ErrorAggregate.Create(
-            id: ErrorCodes.ErrorNotFound,
-            name: "ErrorConfiguration Not Found",
-            messages: [new ErrorMessageConfiguration("en_US", "ErrorConfiguration not found: {id}")]),
+        [ErrorCodes.FeatureNotFound] = MakeDefault(
+            ErrorCodes.FeatureNotFound,
+            "FeatureConfiguration Not Found",
+            "FeatureConfiguration not found: {id}"),
 
-        [ErrorCodes.AppInterfaceNotFound] = ErrorAggregate.Create(
-            id: ErrorCodes.AppInterfaceNotFound,
-            name: "App Interface Not Found",
-            messages: [new ErrorMessageConfiguration("en_US", "App interface not found: {id}")]),
+        [ErrorCodes.ErrorNotFound] = MakeDefault(
+            ErrorCodes.ErrorNotFound,
+            "ErrorConfiguration Not Found",
+            "ErrorConfiguration not found: {id}"),
 
-        [ErrorCodes.InvalidModelAttribute] = ErrorAggregate.Create(
-            id: ErrorCodes.InvalidModelAttribute,
-            name: "Invalid Model Attribute",
-            messages: [new ErrorMessageConfiguration("en_US", "Invalid attribute: {attribute}")]),
+        [ErrorCodes.AppInterfaceNotFound] = MakeDefault(
+            ErrorCodes.AppInterfaceNotFound,
+            "App Interface Not Found",
+            "App interface not found: {id}"),
+
+        [ErrorCodes.InvalidModelAttribute] = MakeDefault(
+            ErrorCodes.InvalidModelAttribute,
+            "Invalid Model Attribute",
+            "Invalid attribute: {attribute}"),
     };
 
     /// <summary>All default error definitions.</summary>
-    public static IReadOnlyDictionary<string, ErrorAggregate> All => _errors;
+    public static IReadOnlyDictionary<string, ErrorConfiguration> All => _errors;
 
     /// <summary>
     /// Get a default error by its error code, or null if not defined.
     /// </summary>
     /// <param name="errorCode">The error code to look up.</param>
-    /// <returns>The error aggregate, or null.</returns>
-    public static ErrorAggregate? Get(string errorCode)
+    /// <returns>The error configuration, or null.</returns>
+    public static ErrorConfiguration? Get(string errorCode)
     {
         return _errors.TryGetValue(errorCode, out var error) ? error : null;
     }

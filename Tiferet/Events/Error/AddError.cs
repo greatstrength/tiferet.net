@@ -10,12 +10,12 @@ public sealed record AddErrorParams(
     string Lang = "en_US",
     IReadOnlyList<ErrorMessageConfiguration>? AdditionalMessages = null);
 
-public class AddError : DomainEvent<AddErrorParams, ErrorAggregate>
+public class AddError : DomainEvent<AddErrorParams, ErrorConfiguration>
 {
     private readonly IErrorService _errorService;
     public AddError(IErrorService errorService) => _errorService = errorService;
 
-    public override ErrorAggregate Execute(AddErrorParams p)
+    public override ErrorConfiguration Execute(AddErrorParams p)
     {
         Verify(!_errorService.Exists(p.Id), ErrorCodes.ErrorAlreadyExists,
             $"An error with ID {p.Id} already exists.", ("id", p.Id));
@@ -26,6 +26,6 @@ public class AddError : DomainEvent<AddErrorParams, ErrorAggregate>
 
         var aggregate = ErrorAggregate.Create(id: p.Id, name: p.Name, messages: messages);
         _errorService.Save(aggregate);
-        return aggregate;
+        return aggregate.ToDomainObject();
     }
 }

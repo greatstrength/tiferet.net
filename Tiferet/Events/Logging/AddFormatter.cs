@@ -8,16 +8,16 @@ public sealed record AddFormatterParams(
     string Id, string Name, string Format,
     string? Description = null, string? DateFormat = null);
 
-public class AddFormatter : DomainEvent<AddFormatterParams, FormatterAggregate>
+public class AddFormatter : DomainEvent<AddFormatterParams, FormatterConfiguration>
 {
     private readonly ILoggingService _loggingService;
     public AddFormatter(ILoggingService loggingService) => _loggingService = loggingService;
 
-    public override FormatterAggregate Execute(AddFormatterParams p)
+    public override FormatterConfiguration Execute(AddFormatterParams p)
     {
         var record = new FormatterConfiguration(p.Id, p.Name, p.Format, p.Description, p.DateFormat);
         var aggregate = new FormatterAggregate(record);
         _loggingService.SaveFormatter(aggregate);
-        return aggregate;
+        return aggregate.ToDomainObject();
     }
 }

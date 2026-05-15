@@ -11,12 +11,12 @@ public sealed record AddFeatureParams(
     IReadOnlyList<FeatureEventConfiguration>? Steps = null,
     IReadOnlyDictionary<string, string>? LogParams = null);
 
-public class AddFeature : DomainEvent<AddFeatureParams, FeatureAggregate>
+public class AddFeature : DomainEvent<AddFeatureParams, FeatureConfiguration>
 {
     private readonly IFeatureService _featureService;
     public AddFeature(IFeatureService featureService) => _featureService = featureService;
 
-    public override FeatureAggregate Execute(AddFeatureParams p)
+    public override FeatureConfiguration Execute(AddFeatureParams p)
     {
         var aggregate = FeatureAggregate.Create(
             name: p.Name, groupId: p.GroupId, featureKey: p.FeatureKey,
@@ -28,6 +28,6 @@ public class AddFeature : DomainEvent<AddFeatureParams, FeatureAggregate>
             ("id", aggregate.Id));
 
         _featureService.Save(aggregate);
-        return aggregate;
+        return aggregate.ToDomainObject();
     }
 }

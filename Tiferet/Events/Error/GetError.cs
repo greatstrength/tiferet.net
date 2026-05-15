@@ -1,4 +1,5 @@
 using Tiferet.Domain;
+using Tiferet.Domain.Error;
 using Tiferet.Interfaces;
 using Tiferet.Mappers.Error;
 
@@ -6,24 +7,23 @@ namespace Tiferet.Events.Error;
 
 public sealed record GetErrorParams(string Id, bool IncludeDefaults = false);
 
-public class GetError : DomainEvent<GetErrorParams, ErrorAggregate>
+public class GetError : DomainEvent<GetErrorParams, ErrorConfiguration>
 {
     private readonly IErrorService _errorService;
     public GetError(IErrorService errorService) => _errorService = errorService;
 
-    public override ErrorAggregate Execute(GetErrorParams p)
+    public override ErrorConfiguration Execute(GetErrorParams p)
     {
         // Try the repository first.
         var error = _errorService.Get(p.Id);
-        if (error is not null) return error;
+        if (error is not null) return error.ToDomainObject();
 
         // Fall back to default errors if requested.
         if (p.IncludeDefaults)
         {
             var defaultError = DefaultErrors.Get(p.Id);
             if (defaultError is not null)
-                return ErrorAggregate.Create(defaultError.Id, defaultError.Name,
-                    defaultError.ErrorCode, defaultError.Description, defaultError.Messages);
+                return defaultError;
         }
 
         // Not found.

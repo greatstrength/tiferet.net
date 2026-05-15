@@ -3,17 +3,12 @@ using Tiferet.Events;
 using Tiferet.Contexts;
 using Tiferet.Domain;
 using Tiferet.Domain.App;
-using Tiferet.Domain.Cli;
-using Tiferet.Domain.Feature;
 using Tiferet.Events.App;
 using Tiferet.Events.DI;
 using Tiferet.Events.Error;
 using Tiferet.Events.Feature;
 using Tiferet.Events.Logging;
 using Tiferet.Interfaces;
-using Tiferet.Mappers;
-using Tiferet.Mappers.App;
-using Tiferet.Mappers.Cli;
 using Tiferet.Repositories;
 
 namespace Tiferet.Blueprints;
@@ -92,10 +87,10 @@ public static class AppBlueprint
     /// instantiated with any configured parameters.
     /// </summary>
     /// <typeparam name="T">The expected service interface type.</typeparam>
-    /// <param name="appInterface">The app interface aggregate.</param>
+    /// <param name="appInterface">The app interface configuration.</param>
     /// <param name="serviceId">The service ID to look up.</param>
     /// <returns>The instantiated service, or null if no override is defined.</returns>
-    private static T? ResolveService<T>(AppInterfaceAggregate appInterface, string serviceId)
+    private static T? ResolveService<T>(AppInterfaceConfiguration appInterface, string serviceId)
         where T : class
     {
         var dep = appInterface.GetService(serviceId);

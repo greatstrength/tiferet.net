@@ -1,6 +1,12 @@
 using Microsoft.Extensions.Logging;
 using Tiferet.Events;
 using Tiferet.Domain;
+using Tiferet.Domain.App;
+using Tiferet.Domain.Cli;
+using Tiferet.Domain.DI;
+using Tiferet.Domain.Error;
+using Tiferet.Domain.Feature;
+using Tiferet.Domain.Logging;
 using Tiferet.Events.Feature;
 using Tiferet.Events.Error;
 using Tiferet.Events.App;
@@ -8,16 +14,12 @@ using Tiferet.Events.DI;
 using Tiferet.Events.Cli;
 using Tiferet.Events.Logging;
 using Tiferet.Interfaces;
-using Tiferet.Mappers;
 using Tiferet.Mappers.Feature;
 using Tiferet.Mappers.DI;
 using Tiferet.Mappers.Cli;
 using Tiferet.Mappers.App;
 using Tiferet.Mappers.Error;
 using Tiferet.Mappers.Logging;
-using Tiferet.Domain.Error;
-using Tiferet.Domain.Feature;
-using Tiferet.Domain.Cli;
 
 namespace Tiferet.Tests.Events;
 
@@ -103,6 +105,7 @@ public class FeatureEventCrudTests
         new AddFeature(svc).Execute(new("Greet", "app"));
         var result = new ListFeatures(svc).Execute(new("calc"));
         Assert.Single(result);
+        Assert.IsType<FeatureConfiguration>(result[0]);
         Assert.Equal("calc", result[0].GroupId);
     }
 
@@ -134,6 +137,7 @@ public class ErrorEventCrudTests
     {
         var svc = new MockErrorService();
         var result = new AddError(svc).Execute(new("inv_input", "Invalid Input", "Value must be a number"));
+        Assert.IsType<ErrorConfiguration>(result);
         Assert.Equal("INV_INPUT", result.ErrorCode);
         Assert.Single(result.Messages!);
     }
@@ -143,6 +147,7 @@ public class ErrorEventCrudTests
     {
         var svc = new MockErrorService();
         var result = new GetError(svc).Execute(new(ErrorCodes.FeatureNotFound, IncludeDefaults: true));
+        Assert.IsType<ErrorConfiguration>(result);
         Assert.Equal(ErrorCodes.FeatureNotFound, result.ErrorCode);
     }
 
@@ -185,6 +190,7 @@ public class AppEventCrudTests
         var svc = new MockAppService();
         var result = new AddAppInterface(svc).Execute(
             new("basic", "Basic", "Asm", "Type"));
+        Assert.IsType<AppInterfaceConfiguration>(result);
         Assert.Equal("basic", result.Id);
     }
 
@@ -233,6 +239,7 @@ public class DIEventCrudTests
         var svc = new MockDIService();
         var result = new AddServiceConfiguration(svc).Execute(
             new("svc1", AssemblyName: "Asm", TypeName: "Type"));
+        Assert.IsType<ServiceConfiguration>(result);
         Assert.Equal("svc1", result.Id);
     }
 
@@ -277,6 +284,7 @@ public class CliEventCrudTests
     {
         var svc = new MockCliService();
         var result = new AddCliCommand(svc).Execute(new("Add", "add", "calc"));
+        Assert.IsType<CliCommandConfiguration>(result);
         Assert.Equal("calc.add", result.Id);
     }
 
@@ -317,6 +325,7 @@ public class LoggingEventCrudTests
         var svc = new MockLoggingService();
         var result = new Tiferet.Events.Logging.AddFormatter(svc).Execute(
             new("fmt1", "Default", "%(msg)s"));
+        Assert.IsType<FormatterConfiguration>(result);
         Assert.Equal("fmt1", result.Id);
         Assert.Single(svc.Formatters);
     }
@@ -327,6 +336,7 @@ public class LoggingEventCrudTests
         var svc = new MockLoggingService();
         var result = new Tiferet.Events.Logging.AddHandler(svc).Execute(
             new("h1", "Console", "Asm", "Type", LogLevel.Information, "fmt1"));
+        Assert.IsType<HandlerConfiguration>(result);
         Assert.Equal(LogLevel.Information, result.Level);
     }
 
@@ -336,6 +346,7 @@ public class LoggingEventCrudTests
         var svc = new MockLoggingService();
         var result = new Tiferet.Events.Logging.AddLogger(svc).Execute(
             new("log1", "App", LogLevel.Debug, ["h1"]));
+        Assert.IsType<LoggerConfiguration>(result);
         Assert.Equal("log1", result.Id);
     }
 

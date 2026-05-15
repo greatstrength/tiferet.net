@@ -10,17 +10,17 @@ public sealed record AddHandlerParams(
     LogLevel Level, string FormatterId,
     string? Description = null, string? Stream = null, string? Filename = null);
 
-public class AddHandler : DomainEvent<AddHandlerParams, HandlerAggregate>
+public class AddHandler : DomainEvent<AddHandlerParams, HandlerConfiguration>
 {
     private readonly ILoggingService _loggingService;
     public AddHandler(ILoggingService loggingService) => _loggingService = loggingService;
 
-    public override HandlerAggregate Execute(AddHandlerParams p)
+    public override HandlerConfiguration Execute(AddHandlerParams p)
     {
         var record = new HandlerConfiguration(p.Id, p.Name, p.AssemblyName, p.TypeName,
             p.Level, p.FormatterId, p.Description, p.Stream, p.Filename);
         var aggregate = new HandlerAggregate(record);
         _loggingService.SaveHandler(aggregate);
-        return aggregate;
+        return aggregate.ToDomainObject();
     }
 }

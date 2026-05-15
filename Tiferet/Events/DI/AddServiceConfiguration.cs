@@ -10,12 +10,12 @@ public sealed record AddServiceConfigurationParams(
     IReadOnlyDictionary<string, string>? Parameters = null,
     IReadOnlyList<FlaggedDependencyConfiguration>? Dependencies = null);
 
-public class AddServiceConfiguration : DomainEvent<AddServiceConfigurationParams, ServiceConfigurationAggregate>
+public class AddServiceConfiguration : DomainEvent<AddServiceConfigurationParams, ServiceConfiguration>
 {
     private readonly IDIService _diService;
     public AddServiceConfiguration(IDIService diService) => _diService = diService;
 
-    public override ServiceConfigurationAggregate Execute(AddServiceConfigurationParams p)
+    public override ServiceConfiguration Execute(AddServiceConfigurationParams p)
     {
         Verify(!_diService.ConfigurationExists(p.Id),
             ErrorCodes.ConfigurationAlreadyExists, null, ("id", p.Id));
@@ -28,6 +28,6 @@ public class AddServiceConfiguration : DomainEvent<AddServiceConfigurationParams
             TypeName: p.TypeName, Parameters: p.Parameters, Dependencies: p.Dependencies);
         var aggregate = new ServiceConfigurationAggregate(record);
         _diService.SaveConfiguration(aggregate);
-        return aggregate;
+        return aggregate.ToDomainObject();
     }
 }

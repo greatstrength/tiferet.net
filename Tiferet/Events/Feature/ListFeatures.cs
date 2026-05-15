@@ -1,19 +1,20 @@
+using Tiferet.Domain.Feature;
 using Tiferet.Interfaces;
-using Tiferet.Mappers.Feature;
 
 namespace Tiferet.Events.Feature;
 
 public sealed record ListFeaturesParams(string? GroupId = null);
 
-public class ListFeatures : DomainEvent<ListFeaturesParams, IReadOnlyList<FeatureAggregate>>
+public class ListFeatures : DomainEvent<ListFeaturesParams, IReadOnlyList<FeatureConfiguration>>
 {
     private readonly IFeatureService _featureService;
     public ListFeatures(IFeatureService featureService) => _featureService = featureService;
 
-    public override IReadOnlyList<FeatureAggregate> Execute(ListFeaturesParams p)
+    public override IReadOnlyList<FeatureConfiguration> Execute(ListFeaturesParams p)
     {
         var all = _featureService.List();
-        if (p.GroupId is null) return all;
-        return all.Where(f => f.GroupId == p.GroupId).ToList();
+        if (p.GroupId is null)
+            return all.Select(f => f.ToDomainObject()).ToList();
+        return all.Where(f => f.GroupId == p.GroupId).Select(f => f.ToDomainObject()).ToList();
     }
 }
