@@ -1,4 +1,4 @@
-using Tiferet.Assets;
+using Tiferet.Domain;
 using Tiferet.Domain.Error;
 using Tiferet.Interfaces;
 using Tiferet.Mappers.Error;
@@ -24,8 +24,7 @@ public class AddError : DomainEvent<AddErrorParams, ErrorAggregate>
         if (p.AdditionalMessages is not null)
             messages.AddRange(p.AdditionalMessages);
 
-        var error = Domain.Error.ErrorConfiguration.Create(id: p.Id, name: p.Name, messages: messages);
-        var aggregate = new ErrorAggregate(error);
+        var aggregate = ErrorAggregate.Create(id: p.Id, name: p.Name, messages: messages);
         _errorService.Save(aggregate);
         return aggregate;
     }

@@ -75,8 +75,7 @@ public class FeatureYamlRepositoryTests : IDisposable
     public void Save_PersistsNewFeature()
     {
         var repo = new FeatureYamlRepository(_yamlFile);
-        var feature = FeatureConfiguration.Create("Divide Numbers", groupId: "calc", featureKey: "divide");
-        repo.Save(new FeatureAggregate(feature));
+        repo.Save(FeatureAggregate.Create("Divide Numbers", groupId: "calc", featureKey: "divide"));
 
         var loaded = repo.Get("calc.divide");
         Assert.NotNull(loaded);
@@ -160,8 +159,7 @@ public class CliYamlRepositoryTests : IDisposable
     public void Save_RoundTrip()
     {
         var repo = new CliYamlRepository(_yamlFile);
-        var cmd = CliCommandConfiguration.Create("Subtract Command", "subtract", "calc");
-        repo.Save(new CliCommandAggregate(cmd));
+        repo.Save(CliCommandAggregate.Create("Subtract Command", "subtract", "calc"));
 
         var loaded = repo.Get("calc.subtract");
         Assert.NotNull(loaded);

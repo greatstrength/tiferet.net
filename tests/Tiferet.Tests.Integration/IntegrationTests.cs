@@ -1,7 +1,6 @@
 using System.Text;
 using Tiferet.Blueprints;
 using Tiferet.Contexts;
-using Tiferet.Assets;
 using Tiferet.Events;
 using Tiferet.Domain;
 using Tiferet.Mappers;
@@ -333,9 +332,8 @@ public class RepositoryRoundTripTests : IDisposable
         File.WriteAllText(yamlFile, "errors: {}", Encoding.UTF8);
 
         var repo = new ErrorYamlRepository(yamlFile);
-        var error = ErrorConfiguration.Create("test_error", "Test ErrorConfiguration",
-            messages: [new ErrorMessageConfiguration("en_US", "Test message")]);
-        repo.Save(new ErrorAggregate(error));
+        repo.Save(ErrorAggregate.Create("test_error", "Test ErrorConfiguration",
+            messages: [new ErrorMessageConfiguration("en_US", "Test message")]));
 
         var loaded = repo.Get("test_error");
         Assert.NotNull(loaded);
@@ -352,12 +350,11 @@ public class RepositoryRoundTripTests : IDisposable
         File.WriteAllText(yamlFile, "features: {}", Encoding.UTF8);
 
         var repo = new FeatureYamlRepository(yamlFile);
-        var feature = FeatureConfiguration.Create(
+        repo.Save(FeatureAggregate.Create(
             name: "Add Number",
             groupId: "calc",
             featureKey: "add",
-            steps: [new FeatureEventConfiguration("Add A and B", "add_number_event")]);
-        repo.Save(new FeatureAggregate(feature));
+            steps: [new FeatureEventConfiguration("Add A and B", "add_number_event")]));
 
         var loaded = repo.Get("calc.add");
         Assert.NotNull(loaded);

@@ -1,4 +1,4 @@
-namespace Tiferet.Assets;
+namespace Tiferet.Domain;
 
 /// <summary>
 /// Defines all structured error code constants used throughout the Tiferet framework.

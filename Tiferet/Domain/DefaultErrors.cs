@@ -1,6 +1,7 @@
 using Tiferet.Domain.Error;
+using Tiferet.Mappers.Error;
 
-namespace Tiferet.Assets;
+namespace Tiferet.Domain;
 
 /// <summary>
 /// Provides framework-level default error definitions as pre-constructed
@@ -11,30 +12,30 @@ public static class DefaultErrors
 {
     private static readonly Dictionary<string, ErrorConfiguration> _errors = new()
     {
-        [ErrorCodes.CommandParameterRequired] = ErrorConfiguration.Create(
+        [ErrorCodes.CommandParameterRequired] = ErrorAggregate.Create(
             id: ErrorCodes.CommandParameterRequired,
             name: "Command Parameter Required",
-            messages: [new ErrorMessageConfiguration("en_US", "Required parameter missing.")]),
+            messages: [new ErrorMessageConfiguration("en_US", "Required parameter missing.")]).Domain,
 
-        [ErrorCodes.FeatureNotFound] = ErrorConfiguration.Create(
+        [ErrorCodes.FeatureNotFound] = ErrorAggregate.Create(
             id: ErrorCodes.FeatureNotFound,
             name: "FeatureConfiguration Not Found",
-            messages: [new ErrorMessageConfiguration("en_US", "FeatureConfiguration not found: {id}")]),
+            messages: [new ErrorMessageConfiguration("en_US", "FeatureConfiguration not found: {id}")]).Domain,
 
-        [ErrorCodes.ErrorNotFound] = ErrorConfiguration.Create(
+        [ErrorCodes.ErrorNotFound] = ErrorAggregate.Create(
             id: ErrorCodes.ErrorNotFound,
             name: "ErrorConfiguration Not Found",
-            messages: [new ErrorMessageConfiguration("en_US", "ErrorConfiguration not found: {id}")]),
+            messages: [new ErrorMessageConfiguration("en_US", "ErrorConfiguration not found: {id}")]).Domain,
 
-        [ErrorCodes.AppInterfaceNotFound] = ErrorConfiguration.Create(
+        [ErrorCodes.AppInterfaceNotFound] = ErrorAggregate.Create(
             id: ErrorCodes.AppInterfaceNotFound,
             name: "App Interface Not Found",
-            messages: [new ErrorMessageConfiguration("en_US", "App interface not found: {id}")]),
+            messages: [new ErrorMessageConfiguration("en_US", "App interface not found: {id}")]).Domain,
 
-        [ErrorCodes.InvalidModelAttribute] = ErrorConfiguration.Create(
+        [ErrorCodes.InvalidModelAttribute] = ErrorAggregate.Create(
             id: ErrorCodes.InvalidModelAttribute,
             name: "Invalid Model Attribute",
-            messages: [new ErrorMessageConfiguration("en_US", "Invalid attribute: {attribute}")]),
+            messages: [new ErrorMessageConfiguration("en_US", "Invalid attribute: {attribute}")]).Domain,
     };
 
     /// <summary>All default error definitions.</summary>

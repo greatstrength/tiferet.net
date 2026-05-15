@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Tiferet.Domain.Cli;
 
 /// <summary>
@@ -10,36 +12,13 @@ namespace Tiferet.Domain.Cli;
 /// <param name="Description">A brief description of the command.</param>
 /// <param name="Arguments">A list of arguments for the command.</param>
 public sealed record CliCommandConfiguration(
-    string Id,
-    string Name,
-    string Key,
-    string GroupKey,
+    [Required] string Id,
+    [Required] string Name,
+    [Required] string Key,
+    [Required] string GroupKey,
     string? Description = null,
     IReadOnlyList<CliArgumentConfiguration>? Arguments = null) : DomainObject
 {
-    /// <summary>
-    /// Create a CliCommandConfiguration with derivation logic for Id from GroupKey and Key.
-    /// </summary>
-    public static CliCommandConfiguration Create(
-        string name,
-        string key,
-        string groupKey,
-        string? id = null,
-        string? description = null,
-        IReadOnlyList<CliArgumentConfiguration>? arguments = null)
-    {
-        // Derive id from groupKey and key, normalizing hyphens to underscores.
-        id ??= $"{groupKey.Replace('-', '_')}.{key.Replace('-', '_')}";
-
-        return new CliCommandConfiguration(
-            Id: id,
-            Name: name,
-            Key: key,
-            GroupKey: groupKey,
-            Description: description,
-            Arguments: arguments);
-    }
-
     /// <summary>
     /// Check if the command has an argument with the given flags.
     /// </summary>

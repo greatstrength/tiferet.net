@@ -1,5 +1,4 @@
 using System.Text.RegularExpressions;
-using Tiferet.Assets;
 using Tiferet.Events;
 using Tiferet.Domain;
 using Tiferet.Domain.Error;

@@ -1,7 +1,7 @@
 using System.Text;
 using System.Text.Json;
 
-using Tiferet.Assets;
+using Tiferet.Domain;
 using Tiferet.Events;
 using Tiferet.Utilities;
 

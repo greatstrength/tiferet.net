@@ -1,4 +1,3 @@
-using Tiferet.Assets;
 using Tiferet.Events;
 using Tiferet.Domain;
 using Tiferet.Mappers;

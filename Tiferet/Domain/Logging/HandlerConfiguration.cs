@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Logging;
 
 namespace Tiferet.Domain.Logging;
@@ -15,12 +16,12 @@ namespace Tiferet.Domain.Logging;
 /// <param name="Stream">The stream for StreamHandler (e.g., "ext://sys.stdout").</param>
 /// <param name="Filename">The file path for FileHandler.</param>
 public sealed record HandlerConfiguration(
-    string Id,
-    string Name,
-    string AssemblyName,
-    string TypeName,
+    [Required] string Id,
+    [Required] string Name,
+    [Required] string AssemblyName,
+    [Required] string TypeName,
     LogLevel Level,
-    string FormatterId,
+    [Required] string FormatterId,
     string? Description = null,
     string? Stream = null,
     string? Filename = null) : DomainObject;

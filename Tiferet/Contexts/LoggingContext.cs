@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Logging;
-using Tiferet.Assets;
 using Tiferet.Events;
 using Tiferet.Domain;
 using Tiferet.Domain.Error;

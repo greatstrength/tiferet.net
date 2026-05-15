@@ -1,5 +1,4 @@
 using System.Reflection;
-using Tiferet.Assets;
 using Tiferet.Domain;
 using Tiferet.Events;
 

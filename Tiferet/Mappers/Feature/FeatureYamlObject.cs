@@ -87,9 +87,8 @@ public class FeatureYamlObject : TransferObject<FeatureConfiguration, FeatureAgg
             ? new Dictionary<string, string>(LogParams) : null;
         IReadOnlyList<string>? flags = Flags?.ToList();
 
-        var feature = FeatureConfiguration.Create(Name, parts[0], parts.Length > 1 ? parts[1] : null, Id,
+        return FeatureAggregate.Create(Name, parts[0], parts.Length > 1 ? parts[1] : null, Id,
             Description, flags, steps, logParams);
-        return new FeatureAggregate(feature);
     }
 
     public static FeatureYamlObject FromAggregate(FeatureAggregate aggregate)

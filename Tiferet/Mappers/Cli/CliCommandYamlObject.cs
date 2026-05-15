@@ -87,8 +87,7 @@ public class CliCommandYamlObject : TransferObject<CliCommandConfiguration, CliC
     {
         var parts = Id.Split('.', 2);
         var arguments = Arguments?.Select(a => a.ToRecord()).ToList() as IReadOnlyList<CliArgumentConfiguration>;
-        var cmd = CliCommandConfiguration.Create(Name, parts.Length > 1 ? parts[1] : parts[0], parts[0], Id, Description, arguments);
-        return new CliCommandAggregate(cmd);
+        return CliCommandAggregate.Create(Name, parts.Length > 1 ? parts[1] : parts[0], parts[0], Id, Description, arguments);
     }
 
     public static CliCommandYamlObject FromAggregate(CliCommandAggregate aggregate)

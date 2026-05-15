@@ -1,7 +1,7 @@
 using Tiferet.Events;
 using System.Text;
 
-using Tiferet.Assets;
+using Tiferet.Domain;
 using Tiferet.Interfaces;
 
 namespace Tiferet.Utilities;

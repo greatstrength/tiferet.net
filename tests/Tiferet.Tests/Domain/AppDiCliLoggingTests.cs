@@ -147,14 +147,14 @@ public class CliRecordTests
     [Fact]
     public void Create_DerivesIdFromGroupKeyAndKey()
     {
-        var cmd = CliCommandConfiguration.Create(name: "Add", key: "add", groupKey: "calc");
+        var cmd = CliCommandAggregate.Create(name: "Add", key: "add", groupKey: "calc").Domain;
         Assert.Equal("calc.add", cmd.Id);
     }
 
     [Fact]
     public void Create_NormalizesHyphens()
     {
-        var cmd = CliCommandConfiguration.Create(name: "Add", key: "add-num", groupKey: "my-calc");
+        var cmd = CliCommandAggregate.Create(name: "Add", key: "add-num", groupKey: "my-calc").Domain;
         Assert.Equal("my_calc.add_num", cmd.Id);
     }
 
@@ -162,14 +162,14 @@ public class CliRecordTests
     public void HasArgument_ReturnsTrue()
     {
         var arg = new CliArgumentConfiguration(["-f", "--flag"]);
-        var cmd = CliCommandConfiguration.Create(name: "Cmd", key: "c", groupKey: "g", arguments: [arg]);
+        var cmd = CliCommandAggregate.Create(name: "Cmd", key: "c", groupKey: "g", arguments: [arg]).Domain;
         Assert.True(cmd.HasArgument(["--flag"]));
     }
 
     [Fact]
     public void HasArgument_ReturnsFalse()
     {
-        var cmd = CliCommandConfiguration.Create(name: "Cmd", key: "c", groupKey: "g");
+        var cmd = CliCommandAggregate.Create(name: "Cmd", key: "c", groupKey: "g").Domain;
         Assert.False(cmd.HasArgument(["--missing"]));
     }
 }
@@ -179,7 +179,7 @@ public class CliCommandAggregateTests
     [Fact]
     public void AddArgument_AddsToList()
     {
-        var agg = new CliCommandAggregate(CliCommandConfiguration.Create(name: "Cmd", key: "c", groupKey: "g"));
+        var agg = CliCommandAggregate.Create(name: "Cmd", key: "c", groupKey: "g");
         agg.AddArgument(["a"], description: "First arg");
         Assert.Single(agg.Domain.Arguments!);
     }
@@ -187,7 +187,7 @@ public class CliCommandAggregateTests
     [Fact]
     public void Rename_Updates()
     {
-        var agg = new CliCommandAggregate(CliCommandConfiguration.Create(name: "Old", key: "c", groupKey: "g"));
+        var agg = CliCommandAggregate.Create(name: "Old", key: "c", groupKey: "g");
         agg.Rename("New");
         Assert.Equal("New", agg.Domain.Name);
     }
