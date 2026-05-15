@@ -17,9 +17,9 @@ public class AddHandler : DomainEvent<AddHandlerParams, HandlerAggregate>
 
     public override HandlerAggregate Execute(AddHandlerParams p)
     {
-        var domain = new HandlerConfiguration(p.Id, p.Name, p.AssemblyName, p.TypeName,
+        var record = new HandlerConfiguration(p.Id, p.Name, p.AssemblyName, p.TypeName,
             p.Level, p.FormatterId, p.Description, p.Stream, p.Filename);
-        var aggregate = new HandlerAggregate(domain);
+        var aggregate = new HandlerAggregate(record);
         _loggingService.SaveHandler(aggregate);
         return aggregate;
     }

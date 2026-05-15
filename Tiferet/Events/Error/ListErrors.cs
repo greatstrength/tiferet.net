@@ -20,10 +20,11 @@ public class ListErrors : DomainEvent<ListErrorsParams, IReadOnlyList<ErrorAggre
         var errors = new Dictionary<string, ErrorAggregate>();
         foreach (var (id, defaultError) in DefaultErrors.All)
         {
-            errors[id] = new ErrorAggregate(defaultError);
+            errors[id] = ErrorAggregate.Create(defaultError.Id, defaultError.Name,
+                defaultError.ErrorCode, defaultError.Description, defaultError.Messages);
         }
         foreach (var error in _errorService.List())
-            errors[error.Domain.Id] = error;
+            errors[error.Id] = error;
 
         return errors.Values.ToList();
     }

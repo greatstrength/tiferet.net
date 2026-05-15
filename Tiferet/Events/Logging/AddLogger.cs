@@ -16,9 +16,9 @@ public class AddLogger : DomainEvent<AddLoggerParams, LoggerAggregate>
 
     public override LoggerAggregate Execute(AddLoggerParams p)
     {
-        var domain = new LoggerConfiguration(p.Id, p.Name, p.Level, p.Description,
+        var record = new LoggerConfiguration(p.Id, p.Name, p.Level, p.Description,
             p.HandlerIds, p.Propagate, p.IsRoot);
-        var aggregate = new LoggerAggregate(domain);
+        var aggregate = new LoggerAggregate(record);
         _loggingService.SaveLogger(aggregate);
         return aggregate;
     }

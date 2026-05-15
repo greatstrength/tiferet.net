@@ -17,7 +17,7 @@ public class RemoveErrorMessage : DomainEvent<RemoveErrorMessageParams, string>
 
         error!.RemoveMessage(p.Lang);
 
-        Verify((error.Domain.Messages?.Count ?? 0) > 0,
+        Verify((error.Messages?.Count ?? 0) > 0,
             ErrorCodes.NoErrorMessages,
             $"No error messages remain for error ID {p.Id}.", ("id", p.Id));
 

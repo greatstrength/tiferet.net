@@ -22,7 +22,8 @@ public class GetError : DomainEvent<GetErrorParams, ErrorAggregate>
         {
             var defaultError = DefaultErrors.Get(p.Id);
             if (defaultError is not null)
-                return new ErrorAggregate(defaultError);
+                return ErrorAggregate.Create(defaultError.Id, defaultError.Name,
+                    defaultError.ErrorCode, defaultError.Description, defaultError.Messages);
         }
 
         // Not found.

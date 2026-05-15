@@ -5,28 +5,47 @@ using Tiferet.Events;
 namespace Tiferet.Mappers;
 
 /// <summary>
-/// Base class for mutable domain aggregates.
-/// Wraps an immutable <typeparamref name="TDomain"/> record and exposes
-/// validated mutation via <see cref="SetAttribute"/>.
+/// Non-generic marker base for all aggregates.
+/// Used as the constraint in <see cref="TransferObject{TAggregate}"/> and
+/// <see cref="Tiferet.Repositories.YamlRepository{TAggregate}"/>.
 /// </summary>
-/// <typeparam name="TDomain">The domain record type.</typeparam>
-public abstract class Aggregate<TDomain> where TDomain : DomainObject
+public abstract record Aggregate : DomainObject;
+
+/// <summary>
+/// Generic adapter base for mutable domain aggregates.
+/// Holds a private mutable instance of the domain record (<typeparamref name="TDomain"/>)
+/// and delegates public properties to it. Mutations use native <c>with {}</c> expressions
+/// on the internal record — no reflection bypass of init-only on <c>this</c>.
+/// </summary>
+/// <typeparam name="TDomain">The domain record type wrapped by this aggregate.</typeparam>
+public abstract record Aggregate<TDomain> : Aggregate
+    where TDomain : DomainObject
 {
-    /// <summary>The underlying immutable domain record.</summary>
-    public TDomain Domain { get; protected set; }
+    /// <summary>The internal domain record state.</summary>
+    protected TDomain State { get; private set; }
 
     /// <summary>
     /// Initializes the aggregate with the given domain record.
     /// </summary>
-    protected Aggregate(TDomain domain)
-    {
-        Domain = domain;
-    }
+    /// <param name="state">The domain record to wrap.</param>
+    protected Aggregate(TDomain state) => State = state;
 
     /// <summary>
-    /// Update a property on the underlying domain record by name,
-    /// producing a new record via reflection-based <c>with</c> cloning.
+    /// Type-safe mutation via native <c>with {}</c> expression.
+    /// Preferred path for concrete aggregate methods.
     /// </summary>
+    /// <param name="mutator">A function that produces a new domain record from the current state.</param>
+    protected void Mutate(Func<TDomain, TDomain> mutator) => State = mutator(State);
+
+    /// <summary>
+    /// Name-based mutation for dynamic/generic scenarios.
+    /// Clones the internal record via the compiler-generated <c>&lt;Clone&gt;$</c> method,
+    /// sets the property on the clone, and replaces the internal state.
+    /// Throws <see cref="TiferetException"/> with <see cref="ErrorCodes.InvalidModelAttribute"/>
+    /// if the property does not exist on the domain record.
+    /// </summary>
+    /// <param name="attribute">The property name to update.</param>
+    /// <param name="value">The new property value.</param>
     protected void SetAttribute(string attribute, object? value)
     {
         var property = typeof(TDomain).GetProperty(
@@ -41,17 +60,33 @@ public abstract class Aggregate<TDomain> where TDomain : DomainObject
                 ("attribute", attribute));
         }
 
-        Domain = CloneWith(property, value);
-    }
+        // Clone the internal record via the compiler-generated <Clone>$ method.
+        var cloneMethod = typeof(TDomain).GetMethod("<Clone>$", BindingFlags.Public | BindingFlags.Instance);
+        var clone = (TDomain)cloneMethod!.Invoke(State, null)!;
 
-    private TDomain CloneWith(PropertyInfo property, object? value)
-    {
-        var cloneMethod = typeof(TDomain).GetMethod("<Clone>$", BindingFlags.Public | BindingFlags.Instance)
-            ?? throw new InvalidOperationException(
-                $"{typeof(TDomain).Name} does not have a record clone method.");
-
-        var clone = (TDomain)cloneMethod.Invoke(Domain, null)!;
+        // Set the property on the clone.
         property.SetValue(clone, value);
-        return clone;
+
+        // Replace internal state with the mutated clone.
+        State = clone;
     }
+
+    /// <summary>
+    /// Returns the internal domain record.
+    /// Used for serialization, persistence, and transfer object construction.
+    /// </summary>
+    /// <returns>The wrapped domain record.</returns>
+    public TDomain ToDomainObject() => State;
+
+    /// <summary>
+    /// Delegates equality to the internal <see cref="State"/> record,
+    /// consistent with domain-object value equality.
+    /// </summary>
+    public virtual bool Equals(Aggregate<TDomain>? other)
+        => other is not null && EqualityComparer<TDomain>.Default.Equals(State, other.State);
+
+    /// <summary>
+    /// Hash code delegates to the internal <see cref="State"/> record.
+    /// </summary>
+    public override int GetHashCode() => State.GetHashCode();
 }

@@ -20,7 +20,7 @@ namespace Tiferet.Repositories;
 /// YAML-backed repository for error definitions.
 /// Flat key structure: <c>errors.{id}</c>.
 /// </summary>
-public class ErrorYamlRepository : YamlRepository<ErrorAggregate, ErrorConfiguration>, IErrorService
+public class ErrorYamlRepository : YamlRepository<ErrorAggregate>, IErrorService
 {
     /// <summary>
     /// Initializes the error YAML repository.

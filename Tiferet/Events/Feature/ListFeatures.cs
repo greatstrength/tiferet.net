@@ -14,6 +14,6 @@ public class ListFeatures : DomainEvent<ListFeaturesParams, IReadOnlyList<Featur
     {
         var all = _featureService.List();
         if (p.GroupId is null) return all;
-        return all.Where(f => f.Domain.GroupId == p.GroupId).ToList();
+        return all.Where(f => f.GroupId == p.GroupId).ToList();
     }
 }

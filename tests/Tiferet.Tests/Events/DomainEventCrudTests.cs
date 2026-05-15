@@ -29,7 +29,7 @@ public class MockFeatureService : IFeatureService
     public bool Exists(string id) => _store.ContainsKey(id);
     public FeatureAggregate? Get(string id) => _store.TryGetValue(id, out var v) ? v : null;
     public IReadOnlyList<FeatureAggregate> List() => _store.Values.ToList();
-    public void Save(FeatureAggregate entity) => _store[entity.Domain.Id] = entity;
+    public void Save(FeatureAggregate entity) => _store[entity.Id] = entity;
     public void Delete(string id) => _store.Remove(id);
 }
 
@@ -39,7 +39,7 @@ public class MockErrorService : IErrorService
     public bool Exists(string id) => _store.ContainsKey(id);
     public ErrorAggregate? Get(string id) => _store.TryGetValue(id, out var v) ? v : null;
     public IReadOnlyList<ErrorAggregate> List() => _store.Values.ToList();
-    public void Save(ErrorAggregate entity) => _store[entity.Domain.Id] = entity;
+    public void Save(ErrorAggregate entity) => _store[entity.Id] = entity;
     public void Delete(string id) => _store.Remove(id);
 }
 
@@ -49,7 +49,7 @@ public class MockAppService : IAppService
     public bool Exists(string id) => _store.ContainsKey(id);
     public AppInterfaceAggregate? Get(string id) => _store.TryGetValue(id, out var v) ? v : null;
     public IReadOnlyList<AppInterfaceAggregate> List() => _store.Values.ToList();
-    public void Save(AppInterfaceAggregate entity) => _store[entity.Domain.Id] = entity;
+    public void Save(AppInterfaceAggregate entity) => _store[entity.Id] = entity;
     public void Delete(string id) => _store.Remove(id);
 }
 
@@ -63,7 +63,7 @@ public class FeatureEventCrudTests
         var svc = new MockFeatureService();
         var evt = new AddFeature(svc);
         var result = evt.Execute(new("Add Number", "calc"));
-        Assert.Equal("calc.add_number", result.Domain.Id);
+        Assert.Equal("calc.add_number", result.Id);
         Assert.True(svc.Exists("calc.add_number"));
     }
 
@@ -83,7 +83,7 @@ public class FeatureEventCrudTests
         var svc = new MockFeatureService();
         new AddFeature(svc).Execute(new("Add", "calc"));
         var result = new GetFeature(svc).Execute(new("calc.add"));
-        Assert.Equal("Add", result.Domain.Name);
+        Assert.Equal("Add", result.Name);
     }
 
     [Fact]
@@ -103,7 +103,7 @@ public class FeatureEventCrudTests
         new AddFeature(svc).Execute(new("Greet", "app"));
         var result = new ListFeatures(svc).Execute(new("calc"));
         Assert.Single(result);
-        Assert.Equal("calc", result[0].Domain.GroupId);
+        Assert.Equal("calc", result[0].GroupId);
     }
 
     [Fact]
@@ -121,7 +121,7 @@ public class FeatureEventCrudTests
         var svc = new MockFeatureService();
         new AddFeature(svc).Execute(new("Add", "calc"));
         new AddFeatureStep(svc).Execute(new("calc.add", "Step1", "svc1"));
-        Assert.Single(svc.Get("calc.add")!.Domain.Steps!);
+        Assert.Single(svc.Get("calc.add")!.Steps!);
     }
 }
 
@@ -134,8 +134,8 @@ public class ErrorEventCrudTests
     {
         var svc = new MockErrorService();
         var result = new AddError(svc).Execute(new("inv_input", "Invalid Input", "Value must be a number"));
-        Assert.Equal("INV_INPUT", result.Domain.ErrorCode);
-        Assert.Single(result.Domain.Messages!);
+        Assert.Equal("INV_INPUT", result.ErrorCode);
+        Assert.Single(result.Messages!);
     }
 
     [Fact]
@@ -143,7 +143,7 @@ public class ErrorEventCrudTests
     {
         var svc = new MockErrorService();
         var result = new GetError(svc).Execute(new(ErrorCodes.FeatureNotFound, IncludeDefaults: true));
-        Assert.Equal(ErrorCodes.FeatureNotFound, result.Domain.ErrorCode);
+        Assert.Equal(ErrorCodes.FeatureNotFound, result.ErrorCode);
     }
 
     [Fact]
@@ -161,7 +161,7 @@ public class ErrorEventCrudTests
         var svc = new MockErrorService();
         new AddError(svc).Execute(new("err", "Old", "msg"));
         new RenameError(svc).Execute(new("err", "New"));
-        Assert.Equal("New", svc.Get("err")!.Domain.Name);
+        Assert.Equal("New", svc.Get("err")!.Name);
     }
 
     [Fact]
@@ -185,7 +185,7 @@ public class AppEventCrudTests
         var svc = new MockAppService();
         var result = new AddAppInterface(svc).Execute(
             new("basic", "Basic", "Asm", "Type"));
-        Assert.Equal("basic", result.Domain.Id);
+        Assert.Equal("basic", result.Id);
     }
 
     [Fact]
@@ -204,7 +204,7 @@ public class AppEventCrudTests
         new AddAppInterface(svc).Execute(new("app", "App", "Asm", "Type"));
         new Tiferet.Events.App.SetServiceDependency(svc).Execute(
             new("app", "svc1", "Asm", "SvcType"));
-        Assert.Single(svc.Get("app")!.Domain.Services!);
+        Assert.Single(svc.Get("app")!.Services!);
     }
 }
 
@@ -222,7 +222,7 @@ public class DIEventCrudTests
             _configs.TryGetValue(id, out var v) ? v : null;
         public (IReadOnlyList<ServiceConfigurationAggregate>, Dictionary<string, string>) ListAll() =>
             (_configs.Values.ToList(), _constants);
-        public void SaveConfiguration(ServiceConfigurationAggregate c) => _configs[c.Domain.Id] = c;
+        public void SaveConfiguration(ServiceConfigurationAggregate c) => _configs[c.Id] = c;
         public void DeleteConfiguration(string id) => _configs.Remove(id);
         public void SaveConstants(Dictionary<string, string> c) => _constants = c;
     }
@@ -233,7 +233,7 @@ public class DIEventCrudTests
         var svc = new MockDIService();
         var result = new AddServiceConfiguration(svc).Execute(
             new("svc1", AssemblyName: "Asm", TypeName: "Type"));
-        Assert.Equal("svc1", result.Domain.Id);
+        Assert.Equal("svc1", result.Id);
     }
 
     [Fact]
@@ -267,7 +267,7 @@ public class CliEventCrudTests
         public bool Exists(string id) => _store.ContainsKey(id);
         public CliCommandAggregate? Get(string id) => _store.TryGetValue(id, out var v) ? v : null;
         public IReadOnlyList<CliCommandAggregate> List() => _store.Values.ToList();
-        public void Save(CliCommandAggregate entity) => _store[entity.Domain.Id] = entity;
+        public void Save(CliCommandAggregate entity) => _store[entity.Id] = entity;
         public void Delete(string id) => _store.Remove(id);
         public IReadOnlyList<CliArgumentConfiguration> GetParentArguments() => [];
     }
@@ -277,7 +277,7 @@ public class CliEventCrudTests
     {
         var svc = new MockCliService();
         var result = new AddCliCommand(svc).Execute(new("Add", "add", "calc"));
-        Assert.Equal("calc.add", result.Domain.Id);
+        Assert.Equal("calc.add", result.Id);
     }
 
     [Fact]
@@ -303,9 +303,9 @@ public class LoggingEventCrudTests
 
         public (IReadOnlyList<FormatterAggregate>, IReadOnlyList<HandlerAggregate>, IReadOnlyList<LoggerAggregate>) ListAll()
             => (Formatters.Values.ToList(), Handlers.Values.ToList(), Loggers.Values.ToList());
-        public void SaveFormatter(FormatterAggregate f) => Formatters[f.Domain.Id] = f;
-        public void SaveHandler(HandlerAggregate h) => Handlers[h.Domain.Id] = h;
-        public void SaveLogger(LoggerAggregate l) => Loggers[l.Domain.Id] = l;
+        public void SaveFormatter(FormatterAggregate f) => Formatters[f.Id] = f;
+        public void SaveHandler(HandlerAggregate h) => Handlers[h.Id] = h;
+        public void SaveLogger(LoggerAggregate l) => Loggers[l.Id] = l;
         public void DeleteFormatter(string id) => Formatters.Remove(id);
         public void DeleteHandler(string id) => Handlers.Remove(id);
         public void DeleteLogger(string id) => Loggers.Remove(id);
@@ -317,7 +317,7 @@ public class LoggingEventCrudTests
         var svc = new MockLoggingService();
         var result = new Tiferet.Events.Logging.AddFormatter(svc).Execute(
             new("fmt1", "Default", "%(msg)s"));
-        Assert.Equal("fmt1", result.Domain.Id);
+        Assert.Equal("fmt1", result.Id);
         Assert.Single(svc.Formatters);
     }
 
@@ -327,7 +327,7 @@ public class LoggingEventCrudTests
         var svc = new MockLoggingService();
         var result = new Tiferet.Events.Logging.AddHandler(svc).Execute(
             new("h1", "Console", "Asm", "Type", LogLevel.Information, "fmt1"));
-        Assert.Equal(LogLevel.Information, result.Domain.Level);
+        Assert.Equal(LogLevel.Information, result.Level);
     }
 
     [Fact]
@@ -336,7 +336,7 @@ public class LoggingEventCrudTests
         var svc = new MockLoggingService();
         var result = new Tiferet.Events.Logging.AddLogger(svc).Execute(
             new("log1", "App", LogLevel.Debug, ["h1"]));
-        Assert.Equal("log1", result.Domain.Id);
+        Assert.Equal("log1", result.Id);
     }
 
     [Fact]

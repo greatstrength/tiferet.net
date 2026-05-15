@@ -15,8 +15,8 @@ public class AddFormatter : DomainEvent<AddFormatterParams, FormatterAggregate>
 
     public override FormatterAggregate Execute(AddFormatterParams p)
     {
-        var domain = new FormatterConfiguration(p.Id, p.Name, p.Format, p.Description, p.DateFormat);
-        var aggregate = new FormatterAggregate(domain);
+        var record = new FormatterConfiguration(p.Id, p.Name, p.Format, p.Description, p.DateFormat);
+        var aggregate = new FormatterAggregate(record);
         _loggingService.SaveFormatter(aggregate);
         return aggregate;
     }

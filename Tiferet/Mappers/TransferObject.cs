@@ -1,6 +1,5 @@
 using System.Reflection;
 using Tiferet.Domain;
-using Tiferet.Utilities;
 
 namespace Tiferet.Mappers;
 
@@ -66,20 +65,11 @@ public abstract class TransferObject
 
 /// <summary>
 /// Generic transfer object that bridges persistent configuration and runtime domain aggregates.
+/// Concrete subclasses must override <see cref="Map"/> to construct the aggregate
+/// from the domain record (adapter pattern).
 /// </summary>
-public abstract class TransferObject<TDomain, TAggregate> : TransferObject
-    where TDomain : DomainObject
-    where TAggregate : Aggregate<TDomain>
+public abstract class TransferObject<TAggregate> : TransferObject
+    where TAggregate : Aggregate
 {
-    public virtual TAggregate Map(Dictionary<string, object?>? overrides = null)
-    {
-        var data = ToDictionary(SerializationRoles.ToModel, overrides);
-        return ConstructAggregate(data);
-    }
-
-    private static TAggregate ConstructAggregate(Dictionary<string, object?> data)
-    {
-        var domain = ReflectionActivator.Construct<TDomain>(data);
-        return (TAggregate)Activator.CreateInstance(typeof(TAggregate), domain)!;
-    }
+    public abstract TAggregate Map(Dictionary<string, object?>? overrides = null);
 }

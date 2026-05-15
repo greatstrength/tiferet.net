@@ -22,7 +22,7 @@ public class ErrorMessageYamlObject : TransferObject
 }
 
 /// <summary>Transfer object for <see cref="ErrorConfiguration"/> in YAML configuration.</summary>
-public class ErrorYamlObject : TransferObject<ErrorConfiguration, ErrorAggregate>
+public class ErrorYamlObject : TransferObject<ErrorAggregate>
 {
     public string Id { get; set; } = "";
     public string Name { get; set; } = "";
@@ -39,16 +39,16 @@ public class ErrorYamlObject : TransferObject<ErrorConfiguration, ErrorAggregate
     public override ErrorAggregate Map(Dictionary<string, object?>? overrides = null)
     {
         var messages = Messages?.Select(m => m.ToRecord()).ToList() as IReadOnlyList<ErrorMessageConfiguration>;
-        return ErrorAggregate.Create(Id, Name, ErrorCode, Description, messages);
+        var record = new ErrorConfiguration(Id, Name, ErrorCode ?? Id.ToUpperInvariant().Replace(' ', '_'), Description, messages);
+        return new ErrorAggregate(record);
     }
 
     public static ErrorYamlObject FromAggregate(ErrorAggregate aggregate)
     {
-        var d = aggregate.Domain;
         return new ErrorYamlObject
         {
-            Id = d.Id, Name = d.Name, ErrorCode = d.ErrorCode, Description = d.Description,
-            Messages = d.Messages?.Select(ErrorMessageYamlObject.FromRecord).ToList(),
+            Id = aggregate.Id, Name = aggregate.Name, ErrorCode = aggregate.ErrorCode, Description = aggregate.Description,
+            Messages = aggregate.Messages?.Select(ErrorMessageYamlObject.FromRecord).ToList(),
         };
     }
 

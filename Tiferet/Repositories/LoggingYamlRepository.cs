@@ -80,7 +80,7 @@ public class LoggingYamlRepository : ILoggingService
     {
         var full = LoadFull();
         var dehydrated = FormatterYamlObject.FromAggregate(formatter).ToYamlDict();
-        YamlHelper.SetNestedValue(full, dehydrated, "logging", "formatters", formatter.Domain.Id);
+        YamlHelper.SetNestedValue(full, dehydrated, "logging", "formatters", formatter.Id);
         SaveFull(full);
     }
 
@@ -89,7 +89,7 @@ public class LoggingYamlRepository : ILoggingService
     {
         var full = LoadFull();
         var dehydrated = HandlerYamlObject.FromAggregate(handler).ToYamlDict();
-        YamlHelper.SetNestedValue(full, dehydrated, "logging", "handlers", handler.Domain.Id);
+        YamlHelper.SetNestedValue(full, dehydrated, "logging", "handlers", handler.Id);
         SaveFull(full);
     }
 
@@ -98,7 +98,7 @@ public class LoggingYamlRepository : ILoggingService
     {
         var full = LoadFull();
         var dehydrated = LoggerYamlObject.FromAggregate(logger).ToYamlDict();
-        YamlHelper.SetNestedValue(full, dehydrated, "logging", "loggers", logger.Domain.Id);
+        YamlHelper.SetNestedValue(full, dehydrated, "logging", "loggers", logger.Id);
         SaveFull(full);
     }
 

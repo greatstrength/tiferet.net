@@ -7,7 +7,7 @@
     <RepositoryUrl>https://github.com/greatstrength/tiferet.net</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/greatstrength/tiferet.net</PackageProjectUrl>
-    <Version>1.0.0-beta.1</Version>
+    <Version>1.0.0-beta.3</Version>
     <!-- Default: nothing is packable. src/ projects opt in by overriding to true. -->
     <IsPackable>false</IsPackable>
     <PackageReadmeFile>README.md</PackageReadmeFile>

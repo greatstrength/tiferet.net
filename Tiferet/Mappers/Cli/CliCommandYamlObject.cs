@@ -70,7 +70,7 @@ public class CliArgumentYamlObject : TransferObject
 }
 
 /// <summary>Transfer object for <see cref="CliCommandConfiguration"/> in YAML configuration.</summary>
-public class CliCommandYamlObject : TransferObject<CliCommandConfiguration, CliCommandAggregate>
+public class CliCommandYamlObject : TransferObject<CliCommandAggregate>
 {
     public string Id { get; set; } = "";
     public string Name { get; set; } = "";
@@ -92,11 +92,10 @@ public class CliCommandYamlObject : TransferObject<CliCommandConfiguration, CliC
 
     public static CliCommandYamlObject FromAggregate(CliCommandAggregate aggregate)
     {
-        var d = aggregate.Domain;
         return new CliCommandYamlObject
         {
-            Id = d.Id, Name = d.Name, Description = d.Description,
-            Arguments = d.Arguments?.Select(CliArgumentYamlObject.FromRecord).ToList(),
+            Id = aggregate.Id, Name = aggregate.Name, Description = aggregate.Description,
+            Arguments = aggregate.Arguments?.Select(CliArgumentYamlObject.FromRecord).ToList(),
         };
     }
 

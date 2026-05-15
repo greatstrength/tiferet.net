@@ -64,7 +64,7 @@ public class FeatureEventYamlObject : TransferObject
 }
 
 /// <summary>Transfer object for <see cref="FeatureConfiguration"/> in YAML configuration.</summary>
-public class FeatureYamlObject : TransferObject<FeatureConfiguration, FeatureAggregate>
+public class FeatureYamlObject : TransferObject<FeatureAggregate>
 {
     public string Id { get; set; } = "";
     public string Name { get; set; } = "";
@@ -93,13 +93,12 @@ public class FeatureYamlObject : TransferObject<FeatureConfiguration, FeatureAgg
 
     public static FeatureYamlObject FromAggregate(FeatureAggregate aggregate)
     {
-        var d = aggregate.Domain;
         return new FeatureYamlObject
         {
-            Id = d.Id, Name = d.Name, Description = d.Description,
-            Flags = d.Flags?.ToList(),
-            Steps = d.Steps?.Select(FeatureEventYamlObject.FromRecord).ToList(),
-            LogParams = d.LogParams is not null ? new Dictionary<string, string>(d.LogParams) : null,
+            Id = aggregate.Id, Name = aggregate.Name, Description = aggregate.Description,
+            Flags = aggregate.Flags?.ToList(),
+            Steps = aggregate.Steps?.Select(FeatureEventYamlObject.FromRecord).ToList(),
+            LogParams = aggregate.LogParams is not null ? new Dictionary<string, string>(aggregate.LogParams) : null,
         };
     }
 

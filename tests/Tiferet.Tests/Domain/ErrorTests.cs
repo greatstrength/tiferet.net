@@ -10,14 +10,14 @@ public class ErrorRecordTests
     [Fact]
     public void Create_DerivesErrorCodeFromId()
     {
-        var e = ErrorAggregate.Create(id: "invalid_input", name: "Invalid Input").Domain;
+        var e = ErrorAggregate.Create(id: "invalid_input", name: "Invalid Input");
         Assert.Equal("INVALID_INPUT", e.ErrorCode);
     }
 
     [Fact]
     public void Create_ExplicitErrorCode()
     {
-        var e = ErrorAggregate.Create(id: "test", name: "Test", errorCode: "CUSTOM_CODE").Domain;
+        var e = ErrorAggregate.Create(id: "test", name: "Test", errorCode: "CUSTOM_CODE");
         Assert.Equal("CUSTOM_CODE", e.ErrorCode);
     }
 
@@ -26,7 +26,7 @@ public class ErrorRecordTests
     {
         var e = ErrorAggregate.Create(id: "err", name: "Err", messages: [
             new ErrorMessageConfiguration("en_US", "Value {value} must be a number")
-        ]).Domain;
+        ]);
         var msg = e.FormatMessage("en_US", new() { ["value"] = "abc" });
         Assert.Equal("Value abc must be a number", msg);
     }
@@ -36,7 +36,7 @@ public class ErrorRecordTests
     {
         var e = ErrorAggregate.Create(id: "err", name: "Err", messages: [
             new ErrorMessageConfiguration("en_US", "ErrorConfiguration")
-        ]).Domain;
+        ]);
         Assert.Null(e.FormatMessage("es_ES"));
     }
 
@@ -45,7 +45,7 @@ public class ErrorRecordTests
     {
         var e = ErrorAggregate.Create(id: "err", name: "Err", messages: [
             new ErrorMessageConfiguration("en_US", "Cannot divide by zero")
-        ]).Domain;
+        ]);
         Assert.Equal("Cannot divide by zero", e.FormatMessage("en_US"));
     }
 
@@ -54,7 +54,7 @@ public class ErrorRecordTests
     {
         var e = ErrorAggregate.Create(id: "err", name: "Err Name", messages: [
             new ErrorMessageConfiguration("en_US", "Bad value {val}")
-        ]).Domain;
+        ]);
         var resp = e.FormatResponse("en_US", new() { ["val"] = "x" });
         Assert.NotNull(resp);
         Assert.Equal("err", resp!.ErrorCode);
@@ -67,7 +67,7 @@ public class ErrorRecordTests
     [Fact]
     public void FormatResponse_ReturnsNull_NoMessage()
     {
-        var e = ErrorAggregate.Create(id: "err", name: "Err").Domain;
+        var e = ErrorAggregate.Create(id: "err", name: "Err");
         Assert.Null(e.FormatResponse());
     }
 }
@@ -103,7 +103,7 @@ public class ErrorAggregateTests
     {
         var agg = ErrorAggregate.Create(id: "err", name: "Old");
         agg.Rename("New");
-        Assert.Equal("New", agg.Domain.Name);
+        Assert.Equal("New", agg.Name);
     }
 
     [Fact]
@@ -111,8 +111,8 @@ public class ErrorAggregateTests
     {
         var agg = ErrorAggregate.Create(id: "err", name: "Err");
         agg.SetMessage("en_US", "ErrorConfiguration text");
-        Assert.Single(agg.Domain.Messages!);
-        Assert.Equal("ErrorConfiguration text", agg.Domain.Messages![0].Text);
+        Assert.Single(agg.Messages!);
+        Assert.Equal("ErrorConfiguration text", agg.Messages![0].Text);
     }
 
     [Fact]
@@ -121,8 +121,8 @@ public class ErrorAggregateTests
         var agg = ErrorAggregate.Create(id: "err", name: "Err",
             messages: [new ErrorMessageConfiguration("en_US", "Old")]);
         agg.SetMessage("en_US", "New");
-        Assert.Single(agg.Domain.Messages!);
-        Assert.Equal("New", agg.Domain.Messages![0].Text);
+        Assert.Single(agg.Messages!);
+        Assert.Equal("New", agg.Messages![0].Text);
     }
 
     [Fact]
@@ -131,7 +131,7 @@ public class ErrorAggregateTests
         var agg = ErrorAggregate.Create(id: "err", name: "Err",
             messages: [new ErrorMessageConfiguration("en_US", "Text"), new ErrorMessageConfiguration("es_ES", "Texto")]);
         agg.RemoveMessage("en_US");
-        Assert.Single(agg.Domain.Messages!);
-        Assert.Equal("es_ES", agg.Domain.Messages![0].Lang);
+        Assert.Single(agg.Messages!);
+        Assert.Equal("es_ES", agg.Messages![0].Lang);
     }
 }

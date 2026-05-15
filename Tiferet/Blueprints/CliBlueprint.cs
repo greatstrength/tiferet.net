@@ -49,30 +49,30 @@ public static class CliBlueprint
         foreach (var cmd in commands)
         {
             // Ensure the group command exists.
-            if (!groups.TryGetValue(cmd.Domain.GroupKey, out var groupCmd))
+            if (!groups.TryGetValue(cmd.GroupKey, out var groupCmd))
             {
-                groupCmd = new Command(cmd.Domain.GroupKey, $"{cmd.Domain.GroupKey} commands");
+                groupCmd = new Command(cmd.GroupKey, $"{cmd.GroupKey} commands");
                 root.AddCommand(groupCmd);
-                groups[cmd.Domain.GroupKey] = groupCmd;
+                groups[cmd.GroupKey] = groupCmd;
             }
 
             // Create the leaf command.
-            var subCmd = new Command(cmd.Domain.Key, cmd.Domain.Description);
+            var subCmd = new Command(cmd.Key, cmd.Description);
 
             // Map CLI arguments/options and build the handler.
             var argBindings = new List<(Argument<string> Arg, string Name)>();
             var optBindings = new List<(Option<string> Opt, string Name)>();
 
-            if (cmd.Domain.Arguments is not null)
+            if (cmd.Arguments is not null)
             {
-                foreach (var cliArg in cmd.Domain.Arguments)
+                foreach (var cliArg in cmd.Arguments)
                 {
                     MapArgument(cliArg, subCmd, argBindings, optBindings);
                 }
             }
 
             // Wire the handler to dispatch feature execution.
-            var featureId = cmd.Domain.Id;
+            var featureId = cmd.Id;
             SetCommandHandler(subCmd, app, featureId, argBindings, optBindings);
 
             groupCmd.AddCommand(subCmd);

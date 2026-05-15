@@ -235,16 +235,16 @@ public class FeatureContext
         var feature = LoadFeature(featureId);
 
         // Execute by iterating over configured steps.
-        if (feature.Domain.Steps is null) return;
+        if (feature.Steps is null) return;
 
-        foreach (var step in feature.Domain.Steps)
+        foreach (var step in feature.Steps)
         {
             // Evaluate the step condition; skip if false.
             if (!EvaluateCondition(step.Condition, request))
                 continue;
 
             // Load the event dependency for this step.
-            var command = LoadFeatureStep(step, feature.Domain.Flags);
+            var command = LoadFeatureStep(step, feature.Flags);
 
             // Parse the step parameters.
             var parsedParams = new Dictionary<string, object?>();

@@ -4,7 +4,7 @@ using Tiferet.Domain.Logging;
 namespace Tiferet.Mappers.Logging;
 
 /// <summary>Transfer object for <see cref="FormatterConfiguration"/> in YAML configuration.</summary>
-public class FormatterYamlObject : TransferObject<FormatterConfiguration, FormatterAggregate>
+public class FormatterYamlObject : TransferObject<FormatterAggregate>
 {
     public string Id { get; set; } = "";
     public string Name { get; set; } = "";
@@ -22,8 +22,8 @@ public class FormatterYamlObject : TransferObject<FormatterConfiguration, Format
 
     public static FormatterYamlObject FromAggregate(FormatterAggregate agg) => new()
     {
-        Id = agg.Domain.Id, Name = agg.Domain.Name, Format = agg.Domain.Format,
-        Description = agg.Domain.Description, DateFormat = agg.Domain.DateFormat,
+        Id = agg.Id, Name = agg.Name, Format = agg.Format,
+        Description = agg.Description, DateFormat = agg.DateFormat,
     };
 
     public static FormatterYamlObject FromYaml(Dictionary<string, object> data, string id) => new()
@@ -45,7 +45,7 @@ public class FormatterYamlObject : TransferObject<FormatterConfiguration, Format
 }
 
 /// <summary>Transfer object for <see cref="HandlerConfiguration"/> in YAML configuration.</summary>
-public class HandlerYamlObject : TransferObject<HandlerConfiguration, HandlerAggregate>
+public class HandlerYamlObject : TransferObject<HandlerAggregate>
 {
     public string Id { get; set; } = "";
     public string Name { get; set; } = "";
@@ -65,18 +65,18 @@ public class HandlerYamlObject : TransferObject<HandlerConfiguration, HandlerAgg
     public override HandlerAggregate Map(Dictionary<string, object?>? overrides = null)
     {
         var level = Enum.TryParse<LogLevel>(Level, true, out var lv) ? lv : LogLevel.Information;
-        return new HandlerAggregate(new HandlerConfiguration(Id, Name, AssemblyName, TypeName, level,
-            FormatterId, Description, Stream, Filename));
+        var record = new HandlerConfiguration(Id, Name, AssemblyName, TypeName, level,
+            FormatterId, Description, Stream, Filename);
+        return new HandlerAggregate(record);
     }
 
     public static HandlerYamlObject FromAggregate(HandlerAggregate agg)
     {
-        var d = agg.Domain;
         return new HandlerYamlObject
         {
-            Id = d.Id, Name = d.Name, AssemblyName = d.AssemblyName, TypeName = d.TypeName,
-            Level = d.Level.ToString(), FormatterId = d.FormatterId,
-            Description = d.Description, Stream = d.Stream, Filename = d.Filename,
+            Id = agg.Id, Name = agg.Name, AssemblyName = agg.AssemblyName, TypeName = agg.TypeName,
+            Level = agg.Level.ToString(), FormatterId = agg.FormatterId,
+            Description = agg.Description, Stream = agg.Stream, Filename = agg.Filename,
         };
     }
 
@@ -108,7 +108,7 @@ public class HandlerYamlObject : TransferObject<HandlerConfiguration, HandlerAgg
 }
 
 /// <summary>Transfer object for <see cref="LoggerConfiguration"/> in YAML configuration.</summary>
-public class LoggerYamlObject : TransferObject<LoggerConfiguration, LoggerAggregate>
+public class LoggerYamlObject : TransferObject<LoggerAggregate>
 {
     public string Id { get; set; } = "";
     public string Name { get; set; } = "";
@@ -126,18 +126,18 @@ public class LoggerYamlObject : TransferObject<LoggerConfiguration, LoggerAggreg
     public override LoggerAggregate Map(Dictionary<string, object?>? overrides = null)
     {
         var level = Enum.TryParse<LogLevel>(Level, true, out var lv) ? lv : LogLevel.Information;
-        return new LoggerAggregate(new LoggerConfiguration(Id, Name, level, Description,
-            HandlerIds?.ToList(), Propagate, IsRoot));
+        var record = new LoggerConfiguration(Id, Name, level, Description,
+            HandlerIds?.ToList(), Propagate, IsRoot);
+        return new LoggerAggregate(record);
     }
 
     public static LoggerYamlObject FromAggregate(LoggerAggregate agg)
     {
-        var d = agg.Domain;
         return new LoggerYamlObject
         {
-            Id = d.Id, Name = d.Name, Level = d.Level.ToString(),
-            Description = d.Description, HandlerIds = d.HandlerIds?.ToList(),
-            Propagate = d.Propagate, IsRoot = d.IsRoot,
+            Id = agg.Id, Name = agg.Name, Level = agg.Level.ToString(),
+            Description = agg.Description, HandlerIds = agg.HandlerIds?.ToList(),
+            Propagate = agg.Propagate, IsRoot = agg.IsRoot,
         };
     }
 

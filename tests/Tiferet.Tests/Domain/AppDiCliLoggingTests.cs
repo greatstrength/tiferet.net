@@ -41,7 +41,7 @@ public class AppInterfaceAggregateTests
     {
         var agg = Create();
         agg.AddService("svc1", "Asm", "Type");
-        Assert.Single(agg.Domain.Services!);
+        Assert.Single(agg.Services!);
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public class AppInterfaceAggregateTests
         agg.AddService("svc1", "Asm", "Type");
         var removed = agg.RemoveService("svc1");
         Assert.NotNull(removed);
-        Assert.Empty(agg.Domain.Services!);
+        Assert.Empty(agg.Services!);
     }
 
     [Fact]
@@ -67,8 +67,8 @@ public class AppInterfaceAggregateTests
         var agg = new AppInterfaceAggregate(new AppInterfaceConfiguration("id", "App", "Asm", "Type",
             Constants: new Dictionary<string, string> { ["a"] = "1" }));
         agg.SetConstants(new() { ["b"] = "2", ["a"] = null });
-        Assert.False(agg.Domain.Constants!.ContainsKey("a"));
-        Assert.Equal("2", agg.Domain.Constants!["b"]);
+        Assert.False(agg.Constants!.ContainsKey("a"));
+        Assert.Equal("2", agg.Constants!["b"]);
     }
 }
 
@@ -108,8 +108,8 @@ public class ServiceConfigurationAggregateTests
     {
         var agg = new ServiceConfigurationAggregate(new ServiceConfiguration("svc1"));
         agg.SetDefaultType("NewAsm", "NewType");
-        Assert.Equal("NewAsm", agg.Domain.AssemblyName);
-        Assert.Equal("NewType", agg.Domain.TypeName);
+        Assert.Equal("NewAsm", agg.AssemblyName);
+        Assert.Equal("NewType", agg.TypeName);
     }
 
     [Fact]
@@ -117,7 +117,7 @@ public class ServiceConfigurationAggregateTests
     {
         var agg = new ServiceConfigurationAggregate(new ServiceConfiguration("svc1"));
         agg.SetDependency("prod", "Asm", "Type");
-        Assert.Single(agg.Domain.Dependencies!);
+        Assert.Single(agg.Dependencies!);
     }
 
     [Fact]
@@ -126,8 +126,8 @@ public class ServiceConfigurationAggregateTests
         var agg = new ServiceConfigurationAggregate(new ServiceConfiguration("svc1",
             Dependencies: [new FlaggedDependencyConfiguration("prod", "OldAsm", "OldType")]));
         agg.SetDependency("prod", "NewAsm", "NewType");
-        Assert.Single(agg.Domain.Dependencies!);
-        Assert.Equal("NewAsm", agg.Domain.Dependencies![0].AssemblyName);
+        Assert.Single(agg.Dependencies!);
+        Assert.Equal("NewAsm", agg.Dependencies![0].AssemblyName);
     }
 
     [Fact]
@@ -136,7 +136,7 @@ public class ServiceConfigurationAggregateTests
         var agg = new ServiceConfigurationAggregate(new ServiceConfiguration("svc1",
             Dependencies: [new FlaggedDependencyConfiguration("prod", "Asm", "Type")]));
         agg.RemoveDependency("prod");
-        Assert.Empty(agg.Domain.Dependencies!);
+        Assert.Empty(agg.Dependencies!);
     }
 }
 
@@ -147,14 +147,14 @@ public class CliRecordTests
     [Fact]
     public void Create_DerivesIdFromGroupKeyAndKey()
     {
-        var cmd = CliCommandAggregate.Create(name: "Add", key: "add", groupKey: "calc").Domain;
+        var cmd = CliCommandAggregate.Create(name: "Add", key: "add", groupKey: "calc");
         Assert.Equal("calc.add", cmd.Id);
     }
 
     [Fact]
     public void Create_NormalizesHyphens()
     {
-        var cmd = CliCommandAggregate.Create(name: "Add", key: "add-num", groupKey: "my-calc").Domain;
+        var cmd = CliCommandAggregate.Create(name: "Add", key: "add-num", groupKey: "my-calc");
         Assert.Equal("my_calc.add_num", cmd.Id);
     }
 
@@ -162,14 +162,14 @@ public class CliRecordTests
     public void HasArgument_ReturnsTrue()
     {
         var arg = new CliArgumentConfiguration(["-f", "--flag"]);
-        var cmd = CliCommandAggregate.Create(name: "Cmd", key: "c", groupKey: "g", arguments: [arg]).Domain;
+        var cmd = CliCommandAggregate.Create(name: "Cmd", key: "c", groupKey: "g", arguments: [arg]);
         Assert.True(cmd.HasArgument(["--flag"]));
     }
 
     [Fact]
     public void HasArgument_ReturnsFalse()
     {
-        var cmd = CliCommandAggregate.Create(name: "Cmd", key: "c", groupKey: "g").Domain;
+        var cmd = CliCommandAggregate.Create(name: "Cmd", key: "c", groupKey: "g");
         Assert.False(cmd.HasArgument(["--missing"]));
     }
 }
@@ -181,7 +181,7 @@ public class CliCommandAggregateTests
     {
         var agg = CliCommandAggregate.Create(name: "Cmd", key: "c", groupKey: "g");
         agg.AddArgument(["a"], description: "First arg");
-        Assert.Single(agg.Domain.Arguments!);
+        Assert.Single(agg.Arguments!);
     }
 
     [Fact]
@@ -189,7 +189,7 @@ public class CliCommandAggregateTests
     {
         var agg = CliCommandAggregate.Create(name: "Old", key: "c", groupKey: "g");
         agg.Rename("New");
-        Assert.Equal("New", agg.Domain.Name);
+        Assert.Equal("New", agg.Name);
     }
 }
 

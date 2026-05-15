@@ -7,16 +7,21 @@ namespace Tiferet.Tests.Mappers;
 // Test domain record.
 public sealed record SampleDomain(string Id, string Name, int Value) : DomainObject;
 
-// Concrete aggregate for testing.
-public class SampleAggregate : Aggregate<SampleDomain>
+// Concrete aggregate for testing — uses adapter pattern.
+public record SampleAggregate : Aggregate<SampleDomain>
 {
-    public SampleAggregate(SampleDomain domain) : base(domain) { }
+    public SampleAggregate(SampleDomain state) : base(state) { }
+
+    // Delegated properties.
+    public string Id => State.Id;
+    public string Name => State.Name;
+    public int Value => State.Value;
 
     /// <summary>Domain-specific mutation shorthand.</summary>
-    public void Rename(string name) => SetAttribute(nameof(SampleDomain.Name), name);
+    public void Rename(string name) => Mutate(s => s with { Name = name });
 
     /// <summary>Domain-specific mutation for Value.</summary>
-    public void SetValue(int value) => SetAttribute(nameof(SampleDomain.Value), value);
+    public void SetValue(int value) => Mutate(s => s with { Value = value });
 
     /// <summary>Test helper — exposes SetAttribute for invalid-attribute testing.</summary>
     public void SetAttributePublic(string attribute, object? value) => SetAttribute(attribute, value);
@@ -31,9 +36,19 @@ public class AggregateTests
     public void Domain_ReturnsWrappedRecord()
     {
         var agg = CreateAggregate();
-        Assert.Equal("1", agg.Domain.Id);
-        Assert.Equal("Alpha", agg.Domain.Name);
-        Assert.Equal(42, agg.Domain.Value);
+        Assert.Equal("1", agg.Id);
+        Assert.Equal("Alpha", agg.Name);
+        Assert.Equal(42, agg.Value);
+    }
+
+    [Fact]
+    public void ToDomainObject_ReturnsInternalState()
+    {
+        var agg = CreateAggregate();
+        var domain = agg.ToDomainObject();
+        Assert.Equal("1", domain.Id);
+        Assert.Equal("Alpha", domain.Name);
+        Assert.Equal(42, domain.Value);
     }
 
     [Fact]
@@ -41,7 +56,7 @@ public class AggregateTests
     {
         var agg = CreateAggregate();
         agg.Rename("Beta");
-        Assert.Equal("Beta", agg.Domain.Name);
+        Assert.Equal("Beta", agg.Name);
     }
 
     [Fact]
@@ -49,8 +64,8 @@ public class AggregateTests
     {
         var agg = CreateAggregate();
         agg.Rename("Beta");
-        Assert.Equal("1", agg.Domain.Id);
-        Assert.Equal(42, agg.Domain.Value);
+        Assert.Equal("1", agg.Id);
+        Assert.Equal(42, agg.Value);
     }
 
     [Fact]
@@ -68,30 +83,31 @@ public class AggregateTests
     {
         var agg = CreateAggregate();
         agg.SetValue(99);
-        Assert.Equal(99, agg.Domain.Value);
+        Assert.Equal(99, agg.Value);
     }
 
     [Fact]
-    public void DomainSpecificMutation_Works()
+    public void Mutate_UpdatesToDomainObject()
     {
         var agg = CreateAggregate();
         agg.Rename("Gamma");
-        Assert.Equal("Gamma", agg.Domain.Name);
+        Assert.Equal("Gamma", agg.ToDomainObject().Name);
     }
 
     [Fact]
-    public void Mutation_ProducesNewRecordInstance()
+    public void Equality_DelegatesToState()
     {
-        var agg = CreateAggregate();
-        var originalDomain = agg.Domain;
-        agg.Rename("Delta");
-        Assert.NotSame(originalDomain, agg.Domain);
+        var agg1 = CreateAggregate();
+        var agg2 = CreateAggregate();
+        Assert.Equal(agg1, agg2);
+        agg1.Rename("Different");
+        Assert.NotEqual(agg1, agg2);
     }
 
     [Fact]
-    public void IsAbstractGenericClass()
+    public void IsAbstractRecord()
     {
-        Assert.True(typeof(Aggregate<>).IsAbstract);
-        Assert.True(typeof(Aggregate<>).IsGenericTypeDefinition);
+        Assert.True(typeof(Aggregate).IsAbstract);
+        Assert.True(typeof(Aggregate<SampleDomain>).IsAbstract);
     }
 }

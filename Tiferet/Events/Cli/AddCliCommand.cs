@@ -21,8 +21,8 @@ public class AddCliCommand : DomainEvent<AddCliCommandParams, CliCommandAggregat
             name: p.Name, key: p.Key, groupKey: p.GroupKey,
             id: p.Id, description: p.Description, arguments: p.Arguments);
 
-        Verify(!_cliService.Exists(aggregate.Domain.Id),
-            ErrorCodes.CliCommandAlreadyExists, null, ("id", aggregate.Domain.Id));
+        Verify(!_cliService.Exists(aggregate.Id),
+            ErrorCodes.CliCommandAlreadyExists, null, ("id", aggregate.Id));
 
         _cliService.Save(aggregate);
         return aggregate;

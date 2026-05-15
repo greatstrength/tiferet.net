@@ -54,13 +54,13 @@ public class FeatureYamlRepositoryTests : IDisposable
         var repo = new FeatureYamlRepository(_yamlFile);
         var feature = repo.Get("calc.add");
         Assert.NotNull(feature);
-        Assert.Equal("calc.add", feature.Domain.Id);
-        Assert.Equal("calc", feature.Domain.GroupId);
-        Assert.Equal("add", feature.Domain.FeatureKey);
-        Assert.Equal("Add Numbers", feature.Domain.Name);
-        Assert.NotNull(feature.Domain.Steps);
-        Assert.Single(feature.Domain.Steps);
-        Assert.Equal("add_event", feature.Domain.Steps[0].ServiceId);
+        Assert.Equal("calc.add", feature.Id);
+        Assert.Equal("calc", feature.GroupId);
+        Assert.Equal("add", feature.FeatureKey);
+        Assert.Equal("Add Numbers", feature.Name);
+        Assert.NotNull(feature.Steps);
+        Assert.Single(feature.Steps);
+        Assert.Equal("add_event", feature.Steps[0].ServiceId);
     }
 
     [Fact]
@@ -79,7 +79,7 @@ public class FeatureYamlRepositoryTests : IDisposable
 
         var loaded = repo.Get("calc.divide");
         Assert.NotNull(loaded);
-        Assert.Equal("Divide Numbers", loaded.Domain.Name);
+        Assert.Equal("Divide Numbers", loaded.Name);
         Assert.Equal(4, repo.List().Count);
     }
 
@@ -140,11 +140,11 @@ public class CliYamlRepositoryTests : IDisposable
         var repo = new CliYamlRepository(_yamlFile);
         var cmd = repo.Get("calc.add");
         Assert.NotNull(cmd);
-        Assert.Equal("calc.add", cmd.Domain.Id);
-        Assert.Equal("Add Command", cmd.Domain.Name);
-        Assert.NotNull(cmd.Domain.Arguments);
-        Assert.Equal(2, cmd.Domain.Arguments.Count);
-        Assert.Equal("a", cmd.Domain.Arguments[0].NameOrFlags[0]);
+        Assert.Equal("calc.add", cmd.Id);
+        Assert.Equal("Add Command", cmd.Name);
+        Assert.NotNull(cmd.Arguments);
+        Assert.Equal(2, cmd.Arguments.Count);
+        Assert.Equal("a", cmd.Arguments[0].NameOrFlags[0]);
     }
 
     [Fact]
@@ -163,7 +163,7 @@ public class CliYamlRepositoryTests : IDisposable
 
         var loaded = repo.Get("calc.subtract");
         Assert.NotNull(loaded);
-        Assert.Equal("Subtract Command", loaded.Domain.Name);
+        Assert.Equal("Subtract Command", loaded.Name);
     }
 
     [Fact]

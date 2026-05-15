@@ -6,7 +6,7 @@ namespace Tiferet.Tests.Mappers;
 // Reuse SampleDomain and SampleAggregate from AggregateTests.
 
 // Concrete transfer object for testing.
-public class SampleTransferObject : TransferObject<SampleDomain, SampleAggregate>
+public class SampleTransferObject : TransferObject<SampleAggregate>
 {
     public string Id { get; set; } = "";
     public string Name { get; set; } = "";
@@ -25,6 +25,14 @@ public class SampleTransferObject : TransferObject<SampleDomain, SampleAggregate
             ByAlias = true,
         },
     };
+
+    public override SampleAggregate Map(Dictionary<string, object?>? overrides = null)
+    {
+        var data = ToDictionary(SerializationRoles.ToModel, overrides);
+        var name = data.TryGetValue("Name", out var n) ? n?.ToString() ?? Name : Name;
+        var value = data.TryGetValue("Value", out var v) && v is int i ? i : Value;
+        return new SampleAggregate(new SampleDomain(Id, name, value));
+    }
 }
 
 public class TransferObjectTests
@@ -89,9 +97,9 @@ public class TransferObjectTests
     {
         var to = CreateTransfer();
         var agg = to.Map();
-        Assert.Equal("1", agg.Domain.Id);
-        Assert.Equal("Alpha", agg.Domain.Name);
-        Assert.Equal(42, agg.Domain.Value);
+        Assert.Equal("1", agg.Id);
+        Assert.Equal("Alpha", agg.Name);
+        Assert.Equal(42, agg.Value);
     }
 
     [Fact]
@@ -99,7 +107,7 @@ public class TransferObjectTests
     {
         var to = CreateTransfer();
         var agg = to.Map(new() { ["Name"] = "Overridden" });
-        Assert.Equal("Overridden", agg.Domain.Name);
+        Assert.Equal("Overridden", agg.Name);
     }
 
     [Fact]
@@ -126,9 +134,9 @@ public class TransferObjectTests
         var domain = new SampleDomain("1", "Alpha", 42);
         var to = new SampleTransferObject { Id = domain.Id, Name = domain.Name, Value = domain.Value };
         var agg = to.Map();
-        Assert.Equal(domain.Id, agg.Domain.Id);
-        Assert.Equal(domain.Name, agg.Domain.Name);
-        Assert.Equal(domain.Value, agg.Domain.Value);
+        Assert.Equal(domain.Id, agg.Id);
+        Assert.Equal(domain.Name, agg.Name);
+        Assert.Equal(domain.Value, agg.Value);
     }
 
     [Fact]
@@ -144,7 +152,7 @@ public class TransferObjectTests
     [Fact]
     public void IsAbstractGenericClass()
     {
-        Assert.True(typeof(TransferObject<,>).IsAbstract);
-        Assert.True(typeof(TransferObject<,>).IsGenericTypeDefinition);
+        Assert.True(typeof(TransferObject<>).IsAbstract);
+        Assert.True(typeof(TransferObject<>).IsGenericTypeDefinition);
     }
 }

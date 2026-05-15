@@ -57,7 +57,7 @@ public class AppServiceDependencyYamlObject : TransferObject
 }
 
 /// <summary>Transfer object for <see cref="AppInterfaceConfiguration"/> in YAML configuration.</summary>
-public class AppInterfaceYamlObject : TransferObject<AppInterfaceConfiguration, AppInterfaceAggregate>
+public class AppInterfaceYamlObject : TransferObject<AppInterfaceAggregate>
 {
     public string Id { get; set; } = "";
     public string Name { get; set; } = "";
@@ -82,21 +82,20 @@ public class AppInterfaceYamlObject : TransferObject<AppInterfaceConfiguration, 
             ? new Dictionary<string, string>(Constants) : null;
         IReadOnlyList<string>? flags = Flags?.ToList();
 
-        var app = new AppInterfaceConfiguration(Id, Name, AssemblyName, TypeName, Description,
+        var record = new AppInterfaceConfiguration(Id, Name, AssemblyName, TypeName, Description,
             LoggerId, flags, services, constants);
-        return new AppInterfaceAggregate(app);
+        return new AppInterfaceAggregate(record);
     }
 
     public static AppInterfaceYamlObject FromAggregate(AppInterfaceAggregate aggregate)
     {
-        var d = aggregate.Domain;
         return new AppInterfaceYamlObject
         {
-            Id = d.Id, Name = d.Name, AssemblyName = d.AssemblyName, TypeName = d.TypeName,
-            Description = d.Description, LoggerId = d.LoggerId,
-            Flags = d.Flags?.ToList(),
-            Services = d.Services?.Select(AppServiceDependencyYamlObject.FromRecord).ToList(),
-            Constants = d.Constants is not null ? new Dictionary<string, string>(d.Constants) : null,
+            Id = aggregate.Id, Name = aggregate.Name, AssemblyName = aggregate.AssemblyName, TypeName = aggregate.TypeName,
+            Description = aggregate.Description, LoggerId = aggregate.LoggerId,
+            Flags = aggregate.Flags?.ToList(),
+            Services = aggregate.Services?.Select(AppServiceDependencyYamlObject.FromRecord).ToList(),
+            Constants = aggregate.Constants is not null ? new Dictionary<string, string>(aggregate.Constants) : null,
         };
     }
 

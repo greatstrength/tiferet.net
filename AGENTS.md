@@ -1,4 +1,4 @@
-# AGENTS.md — Tiferet.NET (v1.0.0-beta.1)
+# AGENTS.md — Tiferet.NET (v1.0.0-beta.3)
 
 ## Project Overview
 
@@ -7,13 +7,13 @@
 - **Repository:** https://github.com/greatstrength/tiferet.net
 - **Branch:** `v1.x-proto`
 - **.NET:** 9.0
-- **Version:** `1.0.0-beta.1`
+- **Version:** `1.0.0-beta.3`
 
 ## Architecture
 
 ### Single-Package Layout
 
-As of `1.0.0-beta.1`, all framework code lives in a single `Tiferet` project. Namespaces map to folders. One class per file; supplementary records and enums co-located with their owning class.
+As of `1.0.0-beta.3`, all framework code lives in a single `Tiferet` project. Namespaces map to folders. One class per file; supplementary records and enums co-located with their owning class.
 
 ```
 Tiferet/
@@ -42,7 +42,7 @@ Tiferet/
 │   ├── Feature/          # AddFeature, GetFeature, ListFeatures, UpdateFeature, AddFeatureStep, ...
 │   └── Logging/          # ListAllLoggingConfigs, AddFormatter, AddHandler, AddLogger, ...
 ├── Interfaces/           # Flat: IService, IRepository<T>, IAppService, IFeatureService, IErrorService, ICliService, IDIService, IConfigurationService, IFileService, ISqliteService, ILoggingService
-├── Mappers/              # Aggregate<T>, TransferObject base classes + domain subnamespaces
+├── Mappers/              # Aggregate, TransferObject base classes + domain subnamespaces
 │   ├── Aggregate.cs
 │   ├── TransferObject.cs
 │   ├── App/              # AppInterfaceAggregate, AppInterfaceYamlObject
@@ -90,8 +90,8 @@ All domain objects that map directly to YAML/JSON configuration use the `Configu
 
 ### Aggregate and TransferObject
 
-- `Aggregate<TDomain>` — wraps an immutable domain record, exposes `SetAttribute` for validated mutations via record cloning
-- `TransferObject` / `TransferObject<TDomain, TAggregate>` — bridges YAML/JSON persistence and runtime aggregates via `Map()` and `ToDictionary(role)`
+- `Aggregate` — abstract record extending `DomainObject`. The aggregate IS the domain object (no wrapper). Exposes `SetAttribute` for validated in-place mutation via reflection. Concrete aggregates are positional records (e.g., `record ErrorAggregate(string Id, string Name, ...) : Aggregate`).
+- `TransferObject` / `TransferObject<TAggregate>` — bridges YAML/JSON persistence and runtime aggregates via `Map()` and `ToDictionary(role)`. Single type parameter constrained to `Aggregate`.
 
 ### Runtime Flow
 
@@ -149,7 +149,8 @@ One empty line between `// ***` and first `// **`; one empty line between each `
 ## Package Naming Roadmap
 
 - **Beta 1** (`1.0.0-beta.1`): Single `Tiferet` package; YAML configuration baked in.
-- **Beta 2** (planned): `Tiferet` core + native .NET `IConfiguration` integration; YAML components split into optional `Tiferet.Yaml` package for Python-interop deployments.
+- **Beta 2** (`1.0.0-beta.2`): `Create` factories on aggregates, `DomainObject.Validate`, domain records purely structural.
+- **Beta 3** (`1.0.0-beta.3`): Aggregate evolution — `Aggregate` is now an `abstract record` extending `DomainObject` directly (no generic wrapper). All concrete aggregates are positional records. `.Domain` property removed; consumers access fields directly on aggregates. `TransferObject<TAggregate>` uses single type parameter.
 
 ## Contributing
 

@@ -74,9 +74,9 @@ public static class AppBlueprint
         var errorContext = new ErrorContext(getErrorEvent);
 
         // Use the configured LoggerId if set, otherwise fall back to the interface ID.
-        var loggerId = appInterface.Domain.LoggerId == "default"
+        var loggerId = appInterface.LoggerId == "default"
             ? interfaceId
-            : appInterface.Domain.LoggerId;
+            : appInterface.LoggerId;
         var loggingContext = new LoggingContext(listAllLoggingConfigsEvent, loggerId);
         var diContext = new DIContext(listAllSettingsEvent, cache);
         var featureContext = new FeatureContext(getFeatureEvent, diContext, cache);
@@ -98,7 +98,7 @@ public static class AppBlueprint
     private static T? ResolveService<T>(AppInterfaceAggregate appInterface, string serviceId)
         where T : class
     {
-        var dep = appInterface.Domain.GetService(serviceId);
+        var dep = appInterface.GetService(serviceId);
         if (dep is null)
             return null;
 

@@ -24,9 +24,9 @@ public class AddServiceConfiguration : DomainEvent<AddServiceConfigurationParams
         var hasDeps = p.Dependencies is not null && p.Dependencies.Count > 0;
         Verify(hasDefault || hasDeps, ErrorCodes.InvalidServiceConfiguration);
 
-        var domain = new ServiceConfiguration(p.Id, AssemblyName: p.AssemblyName,
+        var record = new ServiceConfiguration(p.Id, AssemblyName: p.AssemblyName,
             TypeName: p.TypeName, Parameters: p.Parameters, Dependencies: p.Dependencies);
-        var aggregate = new ServiceConfigurationAggregate(domain);
+        var aggregate = new ServiceConfigurationAggregate(record);
         _diService.SaveConfiguration(aggregate);
         return aggregate;
     }

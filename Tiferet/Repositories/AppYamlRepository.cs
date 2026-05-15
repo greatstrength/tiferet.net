@@ -20,7 +20,7 @@ namespace Tiferet.Repositories;
 /// YAML-backed repository for app interface configurations.
 /// Flat key structure: <c>interfaces.{id}</c>.
 /// </summary>
-public class AppYamlRepository : YamlRepository<AppInterfaceAggregate, AppInterfaceConfiguration>, IAppService
+public class AppYamlRepository : YamlRepository<AppInterfaceAggregate>, IAppService
 {
     /// <summary>
     /// Initializes the app YAML repository.

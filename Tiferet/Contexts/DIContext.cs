@@ -98,12 +98,12 @@ public class DIContext
             {
                 DomainEvent.RaiseError(
                     ErrorCodes.DependencyTypeNotFound,
-                    $"No dependency type found for service configuration {config.Domain.Id} with flags [{string.Join(", ", flags)}].",
-                    ("configurationId", config.Domain.Id),
+                    $"No dependency type found for service configuration {config.Id} with flags [{string.Join(", ", flags)}].",
+                    ("configurationId", config.Id),
                     ("flags", string.Join(", ", flags)));
             }
 
-            typeMap[config.Domain.Id] = serviceType!;
+            typeMap[config.Id] = serviceType!;
         }
 
         // Build the provider.
@@ -157,8 +157,8 @@ public class DIContext
         // Merge per-configuration parameters (flagged or default).
         foreach (var config in configurations)
         {
-            var dependency = config.Domain.GetDependency(flags);
-            var parameters = dependency?.Parameters ?? config.Domain.Parameters;
+            var dependency = config.GetDependency(flags);
+            var parameters = dependency?.Parameters ?? config.Parameters;
 
             if (parameters is not null)
             {
