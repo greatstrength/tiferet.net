@@ -82,8 +82,7 @@ public class ErrorYamlRepositoryTests : IDisposable
     public void Save_PersistsNewEntity()
     {
         var repo = new ErrorYamlRepository(_yamlFile);
-        var error = ErrorConfiguration.Create("server_error", "Server ErrorConfiguration");
-        repo.Save(new ErrorAggregate(error));
+        repo.Save(ErrorAggregate.Create("server_error", "Server ErrorConfiguration"));
 
         var loaded = repo.Get("server_error");
         Assert.NotNull(loaded);

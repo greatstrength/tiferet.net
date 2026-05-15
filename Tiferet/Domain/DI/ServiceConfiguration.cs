@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Tiferet.Domain.DI;
 
 /// <summary>
@@ -10,7 +12,7 @@ namespace Tiferet.Domain.DI;
 /// <param name="Parameters">The default configuration parameters.</param>
 /// <param name="Dependencies">The flag-specific implementation overrides.</param>
 public sealed record ServiceConfiguration(
-    string Id,
+    [Required] string Id,
     string? Name = null,
     string? AssemblyName = null,
     string? TypeName = null,

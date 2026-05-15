@@ -1,5 +1,7 @@
 using System.Text.RegularExpressions;
 
+using System.ComponentModel.DataAnnotations;
+
 namespace Tiferet.Domain.Error;
 
 /// <summary>
@@ -7,7 +9,7 @@ namespace Tiferet.Domain.Error;
 /// </summary>
 /// <param name="Lang">The language of the error message text (e.g., "en_US").</param>
 /// <param name="Text">The error message text, supporting named placeholders like {value}.</param>
-public sealed record ErrorMessageConfiguration(string Lang, string Text) : DomainObject
+public sealed record ErrorMessageConfiguration([Required] string Lang, [Required] string Text) : DomainObject
 {
     /// <summary>
     /// Format the error message text with named-placeholder substitution.

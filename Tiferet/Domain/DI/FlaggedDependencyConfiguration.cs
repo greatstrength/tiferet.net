@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Tiferet.Domain.DI;
 
 /// <summary>
@@ -8,7 +10,7 @@ namespace Tiferet.Domain.DI;
 /// <param name="TypeName">The fully-qualified type name for the dependency.</param>
 /// <param name="Parameters">The container dependency parameters.</param>
 public sealed record FlaggedDependencyConfiguration(
-    string Flag,
-    string AssemblyName,
-    string TypeName,
+    [Required] string Flag,
+    [Required] string AssemblyName,
+    [Required] string TypeName,
     IReadOnlyDictionary<string, string>? Parameters = null) : DomainObject;

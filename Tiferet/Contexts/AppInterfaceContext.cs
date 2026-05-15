@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
-using Tiferet.Assets;
+using Tiferet.Domain;
 using Tiferet.Events;
 
 namespace Tiferet.Contexts;

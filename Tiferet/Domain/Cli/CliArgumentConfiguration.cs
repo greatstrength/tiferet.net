@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Tiferet.Domain.Cli;
 
 /// <summary>The data type of a CLI argument.</summary>
@@ -22,7 +24,7 @@ public enum CliArgumentAction
 /// <param name="Nargs">The number of arguments to consume ("?", "*", "+").</param>
 /// <param name="Action">The action to take when the argument is encountered.</param>
 public sealed record CliArgumentConfiguration(
-    IReadOnlyList<string> NameOrFlags,
+    [Required] IReadOnlyList<string> NameOrFlags,
     string? Description = null,
     CliArgumentType Type = CliArgumentType.String,
     bool? Required = null,

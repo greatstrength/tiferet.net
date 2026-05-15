@@ -1,7 +1,6 @@
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using Tiferet.Contexts;
-using Tiferet.Assets;
 using Tiferet.Events;
 using Tiferet.Domain;
 using Tiferet.Domain.App;

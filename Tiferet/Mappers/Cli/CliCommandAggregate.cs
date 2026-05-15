@@ -1,3 +1,4 @@
+using Tiferet.Domain;
 using Tiferet.Domain.Cli;
 
 namespace Tiferet.Mappers.Cli;
@@ -6,6 +7,37 @@ namespace Tiferet.Mappers.Cli;
 public class CliCommandAggregate : Aggregate<CliCommandConfiguration>
 {
     public CliCommandAggregate(CliCommandConfiguration domain) : base(domain) { }
+
+    /// <summary>
+    /// Create a new CliCommandAggregate, deriving Id from GroupKey and Key when not provided.
+    /// Validates the resulting domain record and throws on failure.
+    /// </summary>
+    public static CliCommandAggregate Create(
+        string name,
+        string key,
+        string groupKey,
+        string? id = null,
+        string? description = null,
+        IReadOnlyList<CliArgumentConfiguration>? arguments = null)
+    {
+        // Derive id from groupKey and key, normalizing hyphens to underscores.
+        id ??= $"{groupKey.Replace('-', '_')}.{key.Replace('-', '_')}";
+
+        // Construct the domain record.
+        var instance = new CliCommandConfiguration(
+            Id: id,
+            Name: name,
+            Key: key,
+            GroupKey: groupKey,
+            Description: description,
+            Arguments: arguments);
+
+        // Validate — throws TiferetDomainException on failure.
+        DomainObject.Validate(instance);
+
+        // Return the constructed aggregate.
+        return new CliCommandAggregate(instance);
+    }
 
     public void Rename(string name) => SetAttribute(nameof(CliCommandConfiguration.Name), name);
     public void SetDescription(string? description) => SetAttribute(nameof(CliCommandConfiguration.Description), description);

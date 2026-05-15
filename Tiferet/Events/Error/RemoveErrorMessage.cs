@@ -1,4 +1,4 @@
-using Tiferet.Assets;
+using Tiferet.Domain;
 using Tiferet.Interfaces;
 
 namespace Tiferet.Events.Error;

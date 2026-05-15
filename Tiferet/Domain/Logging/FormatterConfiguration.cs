@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Tiferet.Domain.Logging;
 
 /// <summary>
@@ -9,8 +11,8 @@ namespace Tiferet.Domain.Logging;
 /// <param name="Description">The description of the formatter.</param>
 /// <param name="DateFormat">The date format for log timestamps.</param>
 public sealed record FormatterConfiguration(
-    string Id,
-    string Name,
-    string Format,
+    [Required] string Id,
+    [Required] string Name,
+    [Required] string Format,
     string? Description = null,
     string? DateFormat = null) : DomainObject;

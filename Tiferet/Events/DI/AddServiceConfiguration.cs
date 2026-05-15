@@ -1,4 +1,4 @@
-using Tiferet.Assets;
+using Tiferet.Domain;
 using Tiferet.Domain.DI;
 using Tiferet.Interfaces;
 using Tiferet.Mappers.DI;

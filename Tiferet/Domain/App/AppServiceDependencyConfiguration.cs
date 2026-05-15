@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Tiferet.Domain.App;
 
 /// <summary>
@@ -8,7 +10,7 @@ namespace Tiferet.Domain.App;
 /// <param name="TypeName">The fully-qualified type name for the service.</param>
 /// <param name="Parameters">The parameters for the application dependency.</param>
 public sealed record AppServiceDependencyConfiguration(
-    string ServiceId,
-    string AssemblyName,
-    string TypeName,
+    [Required] string ServiceId,
+    [Required] string AssemblyName,
+    [Required] string TypeName,
     IReadOnlyDictionary<string, string>? Parameters = null) : DomainObject;

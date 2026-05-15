@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Tiferet.Domain.Feature;
 
 /// <summary>
@@ -11,8 +13,8 @@ namespace Tiferet.Domain.Feature;
 /// <param name="PassOnError">Whether to pass on the error if the event fails.</param>
 /// <param name="Condition">Optional boolean expression for conditional execution.</param>
 public sealed record FeatureEventConfiguration(
-    string Name,
-    string ServiceId,
+    [Required] string Name,
+    [Required] string ServiceId,
     IReadOnlyList<string>? Flags = null,
     IReadOnlyDictionary<string, string>? Parameters = null,
     string? DataKey = null,

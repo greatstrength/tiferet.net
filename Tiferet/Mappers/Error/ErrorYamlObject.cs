@@ -39,8 +39,7 @@ public class ErrorYamlObject : TransferObject<ErrorConfiguration, ErrorAggregate
     public override ErrorAggregate Map(Dictionary<string, object?>? overrides = null)
     {
         var messages = Messages?.Select(m => m.ToRecord()).ToList() as IReadOnlyList<ErrorMessageConfiguration>;
-        var error = ErrorConfiguration.Create(Id, Name, ErrorCode, Description, messages);
-        return new ErrorAggregate(error);
+        return ErrorAggregate.Create(Id, Name, ErrorCode, Description, messages);
     }
 
     public static ErrorYamlObject FromAggregate(ErrorAggregate aggregate)

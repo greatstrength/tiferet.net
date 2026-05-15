@@ -1,4 +1,4 @@
-using Tiferet.Assets;
+using Tiferet.Domain;
 
 namespace Tiferet.Events;
 

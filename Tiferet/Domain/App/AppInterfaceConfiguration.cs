@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Tiferet.Domain.App;
 
 /// <summary>
@@ -13,10 +15,10 @@ namespace Tiferet.Domain.App;
 /// <param name="Services">The application instance service dependencies.</param>
 /// <param name="Constants">The application dependency constants.</param>
 public sealed record AppInterfaceConfiguration(
-    string Id,
-    string Name,
-    string AssemblyName,
-    string TypeName,
+    [Required] string Id,
+    [Required] string Name,
+    [Required] string AssemblyName,
+    [Required] string TypeName,
     string? Description = null,
     string LoggerId = "default",
     IReadOnlyList<string>? Flags = null,

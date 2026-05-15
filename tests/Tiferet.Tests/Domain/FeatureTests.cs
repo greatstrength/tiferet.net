@@ -10,7 +10,7 @@ public class FeatureRecordTests
     [Fact]
     public void Create_DerivesIdFromGroupIdAndKey()
     {
-        var f = FeatureConfiguration.Create(name: "Add Number", groupId: "calc");
+        var f = FeatureAggregate.Create(name: "Add Number", groupId: "calc").Domain;
         Assert.Equal("calc.add_number", f.Id);
         Assert.Equal("calc", f.GroupId);
         Assert.Equal("add_number", f.FeatureKey);
@@ -19,7 +19,7 @@ public class FeatureRecordTests
     [Fact]
     public void Create_DerivesGroupIdAndKeyFromId()
     {
-        var f = FeatureConfiguration.Create(name: "Add", id: "calc.add");
+        var f = FeatureAggregate.Create(name: "Add", id: "calc.add").Domain;
         Assert.Equal("calc", f.GroupId);
         Assert.Equal("add", f.FeatureKey);
     }
@@ -27,14 +27,14 @@ public class FeatureRecordTests
     [Fact]
     public void Create_DefaultsDescriptionToName()
     {
-        var f = FeatureConfiguration.Create(name: "Add Number", groupId: "calc");
+        var f = FeatureAggregate.Create(name: "Add Number", groupId: "calc").Domain;
         Assert.Equal("Add Number", f.Description);
     }
 
     [Fact]
     public void Create_ExplicitDescription()
     {
-        var f = FeatureConfiguration.Create(name: "Add", groupId: "calc", description: "Custom desc");
+        var f = FeatureAggregate.Create(name: "Add", groupId: "calc", description: "Custom desc").Domain;
         Assert.Equal("Custom desc", f.Description);
     }
 
@@ -42,22 +42,22 @@ public class FeatureRecordTests
     public void GetStep_ReturnsStep()
     {
         var step = new FeatureEventConfiguration("Step1", "svc1");
-        var f = FeatureConfiguration.Create(name: "F", groupId: "g", steps: [step]);
+        var f = FeatureAggregate.Create(name: "F", groupId: "g", steps: [step]).Domain;
         Assert.Same(step, f.GetStep(0));
     }
 
     [Fact]
     public void GetStep_ReturnsNull_OutOfRange()
     {
-        var f = FeatureConfiguration.Create(name: "F", groupId: "g");
+        var f = FeatureAggregate.Create(name: "F", groupId: "g").Domain;
         Assert.Null(f.GetStep(0));
     }
 
     [Fact]
     public void ValueEquality()
     {
-        var a = FeatureConfiguration.Create(name: "F", groupId: "g");
-        var b = FeatureConfiguration.Create(name: "F", groupId: "g");
+        var a = FeatureAggregate.Create(name: "F", groupId: "g").Domain;
+        var b = FeatureAggregate.Create(name: "F", groupId: "g").Domain;
         Assert.Equal(a, b);
     }
 }
@@ -65,7 +65,7 @@ public class FeatureRecordTests
 public class FeatureAggregateTests
 {
     private static FeatureAggregate CreateAggregate() =>
-        new(FeatureConfiguration.Create(name: "Add Number", groupId: "calc"));
+        FeatureAggregate.Create(name: "Add Number", groupId: "calc");
 
     [Fact]
     public void Rename_UpdatesName()

@@ -1,4 +1,4 @@
-using Tiferet.Assets;
+using Tiferet.Domain;
 using Tiferet.Domain.Feature;
 using Tiferet.Interfaces;
 using Tiferet.Mappers.Feature;
@@ -18,16 +18,15 @@ public class AddFeature : DomainEvent<AddFeatureParams, FeatureAggregate>
 
     public override FeatureAggregate Execute(AddFeatureParams p)
     {
-        var feature = FeatureConfiguration.Create(
+        var aggregate = FeatureAggregate.Create(
             name: p.Name, groupId: p.GroupId, featureKey: p.FeatureKey,
             id: p.Id, description: p.Description,
             steps: p.Steps, logParams: p.LogParams);
 
-        Verify(!_featureService.Exists(feature.Id),
-            ErrorCodes.FeatureAlreadyExists, $"FeatureConfiguration with ID {feature.Id} already exists.",
-            ("id", feature.Id));
+        Verify(!_featureService.Exists(aggregate.Domain.Id),
+            ErrorCodes.FeatureAlreadyExists, $"FeatureConfiguration with ID {aggregate.Domain.Id} already exists.",
+            ("id", aggregate.Domain.Id));
 
-        var aggregate = new FeatureAggregate(feature);
         _featureService.Save(aggregate);
         return aggregate;
     }
