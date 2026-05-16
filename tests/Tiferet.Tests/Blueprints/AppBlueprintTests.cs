@@ -27,12 +27,11 @@ public class AppBlueprintTests : IDisposable
     }
 
     /// <summary>
-    /// Write minimal YAML config files for a basic_calc interface.
+    /// Write a consolidated config.yml for a basic_calc interface.
     /// </summary>
     private void WriteMinimalConfigs()
     {
-        // app.yml
-        File.WriteAllText(Path.Combine(_configDir, "app.yml"), """
+        File.WriteAllText(Path.Combine(_configDir, "config.yml"), """
             interfaces:
               basic_calc:
                 Name: Basic Calculator
@@ -44,20 +43,12 @@ public class AppBlueprintTests : IDisposable
                 AssemblyName: Tiferet.Contexts
                 TypeName: Tiferet.Contexts.AppInterfaceContext
                 LoggerId: app_logger
-            """, Encoding.UTF8);
-
-        // feature.yml
-        File.WriteAllText(Path.Combine(_configDir, "feature.yml"), """
             features:
               calc:
                 add:
                   Name: Add Number
                   Description: Adds one number to another
                   Steps: []
-            """, Encoding.UTF8);
-
-        // error.yml
-        File.WriteAllText(Path.Combine(_configDir, "error.yml"), """
             errors:
               invalid_input:
                 Name: Invalid Input
@@ -65,16 +56,8 @@ public class AppBlueprintTests : IDisposable
                 Messages:
                   - Lang: en_US
                     Text: "Value {value} is invalid"
-            """, Encoding.UTF8);
-
-        // container.yml (DI service configurations)
-        File.WriteAllText(Path.Combine(_configDir, "container.yml"), """
             services: {}
             const: {}
-            """, Encoding.UTF8);
-
-        // logging.yml
-        File.WriteAllText(Path.Combine(_configDir, "logging.yml"), """
             logging:
               formatters: {}
               handlers: {}

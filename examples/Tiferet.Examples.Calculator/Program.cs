@@ -6,7 +6,7 @@ using Tiferet.Events;
 using Tiferet.Domain.Error;
 
 // Config directory relative to the binary output location.
-var configDir = Path.Combine(AppContext.BaseDirectory, "app", "configs");
+var configDir = Path.Combine(AppContext.BaseDirectory, "app", "assets");
 
 // Demo mode: run hardcoded test cases (mirrors Python basic_calc.py).
 if (args.Length == 0 || (args.Length == 1 && args[0] == "--demo"))

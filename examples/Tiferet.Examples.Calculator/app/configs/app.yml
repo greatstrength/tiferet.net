@@ -1,6 +1,0 @@
-interfaces:
-  basic_calc:
-    Name: Basic Calculator
-    AssemblyName: Tiferet.Examples.Calculator
-    TypeName: Tiferet.Examples.Calculator.Program
-    Description: Perform basic calculator operations
