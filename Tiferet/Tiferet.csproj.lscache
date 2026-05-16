@@ -53,9 +53,11 @@ TemporaryDependencyNodeTargetIdentifier=net9.0
 /warnaserror+:NU1605,SYSLIB0011
 
 [sourceFiles]
+Assets/ConfigurationDefaults.cs
 Blueprints/
  AppBlueprint.cs
  CliBlueprint.cs
+ TiferetOptions.cs
 Contexts/
  AppInterfaceContext.cs
  CacheContext.cs
@@ -68,6 +70,7 @@ DependencyInjection/
  DynamicServiceResolver.cs
  IServiceResolver.cs
  ServiceCollectionExtensions.cs
+ TiferetHostExtensions.cs
 Domain/App/
  AppInterfaceConfiguration.cs
  AppServiceDependencyConfiguration.cs
@@ -96,6 +99,7 @@ Domain/
  TiferetDomainException.cs
 Events/App/
  AddAppInterface.cs
+ BootstrapAppConfiguration.cs
  GetAppInterface.cs
  ListAppInterfaces.cs
  RemoveAppInterface.cs
@@ -376,6 +380,9 @@ Utilities/
  microsoft.extensions.configuration/9.0.0/lib/net9.0/Microsoft.Extensions.Configuration.dll
  microsoft.extensions.dependencyinjection.abstractions/9.0.0/lib/net9.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll
  microsoft.extensions.dependencyinjection/9.0.0/lib/net9.0/Microsoft.Extensions.DependencyInjection.dll
+ microsoft.extensions.diagnostics.abstractions/9.0.0/lib/net9.0/Microsoft.Extensions.Diagnostics.Abstractions.dll
+ microsoft.extensions.fileproviders.abstractions/9.0.0/lib/net9.0/Microsoft.Extensions.FileProviders.Abstractions.dll
+ microsoft.extensions.hosting.abstractions/9.0.0/lib/net9.0/Microsoft.Extensions.Hosting.Abstractions.dll
  microsoft.extensions.logging.abstractions/9.0.0/lib/net9.0/Microsoft.Extensions.Logging.Abstractions.dll
  microsoft.extensions.logging.configuration/9.0.0/lib/net9.0/Microsoft.Extensions.Logging.Configuration.dll
  microsoft.extensions.logging.console/9.0.0/lib/net9.0/Microsoft.Extensions.Logging.Console.dll

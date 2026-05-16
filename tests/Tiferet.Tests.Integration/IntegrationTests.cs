@@ -40,17 +40,13 @@ public class IntegrationFixture : IDisposable
 
     private void WriteConfigs()
     {
-        // app.yml
-        File.WriteAllText(Path.Combine(ConfigDir, "app.yml"), """
+        // Consolidated config.yml — matches beta 5+ convention.
+        File.WriteAllText(Path.Combine(ConfigDir, "config.yml"), """
             interfaces:
               test_app:
                 Name: Test App
                 AssemblyName: Tiferet.Tests.Integration
                 TypeName: Tiferet.Tests.Integration.TestApp
-            """, Encoding.UTF8);
-
-        // container.yml — all test events
-        File.WriteAllText(Path.Combine(ConfigDir, "container.yml"), """
             services:
               add_double_event:
                 AssemblyName: Tiferet.Tests.Integration
@@ -65,10 +61,6 @@ public class IntegrationFixture : IDisposable
                 AssemblyName: Tiferet.Tests.Integration
                 TypeName: Tiferet.Tests.Integration.ConcatEvent
             const: {}
-            """, Encoding.UTF8);
-
-        // feature.yml
-        File.WriteAllText(Path.Combine(ConfigDir, "feature.yml"), """
             features:
               math:
                 add:
@@ -106,20 +98,12 @@ public class IntegrationFixture : IDisposable
                   Steps:
                     - ServiceId: erroring_event
                       Name: Always fails
-            """, Encoding.UTF8);
-
-        // error.yml — DIVISION_BY_ZERO defined; TEST_ERROR falls back to default
-        File.WriteAllText(Path.Combine(ConfigDir, "error.yml"), """
             errors:
               DIVISION_BY_ZERO:
                 Name: Division By Zero
                 Messages:
                   - Lang: en_US
                     Text: 'Cannot divide by zero'
-            """, Encoding.UTF8);
-
-        // logging.yml
-        File.WriteAllText(Path.Combine(ConfigDir, "logging.yml"), """
             logging:
               formatters: {}
               handlers: {}
