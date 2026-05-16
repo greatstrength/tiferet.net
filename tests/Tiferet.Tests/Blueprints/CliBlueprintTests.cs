@@ -26,17 +26,12 @@ public class CliBlueprintTests : IDisposable
 
     private void WriteMinimalConfigs()
     {
-        // app.yml
-        File.WriteAllText(Path.Combine(_configDir, "app.yml"), """
+        File.WriteAllText(Path.Combine(_configDir, "config.yml"), """
             interfaces:
               basic_calc:
                 Name: Basic Calculator
                 AssemblyName: Tiferet.Contexts
                 TypeName: Tiferet.Contexts.AppInterfaceContext
-            """, Encoding.UTF8);
-
-        // feature.yml
-        File.WriteAllText(Path.Combine(_configDir, "feature.yml"), """
             features:
               calc:
                 add:
@@ -47,29 +42,13 @@ public class CliBlueprintTests : IDisposable
                   Name: Square Root
                   Description: Calculates the square root
                   Steps: []
-            """, Encoding.UTF8);
-
-        // error.yml
-        File.WriteAllText(Path.Combine(_configDir, "error.yml"), """
             errors: {}
-            """, Encoding.UTF8);
-
-        // container.yml
-        File.WriteAllText(Path.Combine(_configDir, "container.yml"), """
             services: {}
             const: {}
-            """, Encoding.UTF8);
-
-        // logging.yml
-        File.WriteAllText(Path.Combine(_configDir, "logging.yml"), """
             logging:
               formatters: {}
               handlers: {}
               loggers: {}
-            """, Encoding.UTF8);
-
-        // cli.yml
-        File.WriteAllText(Path.Combine(_configDir, "cli.yml"), """
             cli:
               cmds:
                 calc:
@@ -100,9 +79,9 @@ public class CliBlueprintTests : IDisposable
     public void BuildCli_ReturnsRootCommand()
     {
         var app = AppBlueprint.BuildApp("basic_calc", _configDir);
-        var cliFile = Path.Combine(_configDir, "cli.yml");
+        var configFile = Path.Combine(_configDir, "config.yml");
 
-        var root = CliBlueprint.BuildCli(app, cliFile);
+        var root = CliBlueprint.BuildCli(app, configFile);
 
         Assert.NotNull(root);
         Assert.IsType<RootCommand>(root);
@@ -113,9 +92,9 @@ public class CliBlueprintTests : IDisposable
     public void BuildCli_CreatesGroupCommands()
     {
         var app = AppBlueprint.BuildApp("basic_calc", _configDir);
-        var cliFile = Path.Combine(_configDir, "cli.yml");
+        var configFile = Path.Combine(_configDir, "config.yml");
 
-        var root = CliBlueprint.BuildCli(app, cliFile);
+        var root = CliBlueprint.BuildCli(app, configFile);
 
         // Should have one group command: "calc"
         var calcGroup = root.Children.OfType<Command>()
@@ -128,9 +107,9 @@ public class CliBlueprintTests : IDisposable
     public void BuildCli_CreatesSubcommands()
     {
         var app = AppBlueprint.BuildApp("basic_calc", _configDir);
-        var cliFile = Path.Combine(_configDir, "cli.yml");
+        var configFile = Path.Combine(_configDir, "config.yml");
 
-        var root = CliBlueprint.BuildCli(app, cliFile);
+        var root = CliBlueprint.BuildCli(app, configFile);
 
         var calcGroup = root.Children.OfType<Command>().First(c => c.Name == "calc");
 
@@ -147,9 +126,9 @@ public class CliBlueprintTests : IDisposable
     public void BuildCli_AddCommand_HasTwoArguments()
     {
         var app = AppBlueprint.BuildApp("basic_calc", _configDir);
-        var cliFile = Path.Combine(_configDir, "cli.yml");
+        var configFile = Path.Combine(_configDir, "config.yml");
 
-        var root = CliBlueprint.BuildCli(app, cliFile);
+        var root = CliBlueprint.BuildCli(app, configFile);
         var calcGroup = root.Children.OfType<Command>().First(c => c.Name == "calc");
         var addCmd = calcGroup.Children.OfType<Command>().First(c => c.Name == "add");
 
@@ -165,9 +144,9 @@ public class CliBlueprintTests : IDisposable
     public void BuildCli_SqrtCommand_HasOneArgument()
     {
         var app = AppBlueprint.BuildApp("basic_calc", _configDir);
-        var cliFile = Path.Combine(_configDir, "cli.yml");
+        var configFile = Path.Combine(_configDir, "config.yml");
 
-        var root = CliBlueprint.BuildCli(app, cliFile);
+        var root = CliBlueprint.BuildCli(app, configFile);
         var calcGroup = root.Children.OfType<Command>().First(c => c.Name == "calc");
         var sqrtCmd = calcGroup.Children.OfType<Command>().First(c => c.Name == "sqrt");
 
@@ -181,9 +160,9 @@ public class CliBlueprintTests : IDisposable
     public void BuildCli_WithCustomDescription()
     {
         var app = AppBlueprint.BuildApp("basic_calc", _configDir);
-        var cliFile = Path.Combine(_configDir, "cli.yml");
+        var configFile = Path.Combine(_configDir, "config.yml");
 
-        var root = CliBlueprint.BuildCli(app, cliFile, description: "My Calculator CLI");
+        var root = CliBlueprint.BuildCli(app, configFile, description: "My Calculator CLI");
 
         Assert.Equal("My Calculator CLI", root.Description);
     }
@@ -206,9 +185,9 @@ public class CliBlueprintTests : IDisposable
     public void BuildCli_ParseResult_ValidArgs()
     {
         var app = AppBlueprint.BuildApp("basic_calc", _configDir);
-        var cliFile = Path.Combine(_configDir, "cli.yml");
+        var configFile = Path.Combine(_configDir, "config.yml");
 
-        var root = CliBlueprint.BuildCli(app, cliFile);
+        var root = CliBlueprint.BuildCli(app, configFile);
 
         // Verify the parser recognizes "calc add 1 2".
         var result = root.Parse("calc add 1 2");
@@ -220,9 +199,9 @@ public class CliBlueprintTests : IDisposable
     public void BuildCli_ParseResult_SqrtCommand()
     {
         var app = AppBlueprint.BuildApp("basic_calc", _configDir);
-        var cliFile = Path.Combine(_configDir, "cli.yml");
+        var configFile = Path.Combine(_configDir, "config.yml");
 
-        var root = CliBlueprint.BuildCli(app, cliFile);
+        var root = CliBlueprint.BuildCli(app, configFile);
 
         var result = root.Parse("calc sqrt 16");
         Assert.Empty(result.Errors);

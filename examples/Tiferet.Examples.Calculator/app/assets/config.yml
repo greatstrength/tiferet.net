@@ -1,0 +1,137 @@
+interfaces:
+  basic_calc:
+    Name: Basic Calculator
+    AssemblyName: Tiferet.Examples.Calculator
+    TypeName: Tiferet.Examples.Calculator.Program
+    Description: Perform basic calculator operations
+
+services:
+  add_number_event:
+    AssemblyName: Tiferet.Examples.Calculator
+    TypeName: Tiferet.Examples.Calculator.Events.AddNumber
+  subtract_number_event:
+    AssemblyName: Tiferet.Examples.Calculator
+    TypeName: Tiferet.Examples.Calculator.Events.SubtractNumber
+  multiply_number_event:
+    AssemblyName: Tiferet.Examples.Calculator
+    TypeName: Tiferet.Examples.Calculator.Events.MultiplyNumber
+  divide_number_event:
+    AssemblyName: Tiferet.Examples.Calculator
+    TypeName: Tiferet.Examples.Calculator.Events.DivideNumber
+  exponentiate_number_event:
+    AssemblyName: Tiferet.Examples.Calculator
+    TypeName: Tiferet.Examples.Calculator.Events.ExponentiateNumber
+const: {}
+
+features:
+  calc:
+    add:
+      Name: Add Number
+      Description: Adds one number to another
+      Steps:
+        - ServiceId: add_number_event
+          Name: Add A and B
+    subtract:
+      Name: Subtract Number
+      Description: Subtracts one number from another
+      Steps:
+        - ServiceId: subtract_number_event
+          Name: Subtract B from A
+    multiply:
+      Name: Multiply Number
+      Description: Multiplies one number by another
+      Steps:
+        - ServiceId: multiply_number_event
+          Name: Multiply A and B
+    divide:
+      Name: Divide Number
+      Description: Divides one number by another
+      Steps:
+        - ServiceId: divide_number_event
+          Name: Divide A by B
+    exp:
+      Name: Exponentiate Number
+      Description: Raises one number to the power of another
+      Steps:
+        - ServiceId: exponentiate_number_event
+          Name: Raise A to the power of B
+    sqrt:
+      Name: Square Root
+      Description: Calculates the square root of a number
+      Steps:
+        - ServiceId: exponentiate_number_event
+          Name: Calculate square root of A
+          Parameters:
+            B: '0.5'
+
+errors:
+  INVALID_INPUT:
+    Name: Invalid Numeric Input
+    Messages:
+      - Lang: en_US
+        Text: 'Value {value} must be a number'
+      - Lang: es_ES
+        Text: 'El valor {value} debe ser un numero'
+  DIVISION_BY_ZERO:
+    Name: Division By Zero
+    Messages:
+      - Lang: en_US
+        Text: 'Cannot divide by zero'
+      - Lang: es_ES
+        Text: 'No se puede dividir por cero'
+
+logging:
+  formatters: {}
+  handlers: {}
+  loggers: {}
+
+cli:
+  cmds:
+    calc:
+      add:
+        Name: Add Number Command
+        Description: Adds two numbers.
+        Arguments:
+          - NameOrFlags:
+              - a
+            Description: The first number to add.
+          - NameOrFlags:
+              - b
+            Description: The second number to add.
+      subtract:
+        Name: Subtract Number Command
+        Description: Subtracts one number from another.
+        Arguments:
+          - NameOrFlags:
+              - a
+            Description: The number to subtract from.
+          - NameOrFlags:
+              - b
+            Description: The number to subtract.
+      multiply:
+        Name: Multiply Number Command
+        Description: Multiplies two numbers.
+        Arguments:
+          - NameOrFlags:
+              - a
+            Description: The first number to multiply.
+          - NameOrFlags:
+              - b
+            Description: The second number to multiply.
+      divide:
+        Name: Divide Number Command
+        Description: Divides one number by another.
+        Arguments:
+          - NameOrFlags:
+              - a
+            Description: The numerator.
+          - NameOrFlags:
+              - b
+            Description: The denominator.
+      sqrt:
+        Name: Square Root Command
+        Description: Calculates the square root of a number.
+        Arguments:
+          - NameOrFlags:
+              - a
+            Description: The number to square root.

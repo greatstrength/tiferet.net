@@ -1,13 +1,13 @@
 using System.CommandLine;
 using System.CommandLine.Invocation;
+using System.Reflection;
+using Tiferet.Assets;
 using Tiferet.Contexts;
 using Tiferet.Events;
 using Tiferet.Domain;
-using Tiferet.Domain.App;
 using Tiferet.Domain.Cli;
-using Tiferet.Domain.Feature;
 using Tiferet.Events.Cli;
-using Tiferet.Repositories;
+using Tiferet.Interfaces;
 
 namespace Tiferet.Blueprints;
 
@@ -19,9 +19,6 @@ namespace Tiferet.Blueprints;
 /// </summary>
 public static class CliBlueprint
 {
-    /// <summary>Default CLI config file name.</summary>
-    private const string DefaultCliConfigFile = "cli.yml";
-
     /// <summary>
     /// Build a <see cref="RootCommand"/> from a CLI config file and an existing
     /// <see cref="AppInterfaceContext"/>.
@@ -35,9 +32,22 @@ public static class CliBlueprint
         string cliConfigFile,
         string? description = null)
     {
+        // Resolve the CLI service reflectively.
+        var cliServiceType = ImportDependency.Resolve(
+            ConfigurationDefaults.DefaultAssembly,
+            ConfigurationDefaults.DefaultCliServiceType);
+        var ctor = cliServiceType.GetConstructors(BindingFlags.Public | BindingFlags.Instance)
+            .OrderByDescending(c => c.GetParameters().Length)
+            .First();
+        var ctorParams = ctor.GetParameters();
+        var args = new object?[ctorParams.Length];
+        args[0] = cliConfigFile;
+        for (int i = 1; i < ctorParams.Length; i++)
+            args[i] = ctorParams[i].HasDefaultValue ? ctorParams[i].DefaultValue : null;
+        var cliService = (ICliService)ctor.Invoke(args);
+
         // Load all CLI commands from configuration.
-        var cliRepo = new CliYamlRepository(cliConfigFile);
-        var listEvent = new ListCliCommands(cliRepo);
+        var listEvent = new ListCliCommands(cliService);
         var commands = listEvent.Execute(new ListCliCommandsParams());
 
         // Create the root command.
@@ -91,12 +101,12 @@ public static class CliBlueprint
     /// <returns>A configured <see cref="RootCommand"/> ready for invocation.</returns>
     public static RootCommand BuildCli(
         string interfaceId,
-        string configDir = AppBlueprint.DefaultConfigDir,
+        string configDir = ConfigurationDefaults.DefaultConfigDir,
         string? cliConfigFile = null,
         string? description = null)
     {
         var app = AppBlueprint.BuildApp(interfaceId, configDir);
-        var cliFile = cliConfigFile ?? Path.Combine(configDir, DefaultCliConfigFile);
+        var cliFile = cliConfigFile ?? Path.Combine(configDir, ConfigurationDefaults.ConfigFile);
         return BuildCli(app, cliFile, description);
     }
 
