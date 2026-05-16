@@ -12,10 +12,10 @@ public class ReorderFeatureStep : DomainEvent<ReorderFeatureStepParams, string>
 
     public override string Execute(ReorderFeatureStepParams p)
     {
-        var feature = _featureService.Get(p.Id);
-        Verify(feature is not null, ErrorCodes.FeatureNotFound, null, ("featureId", p.Id));
+        var feature = VerifyNotNull(_featureService.Get(p.Id),
+            ErrorCodes.FeatureNotFound, context: ("featureId", p.Id));
 
-        feature!.ReorderStep(p.StartPosition, p.EndPosition);
+        feature.ReorderStep(p.StartPosition, p.EndPosition);
         _featureService.Save(feature);
         return p.Id;
     }

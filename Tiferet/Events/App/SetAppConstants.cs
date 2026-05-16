@@ -13,10 +13,10 @@ public class SetAppConstants : DomainEvent<SetAppConstantsParams, string>
 
     public override string Execute(SetAppConstantsParams p)
     {
-        var iface = _appService.Get(p.Id);
-        Verify(iface is not null, ErrorCodes.AppInterfaceNotFound, null, ("interfaceId", p.Id));
+        var iface = VerifyNotNull(_appService.Get(p.Id),
+            ErrorCodes.AppInterfaceNotFound, context: ("interfaceId", p.Id));
 
-        iface!.SetConstants(p.Constants);
+        iface.SetConstants(p.Constants);
         _appService.Save(iface);
         return p.Id;
     }

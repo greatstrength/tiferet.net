@@ -16,10 +16,10 @@ public class AddFeatureStep : DomainEvent<AddFeatureStepParams, string>
 
     public override string Execute(AddFeatureStepParams p)
     {
-        var feature = _featureService.Get(p.Id);
-        Verify(feature is not null, ErrorCodes.FeatureNotFound, null, ("featureId", p.Id));
+        var feature = VerifyNotNull(_featureService.Get(p.Id),
+            ErrorCodes.FeatureNotFound, context: ("featureId", p.Id));
 
-        feature!.AddStep(p.Name, p.ServiceId, p.Parameters, p.DataKey,
+        feature.AddStep(p.Name, p.ServiceId, p.Parameters, p.DataKey,
             p.PassOnError, p.Condition, p.Position);
         _featureService.Save(feature);
         return p.Id;

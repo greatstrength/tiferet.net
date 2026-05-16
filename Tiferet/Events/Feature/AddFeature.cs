@@ -11,23 +11,23 @@ public sealed record AddFeatureParams(
     IReadOnlyList<FeatureEventConfiguration>? Steps = null,
     IReadOnlyDictionary<string, string>? LogParams = null);
 
-public class AddFeature : DomainEvent<AddFeatureParams, FeatureAggregate>
+public class AddFeature : DomainEvent<AddFeatureParams, FeatureConfiguration>
 {
     private readonly IFeatureService _featureService;
     public AddFeature(IFeatureService featureService) => _featureService = featureService;
 
-    public override FeatureAggregate Execute(AddFeatureParams p)
+    public override FeatureConfiguration Execute(AddFeatureParams p)
     {
         var aggregate = FeatureAggregate.Create(
             name: p.Name, groupId: p.GroupId, featureKey: p.FeatureKey,
             id: p.Id, description: p.Description,
             steps: p.Steps, logParams: p.LogParams);
 
-        Verify(!_featureService.Exists(aggregate.Id),
+        VerifyNotExists(_featureService.Exists(aggregate.Id),
             ErrorCodes.FeatureAlreadyExists, $"FeatureConfiguration with ID {aggregate.Id} already exists.",
             ("id", aggregate.Id));
 
         _featureService.Save(aggregate);
-        return aggregate;
+        return aggregate.ToDomainObject();
     }
 }

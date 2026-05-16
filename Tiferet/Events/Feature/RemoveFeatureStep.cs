@@ -12,10 +12,10 @@ public class RemoveFeatureStep : DomainEvent<RemoveFeatureStepParams, string>
 
     public override string Execute(RemoveFeatureStepParams p)
     {
-        var feature = _featureService.Get(p.Id);
-        Verify(feature is not null, ErrorCodes.FeatureNotFound, null, ("featureId", p.Id));
+        var feature = VerifyNotNull(_featureService.Get(p.Id),
+            ErrorCodes.FeatureNotFound, context: ("featureId", p.Id));
 
-        feature!.RemoveStep(p.Position);
+        feature.RemoveStep(p.Position);
         _featureService.Save(feature);
         return p.Id;
     }

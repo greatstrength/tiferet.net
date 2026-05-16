@@ -1,13 +1,8 @@
 using Tiferet.Events;
 using Tiferet.Domain;
-using Tiferet.Domain.Error;
-using Tiferet.Domain.Feature;
+using Tiferet.Domain.DI;
 using Tiferet.DependencyInjection;
 using Tiferet.Events.DI;
-using Tiferet.Mappers;
-using Tiferet.Mappers.Feature;
-using Tiferet.Mappers.DI;
-using Tiferet.Mappers.Logging;
 
 namespace Tiferet.Contexts;
 
@@ -70,6 +65,28 @@ public class DIContext
     }
 
     /// <summary>
+    /// Resolve the service type for a configuration and flags.
+    /// Checks flagged dependencies first, then falls back to the default type.
+    /// </summary>
+    /// <param name="config">The service configuration.</param>
+    /// <param name="flags">The flags to match.</param>
+    /// <returns>The resolved type, or null if none found.</returns>
+    private static Type? ResolveServiceType(ServiceConfiguration config, params string[] flags)
+    {
+        foreach (var flag in flags)
+        {
+            var dep = config.GetDependency(flag);
+            if (dep is not null)
+                return ImportDependency.Resolve(dep.AssemblyName, dep.TypeName);
+        }
+
+        if (config.AssemblyName is not null && config.TypeName is not null)
+            return ImportDependency.Resolve(config.AssemblyName, config.TypeName);
+
+        return null;
+    }
+
+    /// <summary>
     /// Build and cache a service provider for the given flags.
     /// </summary>
     /// <param name="flags">The flags to match against service configurations.</param>
@@ -93,7 +110,7 @@ public class DIContext
         var typeMap = new Dictionary<string, Type>();
         foreach (var config in configurations)
         {
-            var serviceType = config.GetServiceType(flags);
+            var serviceType = ResolveServiceType(config, flags);
             if (serviceType is null)
             {
                 DomainEvent.RaiseError(
@@ -145,7 +162,7 @@ public class DIContext
     /// <param name="flags">The flags to match flagged dependencies.</param>
     /// <returns>A dictionary of parsed constants.</returns>
     public Dictionary<string, string> LoadConstants(
-        IReadOnlyList<ServiceConfigurationAggregate> configurations,
+        IReadOnlyList<ServiceConfiguration> configurations,
         Dictionary<string, string> rawConstants,
         string[] flags)
     {

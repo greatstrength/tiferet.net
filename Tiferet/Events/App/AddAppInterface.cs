@@ -12,17 +12,17 @@ public sealed record AddAppInterfaceParams(
     IReadOnlyList<AppServiceDependencyConfiguration>? Services = null,
     IReadOnlyDictionary<string, string>? Constants = null);
 
-public class AddAppInterface : DomainEvent<AddAppInterfaceParams, AppInterfaceAggregate>
+public class AddAppInterface : DomainEvent<AddAppInterfaceParams, AppInterfaceConfiguration>
 {
     private readonly IAppService _appService;
     public AddAppInterface(IAppService appService) => _appService = appService;
 
-    public override AppInterfaceAggregate Execute(AddAppInterfaceParams p)
+    public override AppInterfaceConfiguration Execute(AddAppInterfaceParams p)
     {
         var record = new AppInterfaceConfiguration(p.Id, p.Name, p.AssemblyName, p.TypeName,
             p.Description, p.LoggerId, p.Flags, p.Services, p.Constants);
         var aggregate = new AppInterfaceAggregate(record);
         _appService.Save(aggregate);
-        return aggregate;
+        return aggregate.ToDomainObject();
     }
 }

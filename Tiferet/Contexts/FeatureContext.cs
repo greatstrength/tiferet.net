@@ -1,13 +1,8 @@
 using System.Text.RegularExpressions;
 using Tiferet.Events;
 using Tiferet.Domain;
-using Tiferet.Domain.Error;
 using Tiferet.Domain.Feature;
 using Tiferet.Events.Feature;
-using Tiferet.Mappers;
-using Tiferet.Mappers.Feature;
-using Tiferet.Mappers.DI;
-using Tiferet.Mappers.Logging;
 
 namespace Tiferet.Contexts;
 
@@ -42,11 +37,11 @@ public class FeatureContext
     /// Load a feature by ID, using the cache when available.
     /// </summary>
     /// <param name="featureId">The feature identifier.</param>
-    /// <returns>The loaded feature aggregate.</returns>
-    public FeatureAggregate LoadFeature(string featureId)
+    /// <returns>The loaded feature configuration.</returns>
+    public FeatureConfiguration LoadFeature(string featureId)
     {
         // Try cache first.
-        var cached = _cache.Get<FeatureAggregate>(featureId);
+        var cached = _cache.Get<FeatureConfiguration>(featureId);
         if (cached is not null)
             return cached;
 

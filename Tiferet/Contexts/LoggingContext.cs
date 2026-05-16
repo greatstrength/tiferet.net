@@ -1,13 +1,5 @@
 using Microsoft.Extensions.Logging;
-using Tiferet.Events;
-using Tiferet.Domain;
-using Tiferet.Domain.Error;
-using Tiferet.Domain.Feature;
 using Tiferet.Events.Logging;
-using Tiferet.Mappers;
-using Tiferet.Mappers.Feature;
-using Tiferet.Mappers.DI;
-using Tiferet.Mappers.Logging;
 
 namespace Tiferet.Contexts;
 

@@ -96,6 +96,51 @@ public class DomainEventTests
     }
 
     [Fact]
+    public void VerifyNotNull_ReturnsValueWhenNotNull()
+    {
+        var evt = new AddNumbersEvent();
+        var result = evt.VerifyNotNull("hello", "SHOULD_NOT_THROW");
+        Assert.Equal("hello", result);
+    }
+
+    [Fact]
+    public void VerifyNotNull_ThrowsWhenNull()
+    {
+        var evt = new AddNumbersEvent();
+        var ex = Assert.Throws<TiferetException>(
+            () => evt.VerifyNotNull<string>(null, "NULL_ERR", "was null", ("key", "val")));
+        Assert.Equal("NULL_ERR", ex.ErrorCode);
+        Assert.Equal("val", ex.Context["key"]);
+    }
+
+    [Fact]
+    public void VerifyNotNull_EliminatesNullableAnnotation()
+    {
+        var evt = new AddNumbersEvent();
+        string? nullable = "typed";
+        // Return type is string (not string?) — no ! needed.
+        string result = evt.VerifyNotNull(nullable, "ERR");
+        Assert.Equal("typed", result);
+    }
+
+    [Fact]
+    public void VerifyNotExists_PassesWhenNotExists()
+    {
+        var evt = new AddNumbersEvent();
+        evt.VerifyNotExists(false, "SHOULD_NOT_THROW");
+    }
+
+    [Fact]
+    public void VerifyNotExists_ThrowsWhenExists()
+    {
+        var evt = new AddNumbersEvent();
+        var ex = Assert.Throws<TiferetException>(
+            () => evt.VerifyNotExists(true, "ALREADY_EXISTS", "duplicate", ("id", "abc")));
+        Assert.Equal("ALREADY_EXISTS", ex.ErrorCode);
+        Assert.Equal("abc", ex.Context["id"]);
+    }
+
+    [Fact]
     public void GenericBase_InheritsFromDomainEvent()
     {
         Assert.True(typeof(DomainEvent).IsAssignableFrom(typeof(DomainEvent<AddNumbersParams, int>)));

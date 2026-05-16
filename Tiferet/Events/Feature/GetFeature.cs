@@ -1,21 +1,21 @@
 using Tiferet.Domain;
+using Tiferet.Domain.Feature;
 using Tiferet.Interfaces;
-using Tiferet.Mappers.Feature;
 
 namespace Tiferet.Events.Feature;
 
 public sealed record GetFeatureParams(string Id);
 
-public class GetFeature : DomainEvent<GetFeatureParams, FeatureAggregate>
+public class GetFeature : DomainEvent<GetFeatureParams, FeatureConfiguration>
 {
     private readonly IFeatureService _featureService;
     public GetFeature(IFeatureService featureService) => _featureService = featureService;
 
-    public override FeatureAggregate Execute(GetFeatureParams p)
+    public override FeatureConfiguration Execute(GetFeatureParams p)
     {
-        var feature = _featureService.Get(p.Id);
-        Verify(feature is not null, ErrorCodes.FeatureNotFound,
+        var feature = VerifyNotNull(_featureService.Get(p.Id),
+            ErrorCodes.FeatureNotFound,
             $"FeatureConfiguration not found: {p.Id}", ("featureId", p.Id));
-        return feature!;
+        return feature.ToDomainObject();
     }
 }

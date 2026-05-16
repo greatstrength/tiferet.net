@@ -1,13 +1,7 @@
 using Tiferet.Events;
 using Tiferet.Domain;
 using Tiferet.Domain.Error;
-using Tiferet.Domain.Feature;
 using Tiferet.Events.Error;
-using Tiferet.Mappers;
-using Tiferet.Mappers.Error;
-using Tiferet.Mappers.Feature;
-using Tiferet.Mappers.DI;
-using Tiferet.Mappers.Logging;
 
 namespace Tiferet.Contexts;
 
@@ -32,8 +26,8 @@ public class ErrorContext
     /// if the repository lookup fails.
     /// </summary>
     /// <param name="errorCode">The error code to retrieve.</param>
-    /// <returns>The error aggregate.</returns>
-    public ErrorAggregate GetErrorByCode(string errorCode)
+    /// <returns>The error configuration.</returns>
+    public ErrorConfiguration GetErrorByCode(string errorCode)
     {
         try
         {
