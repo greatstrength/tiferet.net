@@ -1,28 +1,31 @@
-# AGENTS.md — Tiferet.NET (v1.0.0-beta.3)
+# AGENTS.md — Tiferet.NET (v1.0.0-beta.6)
 
 ## Project Overview
 
 **Tiferet.NET** is a .NET 9 framework for Domain-Driven Design (DDD). It provides a layered architecture for building applications with typed domain events, configuration-driven feature workflows, service interfaces, dependency injection, and YAML-backed repositories. It is the C# port of the [Tiferet Python framework](https://github.com/greatstrength/tiferet).
 
 - **Repository:** https://github.com/greatstrength/tiferet.net
-- **Branch:** `v1.x-proto`
+- **Branch:** `v1.x-proto` (development on `beta-6-proto` worktree)
 - **.NET:** 9.0
-- **Version:** `1.0.0-beta.3`
+- **Version:** `1.0.0-beta.6`
 
 ## Architecture
 
 ### Single-Package Layout
 
-As of `1.0.0-beta.3`, all framework code lives in a single `Tiferet` project. Namespaces map to folders. One class per file; supplementary records and enums co-located with their owning class.
+All framework code lives in a single `Tiferet` project. Namespaces map to folders. One class per file; supplementary records and enums co-located with their owning class.
 
 ```
 Tiferet/
-├── Assets/               # ErrorCodes, DefaultErrors (downward-importing constants)
-├── Blueprints/           # AppBlueprint, CliBlueprint (one-step bootstrappers)
+├── Assets/               # ConfigurationDefaults (default paths, file names)
+├── Blueprints/           # AppBlueprint, CliBlueprint, TiferetOptions (bootstrap configuration)
 ├── Contexts/             # Runtime orchestration: AppInterfaceContext, FeatureContext, ErrorContext, DIContext, LoggingContext, CacheContext, RequestContext
-├── DependencyInjection/  # IServiceResolver, DynamicServiceResolver, ServiceCollectionExtensions
+├── DependencyInjection/  # IServiceResolver, DynamicServiceResolver, ServiceCollectionExtensions, TiferetHostExtensions
 ├── Domain/               # DomainObject base record + domain subnamespaces
 │   ├── DomainObject.cs
+│   ├── ErrorCodes.cs         # Framework error code constants
+│   ├── DefaultErrors.cs      # Default error definitions
+│   ├── TiferetDomainException.cs
 │   ├── App/              # AppInterfaceConfiguration, AppServiceDependencyConfiguration
 │   ├── Cli/              # CliCommandConfiguration, CliArgumentConfiguration (+ enums)
 │   ├── DI/               # ServiceConfiguration, FlaggedDependencyConfiguration
@@ -35,7 +38,7 @@ Tiferet/
 │   ├── TiferetApiException.cs
 │   ├── ParseParameter.cs
 │   ├── ImportDependency.cs
-│   ├── App/              # AddAppInterface, GetAppInterface, UpdateAppInterface, ...
+│   ├── App/              # AddAppInterface, GetAppInterface, BootstrapAppConfiguration, ...
 │   ├── Cli/              # ListCliCommands, GetParentArguments, AddCliCommand, AddCliArgument
 │   ├── DI/               # ListAllSettings, AddServiceConfiguration, SetServiceDependency, ...
 │   ├── Error/            # AddError, GetError, ListErrors, RenameError, ...
@@ -47,12 +50,12 @@ Tiferet/
 │   ├── TransferObject.cs
 │   ├── App/              # AppInterfaceAggregate, AppInterfaceYamlObject
 │   ├── Cli/              # CliCommandAggregate, CliCommandYamlObject
-│   ├── DI/               # ServiceConfigurationAggregate, FlaggedDependencyAggregate, DIYamlObject
+│   ├── DI/               # DIAggregate, DIYamlObject
 │   ├── Error/            # ErrorAggregate, ErrorYamlObject
-│   ├── Feature/          # FeatureAggregate, FeatureEventAggregate, FeatureYamlObject
-│   └── Logging/          # FormatterAggregate, HandlerAggregate, LoggerAggregate, LoggingYamlObject
-├── Repositories/         # Flat YAML-backed repos: AppYamlRepository, FeatureYamlRepository, ErrorYamlRepository, ...
-└── Utilities/            # Flat: FileLoader, YamlLoader, JsonLoader, CsvLoader, SqliteClient, ReflectionActivator
+│   ├── Feature/          # FeatureAggregate, FeatureYamlObject
+│   └── Logging/          # LoggingAggregate, LoggingYamlObject
+├── Repositories/         # Flat YAML-backed repos + generic YamlRepository base
+└── Utilities/            # Flat: FileLoader, YamlLoader, JsonLoader, CsvLoader, CsvDictLoader, CsvParser, SqliteClient, ReflectionActivator
 ```
 
 ### Companion Projects
@@ -95,10 +98,20 @@ All domain objects that map directly to YAML/JSON configuration use the `Configu
 
 ### Runtime Flow
 
-1. `AppBlueprint.BuildApp(interfaceId, configDir)` — loads `app.yml`, wires all contexts and repositories, returns `AppInterfaceContext`
-2. `AppInterfaceContext.Run(featureId, data)` — parses request, executes feature pipeline, handles response
-3. `FeatureContext.ExecuteFeature` — loads feature config, resolves event dependencies via `DIContext`, executes each step sequentially
-4. Each step is a `DomainEvent` subclass resolved by `DynamicServiceResolver`
+Tiferet supports two bootstrapping modes:
+
+**Standalone** (no external DI):
+1. `AppBlueprint.BuildApp(interfaceId, configDir)` — loads config, wires all contexts and repositories, returns `AppInterfaceContext`
+
+**Host-integrated** (Microsoft.Extensions.DependencyInjection):
+1. `AppBlueprint.ConfigureServices(services, options)` — registers all Tiferet services into `IServiceCollection`
+2. `AppBlueprint.BuildApp(provider)` — resolves `AppInterfaceContext` from the service provider
+3. Or use `services.AddTiferet(config)` / `builder.UseTiferet()` extension methods
+
+Both paths converge on the same execution flow:
+1. `AppInterfaceContext.Run(featureId, data)` — parses request, executes feature pipeline, handles response
+2. `FeatureContext.ExecuteFeature` — loads feature config, resolves event dependencies via `DIContext`, executes each step sequentially
+3. Each step is a `DomainEvent` subclass resolved by `DynamicServiceResolver`
 
 ### Exception Hierarchy
 
@@ -109,16 +122,16 @@ Both live in `Tiferet.Events`:
 
 ## Configuration Files
 
-Applications configure behavior via YAML in `app/configs/`:
+Applications configure behavior via YAML. As of beta 5, a single consolidated `config.yml` is supported (individual files also work):
 
-| File | Key | Purpose |
+| Section | Key | Purpose |
 |---|---|---|
-| `app.yml` | `interfaces` | App interface definitions (`AppInterfaceConfiguration`) |
-| `container.yml` | `services` / `const` | DI service configurations (`ServiceConfiguration`) |
-| `feature.yml` | `features` | Feature workflow definitions (`FeatureConfiguration`) |
-| `error.yml` | `errors` | Error definitions with multilingual messages (`ErrorConfiguration`) |
-| `cli.yml` | `cli.cmds` | CLI command definitions (`CliCommandConfiguration`) |
-| `logging.yml` | `logging` | Logging formatters, handlers, and loggers |
+| interfaces | `interfaces` | App interface definitions (`AppInterfaceConfiguration`) |
+| services | `services` / `const` | DI service configurations (`ServiceConfiguration`) |
+| features | `features` | Feature workflow definitions (`FeatureConfiguration`) |
+| errors | `errors` | Error definitions with multilingual messages (`ErrorConfiguration`) |
+| cli | `cli.cmds` | CLI command definitions (`CliCommandConfiguration`) |
+| logging | `logging` | Logging formatters, handlers, and loggers |
 
 ## Building and Testing
 
@@ -146,17 +159,15 @@ All code follows a strict artifact comment hierarchy:
 
 One empty line between `// ***` and first `// **`; one empty line between each `// *` section; one empty line after docstrings and between code snippets.
 
-## Package Naming Roadmap
+## Version Roadmap
 
 - **Beta 1** (`1.0.0-beta.1`): Single `Tiferet` package; YAML configuration baked in.
 - **Beta 2** (`1.0.0-beta.2`): `Create` factories on aggregates, `DomainObject.Validate`, domain records purely structural.
 - **Beta 3** (`1.0.0-beta.3`): Aggregate evolution — `Aggregate` is now an `abstract record` extending `DomainObject` directly (no generic wrapper). All concrete aggregates are positional records. `.Domain` property removed; consumers access fields directly on aggregates. `TransferObject<TAggregate>` uses single type parameter.
+- **Beta 4** (`1.0.0-beta.4`): Domain Layer Alignment — `ErrorCodes` and `DefaultErrors` moved from `Assets` to `Domain`. `TiferetDomainException` added.
+- **Beta 5** (`1.0.0-beta.5`): Assets namespace with `ConfigurationDefaults`, `BootstrapAppConfiguration` event, consolidated `config.yml` support.
+- **Beta 6** (`1.0.0-beta.6`): Microsoft.Extensions.DependencyInjection integration — `TiferetOptions`, `AppBlueprint.ConfigureServices`, `AddTiferet` / `UseTiferet` extensions, `TiferetHostExtensions`.
 
 ## Contributing
 
-1. Tie work to a GitHub issue.
-2. Write a TRD for non-trivial changes.
-3. Implement following structured code style and namespace conventions above.
-4. Separate functional changes from docs/config in distinct commits.
-5. Include `Co-Authored-By:` lines when collaborating with AI agents.
-6. Publish a Collaboration Report on the issue upon completion.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full workflow, including prototype branching conventions (`beta-<N>-proto` worktree branches).

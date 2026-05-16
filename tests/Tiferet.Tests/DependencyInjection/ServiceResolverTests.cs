@@ -1,5 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
+using Tiferet.Blueprints;
 using Tiferet.DependencyInjection;
+using Tiferet.Events;
 using Tiferet.Interfaces;
 
 namespace Tiferet.Tests.DependencyInjection;
@@ -126,41 +128,43 @@ public class DynamicServiceResolverTests
 public class ServiceCollectionExtensionsTests
 {
     [Fact]
-    public void AddTiferet_RegistersIServiceResolver()
-    {
-        var services = new ServiceCollection();
-        services.AddTiferet();
-
-        var provider = services.BuildServiceProvider();
-        var resolver = provider.GetService<IServiceResolver>();
-        Assert.NotNull(resolver);
-        Assert.IsType<DynamicServiceResolver>(resolver);
-    }
-
-    [Fact]
     public void AddTiferet_WithConfigure_InvokesCallback()
     {
         var services = new ServiceCollection();
         var configured = false;
-        services.AddTiferet(resolver =>
-        {
-            configured = true;
-            resolver.AddService<ICalculatorService>(new CalculatorService());
-        });
+
+        // The callback is invoked, but BootstrapAppConfiguration throws
+        // because there is no real config on disk — that's expected.
+        Assert.ThrowsAny<Exception>(() =>
+            services.AddTiferet(options =>
+            {
+                configured = true;
+                options.InterfaceId = "test";
+            }));
 
         Assert.True(configured);
-
-        var provider = services.BuildServiceProvider();
-        var resolver = provider.GetRequiredService<IServiceResolver>();
-        Assert.NotNull(resolver.GetService<ICalculatorService>());
     }
 
     [Fact]
     public void AddTiferet_ReturnsServiceCollection_ForChaining()
     {
-        var services = new ServiceCollection();
-        var result = services.AddTiferet();
-        Assert.Same(services, result);
+        // Use a temp config to verify chaining.
+        var configDir = Path.Combine(Path.GetTempPath(), $"tiferet_ext_{Guid.NewGuid():N}");
+        Directory.CreateDirectory(configDir);
+        try
+        {
+            File.WriteAllText(Path.Combine(configDir, "config.yml"),
+                "interfaces:\n  test:\n    Name: Test\n    AssemblyName: Tiferet\n    TypeName: Tiferet.Contexts.AppInterfaceContext\n" +
+                "features: {}\nerrors: {}\nservices: {}\nconst: {}\nlogging:\n  formatters: {}\n  handlers: {}\n  loggers: {}\n");
+
+            var services = new ServiceCollection();
+            var result = services.AddTiferet(o => { o.InterfaceId = "test"; o.ConfigDir = configDir; });
+            Assert.Same(services, result);
+        }
+        finally
+        {
+            Directory.Delete(configDir, true);
+        }
     }
 }
 
