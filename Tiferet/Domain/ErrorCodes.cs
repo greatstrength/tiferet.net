@@ -95,4 +95,8 @@ public static class ErrorCodes
     public const string UnsupportedConfigFileType = "UNSUPPORTED_CONFIG_FILE_TYPE";
     public const string AppError = "APP_ERROR";
     public const string ConfigFileNotFound = "CONFIG_FILE_NOT_FOUND";
+
+    // HTTP errors
+    public const string HttpRequestFailed = "HTTP_REQUEST_FAILED";
+    public const string HttpDeserializationFailed = "HTTP_DESERIALIZATION_FAILED";
 }

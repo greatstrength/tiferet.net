@@ -158,4 +158,49 @@ public class AppInterfaceContext : IDisposable
 
         return HandleResponse(request);
     }
+
+    /// <summary>
+    /// Run the full application pipeline asynchronously: parse request, execute feature,
+    /// handle response — with timing and error handling.
+    /// Supports <see cref="AsyncDomainEvent"/> steps without deadlocking.
+    /// </summary>
+    /// <param name="featureId">The feature identifier.</param>
+    /// <param name="headers">Optional request headers.</param>
+    /// <param name="data">Optional request data.</param>
+    /// <returns>The feature execution result.</returns>
+    public async Task<object?> RunAsync(
+        string featureId,
+        Dictionary<string, string>? headers = null,
+        Dictionary<string, object?>? data = null)
+    {
+        var stopwatch = Stopwatch.StartNew();
+
+        // Build a logger for this execution.
+        var logger = _logging.BuildLogger();
+
+        // Parse the request.
+        logger.LogDebug("Parsing request for feature: {FeatureId}", featureId);
+        var request = ParseRequest(headers, data, featureId);
+
+        try
+        {
+            // Execute the feature asynchronously.
+            logger.LogDebug("Executing feature (async): {FeatureId}", featureId);
+            request.Headers["FeatureId"] = featureId;
+            await _features.ExecuteFeatureAsync(featureId, request);
+        }
+        catch (TiferetException e)
+        {
+            logger.LogError("ErrorConfiguration executing feature {FeatureId}: {ErrorConfiguration}", featureId, e.Message);
+            return HandleError(e);
+        }
+
+        stopwatch.Stop();
+        var durationMs = stopwatch.ElapsedMilliseconds;
+
+        logger.LogDebug("FeatureConfiguration {FeatureId} executed successfully, handling response.", featureId);
+        logger.LogInformation("Executed FeatureConfiguration (async) - {FeatureId} ({DurationMs}ms)", featureId, durationMs);
+
+        return HandleResponse(request);
+    }
 }

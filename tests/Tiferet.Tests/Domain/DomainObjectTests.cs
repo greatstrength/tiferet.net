@@ -38,4 +38,37 @@ public class DomainObjectTests
     {
         Assert.True(typeof(DomainObject).IsAbstract);
     }
+
+    [Fact]
+    public void Validate_IsPublicStatic()
+    {
+        // Verify the method is accessible from outside the assembly.
+        var method = typeof(DomainObject).GetMethod("Validate",
+            System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+        Assert.NotNull(method);
+    }
+
+    [Fact]
+    public void Validate_PassesOnValidRecord()
+    {
+        var record = new TestDomainObject("1", "Valid");
+        // Should not throw.
+        DomainObject.Validate(record);
+    }
+
+    [Fact]
+    public void Validate_ThrowsTiferetDomainException_OnInvalidRecord()
+    {
+        // TestDomainObjectRequired has [Required] on Name.
+        var record = new TestDomainObjectRequired("", null!);
+        var ex = Assert.Throws<TiferetDomainException>(
+            () => DomainObject.Validate(record));
+        Assert.True(ex.Failures.Count > 0);
+    }
 }
+
+// A domain record with Required annotation for validation testing.
+public sealed record TestDomainObjectRequired(
+    string Id,
+    [property: System.ComponentModel.DataAnnotations.Required] string Name
+) : DomainObject;

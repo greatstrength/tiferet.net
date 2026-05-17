@@ -258,4 +258,91 @@ public class FeatureContext
                 extraParams: parsedParams);
         }
     }
+
+    /// <summary>
+    /// Handle execution of a single command asynchronously.
+    /// If the command is an <see cref="AsyncDomainEvent"/>, calls <c>ExecuteAsync</c>;
+    /// otherwise falls back to synchronous <c>Execute</c>.
+    /// </summary>
+    /// <param name="command">The domain event to execute.</param>
+    /// <param name="request">The request context.</param>
+    /// <param name="dataKey">Optional key to store the result in request data.</param>
+    /// <param name="passOnError">If true, swallow errors and set result to null.</param>
+    /// <param name="extraParams">Additional parameters to merge with request data.</param>
+    public async Task HandleCommandAsync(
+        DomainEvent command,
+        RequestContext request,
+        string? dataKey = null,
+        bool passOnError = false,
+        Dictionary<string, object?>? extraParams = null)
+    {
+        // Merge request data with extra parameters.
+        var data = new Dictionary<string, object?>(request.Data);
+        if (extraParams is not null)
+        {
+            foreach (var (key, value) in extraParams)
+                data[key] = value;
+        }
+
+        try
+        {
+            // Prefer async execution when the event supports it.
+            object? result = command is AsyncDomainEvent asyncEvent
+                ? await asyncEvent.ExecuteAsync(data)
+                : command.Execute(data);
+
+            // Store the result via the request context.
+            request.SetResult(result, dataKey);
+        }
+        catch (Exception)
+        {
+            if (!passOnError)
+                throw;
+
+            // Set result to null when passing on the error.
+            request.SetResult(null, dataKey);
+        }
+    }
+
+    /// <summary>
+    /// Execute a feature asynchronously by its ID with the provided request.
+    /// Iterates over configured steps, evaluates conditions, resolves events,
+    /// parses parameters, and executes each step sequentially using the async path.
+    /// </summary>
+    /// <param name="featureId">The feature identifier.</param>
+    /// <param name="request">The request context.</param>
+    public async Task ExecuteFeatureAsync(string featureId, RequestContext request)
+    {
+        // Load the feature by ID, using cache when possible.
+        var feature = LoadFeature(featureId);
+
+        // Execute by iterating over configured steps.
+        if (feature.Steps is null) return;
+
+        foreach (var step in feature.Steps)
+        {
+            // Evaluate the step condition; skip if false.
+            if (!EvaluateCondition(step.Condition, request))
+                continue;
+
+            // Load the event dependency for this step.
+            var command = LoadFeatureStep(step, feature.Flags);
+
+            // Parse the step parameters.
+            var parsedParams = new Dictionary<string, object?>();
+            if (step.Parameters is not null)
+            {
+                foreach (var (paramKey, paramValue) in step.Parameters)
+                    parsedParams[paramKey] = ParseRequestParameter(paramValue, request);
+            }
+
+            // Execute the step asynchronously.
+            await HandleCommandAsync(
+                command,
+                request,
+                dataKey: step.DataKey,
+                passOnError: step.PassOnError,
+                extraParams: parsedParams);
+        }
+    }
 }
