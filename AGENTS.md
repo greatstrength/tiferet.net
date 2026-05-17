@@ -1,13 +1,13 @@
-# AGENTS.md — Tiferet.NET (v1.0.0-beta.6)
+# AGENTS.md — Tiferet.NET (v1.0.0-beta.7)
 
 ## Project Overview
 
-**Tiferet.NET** is a .NET 9 framework for Domain-Driven Design (DDD). It provides a layered architecture for building applications with typed domain events, configuration-driven feature workflows, service interfaces, dependency injection, and YAML-backed repositories. It is the C# port of the [Tiferet Python framework](https://github.com/greatstrength/tiferet).
+**Tiferet.NET** is a .NET 9 framework for Domain-Driven Design (DDD). It provides a layered architecture for building applications with typed domain events (sync and async), configuration-driven feature workflows, service interfaces, dependency injection, YAML-backed repositories, and HTTP-backed repositories with JSON transfer object infrastructure. It is the C# port of the [Tiferet Python framework](https://github.com/greatstrength/tiferet).
 
 - **Repository:** https://github.com/greatstrength/tiferet.net
-- **Branch:** `v1.x-proto` (development on `beta-6-proto` worktree)
+- **Branch:** `v1.x-proto` (development on `49-consumer-wishlist-proto` worktree)
 - **.NET:** 9.0
-- **Version:** `1.0.0-beta.6`
+- **Version:** `1.0.0-beta.7`
 
 ## Architecture
 
@@ -32,8 +32,9 @@ Tiferet/
 │   ├── Error/            # ErrorConfiguration, ErrorMessageConfiguration, ErrorResponse
 │   ├── Feature/          # FeatureConfiguration, FeatureEventConfiguration, FeatureStepConfiguration
 │   └── Logging/          # FormatterConfiguration, HandlerConfiguration, LoggerConfiguration
-├── Events/               # DomainEvent base + exceptions + static helpers
+├── Events/               # DomainEvent base + async events + exceptions + static helpers
 │   ├── DomainEvent.cs
+│   ├── AsyncDomainEvent.cs   # Async domain event base (sync adapter + async pipeline)
 │   ├── TiferetException.cs
 │   ├── TiferetApiException.cs
 │   ├── ParseParameter.cs
@@ -44,23 +45,26 @@ Tiferet/
 │   ├── Error/            # AddError, GetError, ListErrors, RenameError, ...
 │   ├── Feature/          # AddFeature, GetFeature, ListFeatures, UpdateFeature, AddFeatureStep, ...
 │   └── Logging/          # ListAllLoggingConfigs, AddFormatter, AddHandler, AddLogger, ...
-├── Interfaces/           # Flat: IService, IRepository<T>, IAppService, IFeatureService, IErrorService, ICliService, IDIService, IConfigurationService, IFileService, ISqliteService, ILoggingService
-├── Mappers/              # Aggregate, TransferObject base classes + domain subnamespaces
+├── Interfaces/           # Flat: IService, IRepository<T>, IAuthTokenProvider, IAppService, IFeatureService, IErrorService, ICliService, IDIService, IConfigurationService, IFileService, ISqliteService, ILoggingService
+├── Mappers/              # Aggregate, TransferObject, JsonTransferObject base classes + domain subnamespaces
 │   ├── Aggregate.cs
 │   ├── TransferObject.cs
+│   ├── JsonTransferObject.cs # JSON transfer object base with DeserializeAndMap
 │   ├── App/              # AppInterfaceAggregate, AppInterfaceYamlObject
 │   ├── Cli/              # CliCommandAggregate, CliCommandYamlObject
 │   ├── DI/               # DIAggregate, DIYamlObject
 │   ├── Error/            # ErrorAggregate, ErrorYamlObject
 │   ├── Feature/          # FeatureAggregate, FeatureYamlObject
 │   └── Logging/          # LoggingAggregate, LoggingYamlObject
-├── Repositories/         # Flat YAML-backed repos + generic YamlRepository base
-└── Utilities/            # Flat: FileLoader, YamlLoader, JsonLoader, CsvLoader, CsvDictLoader, CsvParser, SqliteClient, ReflectionActivator
+├── Repositories/         # YAML-backed repos + HTTP-backed repo base + generic YamlRepository base
+│   └── HttpRepository.cs    # Abstract HTTP repository with IHttpClientFactory + IAuthTokenProvider
+└── Utilities/            # FileLoader, YamlLoader, JsonLoader, CsvLoader, CsvDictLoader, CsvParser, SqliteClient, ReflectionActivator
+    └── Json/             # NamingConvention, JsonNamingAttribute, ConventionNamingResolver, JsonSerializerHelper
 ```
 
 ### Companion Projects
 
-- `Tiferet.Testing` — Test harness, base classes, and `DomainEventHarness` helpers for consumer test projects.
+- `Tiferet.Testing` — Test harness, base classes (`DomainEventHarness`, `AggregateTestBase`, `TransferObjectTestBase`, `JsonTransferObjectTestBase`) for consumer test projects.
 - `tests/Tiferet.Tests` — Framework unit tests (references both `Tiferet` and `Tiferet.Testing`).
 - `tests/Tiferet.Tests.Integration` — Integration tests.
 - `examples/Tiferet.Examples.Calculator` — Calculator example app.
@@ -83,7 +87,7 @@ All domain objects that map directly to YAML/JSON configuration use the `Configu
 
 ### DomainEvent
 
-`DomainEvent<TParams, TResult>` is the base for all domain operations:
+`DomainEvent<TParams, TResult>` is the base for all synchronous domain operations:
 
 - Typed entry point: `TResult Execute(TParams parameters)`
 - Runtime entry point: `object? Execute(Dictionary<string, object?> data)` (used by the feature pipeline)
@@ -91,10 +95,23 @@ All domain objects that map directly to YAML/JSON configuration use the `Configu
 - `RaiseError(string errorCode, ...)` — direct structured error raising
 - Params records are co-located in the same `.cs` file as the event class
 
+### AsyncDomainEvent
+
+`AsyncDomainEvent<TParams, TResult>` is the base for asynchronous domain operations:
+
+- Typed entry point: `Task<TResult> ExecuteAsync(TParams parameters)`
+- Runtime entry point: `Task<object?> ExecuteAsync(Dictionary<string, object?> data)`
+- Sync adapter: overrides `Execute(Dictionary<string, object?> data)` via `Task.Run` to avoid `SynchronizationContext` deadlocks — async events work in the existing sync pipeline with no caller changes
+- Inherits `Verify`, `VerifyNotNull`, `VerifyNotExists`, and `RaiseError` from `DomainEvent`
+- `FeatureContext.ExecuteFeatureAsync` and `AppInterfaceContext.RunAsync` provide the native async pipeline
+
 ### Aggregate and TransferObject
 
 - `Aggregate` — abstract record extending `DomainObject`. The aggregate IS the domain object (no wrapper). Exposes `SetAttribute` for validated in-place mutation via reflection. Concrete aggregates are positional records (e.g., `record ErrorAggregate(string Id, string Name, ...) : Aggregate`).
+- `DomainObject.Validate` — `public static` method for Data Annotations validation. Callable from consumer assemblies in `Aggregate.Create()` factories.
 - `TransferObject` / `TransferObject<TAggregate>` — bridges YAML/JSON persistence and runtime aggregates via `Map()` and `ToDictionary(role)`. Single type parameter constrained to `Aggregate`.
+- `JsonTransferObject<TAggregate>` — extends `TransferObject<TAggregate>` for JSON API deserialization with convention-aware naming. Provides `DeserializeAndMap<TTransfer>()` convenience.
+- `HttpRepository<TAggregate>` — abstract HTTP-backed repository with `IHttpClientFactory` integration, `IAuthTokenProvider` auth injection, and template methods (`GetAsync`, `PostAsync`, `PutAsync`, `DeleteAsync`) with automatic transfer object `.Map()` calls.
 
 ### Runtime Flow
 
@@ -109,9 +126,10 @@ Tiferet supports two bootstrapping modes:
 3. Or use `services.AddTiferet(config)` / `builder.UseTiferet()` extension methods
 
 Both paths converge on the same execution flow:
-1. `AppInterfaceContext.Run(featureId, data)` — parses request, executes feature pipeline, handles response
-2. `FeatureContext.ExecuteFeature` — loads feature config, resolves event dependencies via `DIContext`, executes each step sequentially
-3. Each step is a `DomainEvent` subclass resolved by `DynamicServiceResolver`
+1. `AppInterfaceContext.Run(featureId, data)` — parses request, executes feature pipeline, handles response (sync)
+2. `AppInterfaceContext.RunAsync(featureId, data)` — async equivalent for pipelines with `AsyncDomainEvent` steps
+3. `FeatureContext.ExecuteFeature` / `ExecuteFeatureAsync` — loads feature config, resolves event dependencies via `DIContext`, executes each step sequentially
+4. Each step is a `DomainEvent` or `AsyncDomainEvent` subclass resolved by `DynamicServiceResolver`
 
 ### Exception Hierarchy
 
@@ -167,6 +185,7 @@ One empty line between `// ***` and first `// **`; one empty line between each `
 - **Beta 4** (`1.0.0-beta.4`): Domain Layer Alignment — `ErrorCodes` and `DefaultErrors` moved from `Assets` to `Domain`. `TiferetDomainException` added.
 - **Beta 5** (`1.0.0-beta.5`): Assets namespace with `ConfigurationDefaults`, `BootstrapAppConfiguration` event, consolidated `config.yml` support.
 - **Beta 6** (`1.0.0-beta.6`): Microsoft.Extensions.DependencyInjection integration — `TiferetOptions`, `AppBlueprint.ConfigureServices`, `AddTiferet` / `UseTiferet` extensions, `TiferetHostExtensions`.
+- **Beta 7** (`1.0.0-beta.7`): Consumer wishlist — `DomainObject.Validate` public accessibility, `AsyncDomainEvent` with sync adapter and async pipeline, JSON transfer object infrastructure (`JsonNamingAttribute`, `ConventionNamingResolver`, `JsonSerializerHelper`, `JsonTransferObject<T>`), `HttpRepository<T>` with `IAuthTokenProvider`, `Tiferet.Testing` harnesses (`AggregateTestBase`, `TransferObjectTestBase`, `JsonTransferObjectTestBase`).
 
 ## Contributing
 

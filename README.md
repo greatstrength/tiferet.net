@@ -2,7 +2,7 @@
 
 > **Beta software.** APIs are stabilizing. Breaking changes are possible before 1.0.
 
-A .NET framework for Domain-Driven Design — configuration-driven features, typed domain events, generic service contracts, and YAML-backed repositories. The C# port of the [Tiferet Python framework](https://github.com/greatstrength/tiferet).
+A .NET framework for Domain-Driven Design — configuration-driven features, typed domain events (sync and async), generic service contracts, YAML and HTTP-backed repositories, and JSON transfer object infrastructure. The C# port of the [Tiferet Python framework](https://github.com/greatstrength/tiferet).
 
 ## Installation
 
@@ -95,6 +95,61 @@ var cli = CliBlueprint.BuildCli("my_app", configDir: "app/configs");
 await cli.InvokeAsync(args);
 ```
 
+## Async Domain Events
+
+For events backed by async services (e.g., HTTP clients), extend `AsyncDomainEvent<TParams, TResult>`:
+
+```csharp
+using Tiferet.Events;
+
+public class FetchUser : AsyncDomainEvent<FetchUserParams, User>
+{
+    private readonly IUserApiClient _client;
+    public FetchUser(IUserApiClient client) => _client = client;
+
+    public override async Task<User> ExecuteAsync(FetchUserParams p)
+        => await _client.GetUserAsync(p.UserId);
+}
+```
+
+Async events work in the sync pipeline automatically (via a `Task.Run` adapter), or natively via `app.RunAsync()`.
+
+## JSON Transfer Objects
+
+For REST API integrations, use `JsonTransferObject<TAggregate>` with naming convention support:
+
+```csharp
+using Tiferet.Mappers;
+using Tiferet.Utilities.Json;
+
+[JsonNaming(NamingConvention.SnakeCase)]
+public class UserJson : JsonTransferObject<UserAggregate>
+{
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+
+    public override UserAggregate Map(Dictionary<string, object?>? overrides = null)
+        => UserAggregate.Create(FirstName, LastName);
+}
+```
+
+## HTTP Repositories
+
+Extend `HttpRepository<TAggregate>` for HTTP-backed persistence:
+
+```csharp
+using Tiferet.Repositories;
+
+public class UserRepository : HttpRepository<UserAggregate>
+{
+    public UserRepository(IHttpClientFactory factory, IAuthTokenProvider? auth = null)
+        : base(factory, auth) { }
+
+    public Task<UserAggregate> GetUser(string id)
+        => GetAsync<UserJson>($"/api/users/{id}");
+}
+```
+
 ## Error Handling
 
 Framework errors are raised as `TiferetApiException`. Define error messages in `app/configs/error.yml` and reference them by code in your domain events:
@@ -102,6 +157,15 @@ Framework errors are raised as `TiferetApiException`. Define error messages in `
 ```csharp
 Verify(b != 0, "DIVISION_BY_ZERO", "Cannot divide by zero.");
 ```
+
+## Testing
+
+`Tiferet.Testing` provides base classes for testing aggregates, transfer objects, and domain events:
+
+- `DomainEventHarness` — sync and async event execution + error assertion
+- `AggregateTestBase<TAggregate, TDomain>` — auto-tests for Create factory, delegated properties, ToDomainObject round-trip
+- `TransferObjectTestBase<TTransfer, TAggregate>` — auto-tests for Map() verification
+- `JsonTransferObjectTestBase<TTransfer, TAggregate>` — adds JSON deserialization round-trip
 
 ## Examples
 
