@@ -13,6 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tiferet.Tests.Integration",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tiferet.Testing", "Tiferet.Testing\Tiferet.Testing.csproj", "{44EED980-8B4B-4497-B26C-C7EB603221E0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{B36A84DF-456D-A817-6EDD-3EC3E7F6E11F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tiferet.Examples.WebApi", "examples\Tiferet.Examples.WebApi\Tiferet.Examples.WebApi.csproj", "{CED44B5B-34C1-4B84-8BD7-9D04EE68BD6A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,8 +75,23 @@ Global
 		{44EED980-8B4B-4497-B26C-C7EB603221E0}.Release|x64.Build.0 = Release|Any CPU
 		{44EED980-8B4B-4497-B26C-C7EB603221E0}.Release|x86.ActiveCfg = Release|Any CPU
 		{44EED980-8B4B-4497-B26C-C7EB603221E0}.Release|x86.Build.0 = Release|Any CPU
+		{CED44B5B-34C1-4B84-8BD7-9D04EE68BD6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CED44B5B-34C1-4B84-8BD7-9D04EE68BD6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CED44B5B-34C1-4B84-8BD7-9D04EE68BD6A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CED44B5B-34C1-4B84-8BD7-9D04EE68BD6A}.Debug|x64.Build.0 = Debug|Any CPU
+		{CED44B5B-34C1-4B84-8BD7-9D04EE68BD6A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CED44B5B-34C1-4B84-8BD7-9D04EE68BD6A}.Debug|x86.Build.0 = Debug|Any CPU
+		{CED44B5B-34C1-4B84-8BD7-9D04EE68BD6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CED44B5B-34C1-4B84-8BD7-9D04EE68BD6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CED44B5B-34C1-4B84-8BD7-9D04EE68BD6A}.Release|x64.ActiveCfg = Release|Any CPU
+		{CED44B5B-34C1-4B84-8BD7-9D04EE68BD6A}.Release|x64.Build.0 = Release|Any CPU
+		{CED44B5B-34C1-4B84-8BD7-9D04EE68BD6A}.Release|x86.ActiveCfg = Release|Any CPU
+		{CED44B5B-34C1-4B84-8BD7-9D04EE68BD6A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CED44B5B-34C1-4B84-8BD7-9D04EE68BD6A} = {B36A84DF-456D-A817-6EDD-3EC3E7F6E11F}
 	EndGlobalSection
 EndGlobal
