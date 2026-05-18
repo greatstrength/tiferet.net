@@ -1,0 +1,80 @@
+interfaces:
+  task_api:
+    Name: Task List API
+    AssemblyName: Tiferet.Examples.WebApi
+    TypeName: Tiferet.Examples.WebApi.Program
+    Description: A simple task list REST API demonstrating WebBlueprint
+
+services:
+  save_task_event:
+    AssemblyName: Tiferet.Examples.WebApi
+    TypeName: Tiferet.Examples.WebApi.Events.SaveTask
+  list_tasks_event:
+    AssemblyName: Tiferet.Examples.WebApi
+    TypeName: Tiferet.Examples.WebApi.Events.ListTasks
+  get_task_event:
+    AssemblyName: Tiferet.Examples.WebApi
+    TypeName: Tiferet.Examples.WebApi.Events.GetTask
+  update_task_event:
+    AssemblyName: Tiferet.Examples.WebApi
+    TypeName: Tiferet.Examples.WebApi.Events.UpdateTask
+  delete_task_event:
+    AssemblyName: Tiferet.Examples.WebApi
+    TypeName: Tiferet.Examples.WebApi.Events.DeleteTask
+  persist_task_event:
+    AssemblyName: Tiferet.Examples.WebApi
+    TypeName: Tiferet.Examples.WebApi.Events.PersistTask
+const: {}
+
+features:
+  task:
+    create:
+      Name: Create Task
+      Description: Create a new task with title and optional description
+      Steps:
+        - ServiceId: save_task_event
+          Name: Save the task
+    list:
+      Name: List Tasks
+      Description: List all tasks
+      Steps:
+        - ServiceId: list_tasks_event
+          Name: Retrieve all tasks
+    get:
+      Name: Get Task
+      Description: Get a single task by ID
+      Steps:
+        - ServiceId: get_task_event
+          Name: Retrieve task by ID
+    update:
+      Name: Update Task
+      Description: Update an existing task
+      Steps:
+        - ServiceId: get_task_event
+          Name: Verify task exists
+          PassOnError: false
+        - ServiceId: update_task_event
+          Name: Apply updates
+    delete:
+      Name: Delete Task
+      Description: Delete a task by ID
+      Steps:
+        - ServiceId: delete_task_event
+          Name: Remove task
+
+errors:
+  MISSING_TITLE:
+    Name: Missing Title
+    Messages:
+      - Lang: en_US
+        Text: 'Task title is required'
+  TASK_NOT_FOUND:
+    Name: Task Not Found
+    Messages:
+      - Lang: en_US
+        Text: 'Task {Id} was not found'
+
+logging:
+  formatters: {}
+  handlers: {}
+  loggers: {}

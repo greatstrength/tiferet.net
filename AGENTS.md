@@ -1,13 +1,13 @@
-# AGENTS.md — Tiferet.NET (v1.0.0-beta.7)
+# AGENTS.md — Tiferet.NET (v1.0.0-beta.8)
 
 ## Project Overview
 
 **Tiferet.NET** is a .NET 9 framework for Domain-Driven Design (DDD). It provides a layered architecture for building applications with typed domain events (sync and async), configuration-driven feature workflows, service interfaces, dependency injection, YAML-backed repositories, and HTTP-backed repositories with JSON transfer object infrastructure. It is the C# port of the [Tiferet Python framework](https://github.com/greatstrength/tiferet).
 
 - **Repository:** https://github.com/greatstrength/tiferet.net
-- **Branch:** `v1.x-proto` (development on `49-consumer-wishlist-proto` worktree)
+- **Branch:** `v1.x-proto` (development on `51-beta-8-proto` worktree)
 - **.NET:** 9.0
-- **Version:** `1.0.0-beta.7`
+- **Version:** `1.0.0-beta.8`
 
 ## Architecture
 
@@ -56,8 +56,9 @@ Tiferet/
 │   ├── Error/            # ErrorAggregate, ErrorYamlObject
 │   ├── Feature/          # FeatureAggregate, FeatureYamlObject
 │   └── Logging/          # LoggingAggregate, LoggingYamlObject
-├── Repositories/         # YAML-backed repos + HTTP-backed repo base + generic YamlRepository base
-│   └── HttpRepository.cs    # Abstract HTTP repository with IHttpClientFactory + IAuthTokenProvider
+├── Repositories/         # YAML-backed repos + HTTP/SQLite-backed repo bases + generic YamlRepository base
+│   ├── HttpRepository.cs    # Abstract HTTP repository with IHttpClientFactory + IAuthTokenProvider
+│   └── SqliteRepository.cs  # Abstract SQLite repository with SqliteClient-backed CRUD
 └── Utilities/            # FileLoader, YamlLoader, JsonLoader, CsvLoader, CsvDictLoader, CsvParser, SqliteClient, ReflectionActivator
     └── Json/             # NamingConvention, JsonNamingAttribute, ConventionNamingResolver, JsonSerializerHelper
 ```
@@ -68,6 +69,7 @@ Tiferet/
 - `tests/Tiferet.Tests` — Framework unit tests (references both `Tiferet` and `Tiferet.Testing`).
 - `tests/Tiferet.Tests.Integration` — Integration tests.
 - `examples/Tiferet.Examples.Calculator` — Calculator example app.
+- `examples/Tiferet.Examples.WebApi` — Task list REST API example (WebBlueprint + health checks).
 
 ## Key Concepts
 
@@ -186,6 +188,7 @@ One empty line between `// ***` and first `// **`; one empty line between each `
 - **Beta 5** (`1.0.0-beta.5`): Assets namespace with `ConfigurationDefaults`, `BootstrapAppConfiguration` event, consolidated `config.yml` support.
 - **Beta 6** (`1.0.0-beta.6`): Microsoft.Extensions.DependencyInjection integration — `TiferetOptions`, `AppBlueprint.ConfigureServices`, `AddTiferet` / `UseTiferet` extensions, `TiferetHostExtensions`.
 - **Beta 7** (`1.0.0-beta.7`): Consumer wishlist — `DomainObject.Validate` public accessibility, `AsyncDomainEvent` with sync adapter and async pipeline, JSON transfer object infrastructure (`JsonNamingAttribute`, `ConventionNamingResolver`, `JsonSerializerHelper`, `JsonTransferObject<T>`), `HttpRepository<T>` with `IAuthTokenProvider`, `Tiferet.Testing` harnesses (`AggregateTestBase`, `TransferObjectTestBase`, `JsonTransferObjectTestBase`).
+- **Beta 8** (`1.0.0-beta.8`): Prototype wishlist — `SqliteRepository<T>` generic base class, `WebBlueprint` for ASP.NET Minimal API endpoint generation from feature config, `IHealthCheck` implementations (`YamlConfigHealthCheck`, `SqliteHealthCheck`) with `AddTiferetHealthChecks` extension, Task List Web API example.
 
 ## Contributing
 
