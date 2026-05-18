@@ -176,6 +176,32 @@ Verify(b != 0, "DIVISION_BY_ZERO", "Cannot divide by zero.");
 - [Tutorial](https://github.com/greatstrength/tiferet.net/blob/v1.x-proto/docs/tutorial.md) — step-by-step walkthrough building the calculator app from scratch
 - [Architecture](https://github.com/greatstrength/tiferet.net/blob/v1.x-proto/docs/architecture.md) — layer diagram, responsibilities, and runtime flow
 
+### Core (Internal Design)
+
+Component-level design documentation for framework contributors and AI agents.
+
+- [Code Style](docs/core/code_style.md) — artifact comments, naming, spacing, and formatting conventions
+- [Domain](docs/core/domain.md) — `DomainObject` base record and domain module design
+- [Events](docs/core/events.md) — `DomainEvent`, `AsyncDomainEvent`, and exception hierarchy
+- [Interfaces](docs/core/interfaces.md) — `IService`, `IRepository<T>`, and service contract patterns
+- [Mappers](docs/core/mappers.md) — `Aggregate`, `TransferObject`, `JsonTransferObject` base classes
+- [Contexts](docs/core/contexts.md) — runtime orchestration contexts
+- [Repositories](docs/core/repos.md) — `YamlRepository<T>` and `HttpRepository<T>` base classes
+- [Utilities](docs/core/utils.md) — infrastructure utilities (`FileLoader`, `YamlLoader`, `JsonLoader`, etc.)
+- [Blueprints](docs/core/blueprints.md) — `AppBlueprint` and `CliBlueprint` bootstrapping
+
+### Guides (Strategies & Patterns)
+
+User-facing guides with strategies, patterns, and usage examples.
+
+- [Interfaces](docs/guides/interfaces.md) — CRUD patterns, aggregate return types, service consumption
+- [Mappers](docs/guides/mappers.md) — aggregate factories, transfer objects, JSON transfer objects, testing
+- [Repositories](docs/guides/repos.md) — YAML and HTTP repository patterns
+- [Contexts](docs/guides/contexts.md) — pipeline pattern, feature execution, error handling
+- [Blueprints](docs/guides/blueprints.md) — standalone, host-integrated, and CLI bootstrapping
+- Domain Guides: [App](docs/guides/domain/app.md) · [CLI](docs/guides/domain/cli.md) · [DI](docs/guides/domain/di.md) · [Error](docs/guides/domain/error.md) · [Feature](docs/guides/domain/feature.md) · [Logging](docs/guides/domain/logging.md)
+- Utility Guides: [File](docs/guides/utils/file.md) · [YAML](docs/guides/utils/yaml.md) · [JSON](docs/guides/utils/json.md) · [CSV](docs/guides/utils/csv.md) · [SQLite](docs/guides/utils/sqlite.md)
+
 ## License
 
 [MIT](https://github.com/greatstrength/tiferet.net/blob/v1.x-proto/LICENSE)
